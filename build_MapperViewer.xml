@@ -1,0 +1,44 @@
+<!--
+# -*- Buildfile -*-
+# @file  build_MapperViewer.xml
+# @brief RTComponent makefile for "MapperViewer component"
+# @date  $Date$
+#
+# $Id$
+ -->
+<project name="MapperViewer" default="compile">
+	<property name="source" value="src" />
+	<property name="dest" value="bin" />
+	<property environment="env" />
+
+	<target name="mkdir">
+		<mkdir dir="${dest}" />
+	</target>
+
+	<target name="idlcompile"  depends="mkdir">
+		<exec executable="${java.home}/../bin/idlj">
+			<arg line="-td 'src' -i '${env.RTM_ROOT}/rtm/idl' -fall 'idl/MobileRobot.idl'"/>
+		</exec>
+		<!--
+		<exec executable="${java.home}/../bin/idlj">
+			<arg line="-td 'src' -i 'C:\Users\ysuga\rtm\idl\' -fall 'idl/BasicDataType.idl'"/>
+		</exec>
+		<exec executable="${java.home}/../bin/idlj">
+			<arg line="-td 'src' -i 'C:\Users\ysuga\rtm\idl\' -fall 'idl/ExtendedDataTypes.idl'"/>
+		</exec>
+		<exec executable="${java.home}/../bin/idlj">
+			<arg line="-td 'src' -i 'C:\Users\ysuga\rtm\idl\' -fall 'idl/InterfaceDataTypes.idl'"/>
+		</exec>
+		-->
+	</target>
+
+	<target name="compile" depends="idlcompile">
+		<javac srcdir="${source}" destdir="${dest}">
+			<classpath>
+				<fileset dir="${env.RTM_JAVA_ROOT}/jar">
+					<include name="*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+</project>
