@@ -7,22 +7,26 @@
  * $Id$
  */
 
-import RTC.TimedPose2D;
-import RTC.RangeData;
-import RTC.Path2D;
-import RTC.CameraImage;
-import RTC.TimedVector2D;
-import RTC.Waypoint2D;
 import jp.go.aist.rtm.RTC.DataFlowComponentBase;
 import jp.go.aist.rtm.RTC.Manager;
+import jp.go.aist.rtm.RTC.port.CorbaConsumer;
+import jp.go.aist.rtm.RTC.port.CorbaPort;
 import jp.go.aist.rtm.RTC.port.InPort;
 import jp.go.aist.rtm.RTC.port.OutPort;
 import jp.go.aist.rtm.RTC.util.DataRef;
-import jp.go.aist.rtm.RTC.port.CorbaConsumer;
-import jp.go.aist.rtm.RTC.port.CorbaPort;
 import jp.go.aist.rtm.RTC.util.IntegerHolder;
-import RTC.ReturnCode_t;
+import RTC.CameraImage;
+import RTC.OGMap;
+import RTC.OGMapHolder;
 import RTC.OGMapper;
+import RTC.Path2D;
+import RTC.RETURN_VALUE;
+import RTC.RangeData;
+import RTC.ReturnCode_t;
+import RTC.Time;
+import RTC.TimedPose2D;
+import RTC.TimedVelocity2D;
+import RTC.Waypoint2D;
 
 /*!
  * @class MapperViewerImpl
@@ -51,13 +55,13 @@ public class MapperViewerImpl extends DataFlowComponentBase {
         m_camera_val = new CameraImage();
         m_camera = new DataRef<CameraImage>(m_camera_val);
         m_cameraIn = new InPort<CameraImage>("camera", m_camera);
-        m_targetVelocity_val = new TimedVector2D();
-        m_targetVelocity = new DataRef<TimedVector2D>(m_targetVelocity_val);
-        m_targetVelocityOut = new OutPort<TimedVector2D>("targetVelocity", m_targetVelocity);
+        m_targetVelocity_val = new TimedVelocity2D(new Time(0,0), new RTC.Velocity2D(0, 0, 0));
+        m_targetVelocity = new DataRef<TimedVelocity2D>(m_targetVelocity_val);
+        m_targetVelocityOut = new OutPort<TimedVelocity2D>("targetVelocity", m_targetVelocity);
         m_goal_val = new Waypoint2D();
         m_goal = new DataRef<Waypoint2D>(m_goal_val);
         m_goalOut = new OutPort<Waypoint2D>("goal", m_goal);
-        m_mapperServicePort = new CorbaPort("mapperService");
+        m_mapperServicePort = new CorbaPort("gridMapper");
         // </rtc-template>
 
     }
@@ -86,7 +90,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
         addOutPort("goal", m_goalOut);
         
         // Set service consumers to Ports
-        m_mapperServicePort.registerConsumer("OGMapper", "RTC.OGMapper", m_mapperBase);
+        m_mapperServicePort.registerConsumer("OGMapper", "RTC::OGMapper", m_mapperBase);
         
         // Set CORBA Service Ports
         addPort(m_mapperServicePort);
@@ -191,6 +195,46 @@ public class MapperViewerImpl extends DataFlowComponentBase {
      */
     @Override
     protected ReturnCode_t onExecute(int ec_id) {
+    	if(m_currentPoseIn.isNew()) {
+    		m_currentPoseIn.read();
+    		this.frame.setRobotPose(m_currentPose.v.data);
+    	}
+    	
+    	if(m_rangeIn.isNew()) {
+    		m_rangeIn.read();
+    		this.frame.setRangeData(m_range.v);
+    	}
+    	
+    	if(frame.isJoystick()) {
+    		int state = frame.getJoyState();
+    		double vx = 0;
+    		double vy = 0;
+    		double va = 0;
+    		double tvel = frame.getTranslationVelocity();
+    		double rvel = frame.getRotationVelocity();
+    		switch(state) {
+    		case JoyFrame.UP:
+    			vx = tvel;
+    			break;
+    		case JoyFrame.DOWN:
+    			vx = -tvel;
+    			break;
+    		case JoyFrame.LEFT:
+    			va = rvel;
+    			break;
+    		case JoyFrame.RIGHT:
+    			va = -rvel;
+    			break;
+    		case JoyFrame.DEF:
+    			break;
+   			default:
+   				break;
+    		}
+    		this.m_targetVelocity.v.data.vx = vx;
+    		this.m_targetVelocity.v.data.vy = vy;
+    		this.m_targetVelocity.v.data.va = va;
+    		m_targetVelocityOut.write();
+    	}
         return super.onExecute(ec_id);
     }
 
@@ -315,11 +359,11 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 
     // DataOutPort declaration
     // <rtc-template block="outport_declare">
-    protected TimedVector2D m_targetVelocity_val;
-    protected DataRef<TimedVector2D> m_targetVelocity;
+    protected TimedVelocity2D m_targetVelocity_val;
+    protected DataRef<TimedVelocity2D> m_targetVelocity;
     /*!
      */
-    protected OutPort<TimedVector2D> m_targetVelocityOut;
+    protected OutPort<TimedVelocity2D> m_targetVelocityOut;
 
     protected Waypoint2D m_goal_val;
     protected DataRef<Waypoint2D> m_goal;
@@ -349,6 +393,39 @@ public class MapperViewerImpl extends DataFlowComponentBase {
     /*!
      */
     protected OGMapper m_mapper;
+    
+    /**
+     * requestMap
+     * @return
+     */
+	public OGMap requestMap() {
+		OGMap map = new OGMap();
+		OGMapHolder mapHolder = new OGMapHolder(map);
+		if(m_mapperServicePort.get_connector_profiles().length != 0) {
+			if(this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
+				return mapHolder.value;
+			}
+		}
+		return null;
+	}
+
+	public boolean startMapping() {
+		if(m_mapperServicePort.get_connector_profiles().length != 0) {
+			if(this.m_mapperBase._ptr().startMapping() == RETURN_VALUE.RETVAL_OK) {
+				return true;
+			}
+		}	
+		return false;
+	}
+
+	public boolean stopMapping() {
+		if(m_mapperServicePort.get_connector_profiles().length != 0) {
+			if(this.m_mapperBase._ptr().stopMapping() == RETURN_VALUE.RETVAL_OK) {
+				return true;
+			}
+		}
+		return false;
+	}
     
     // </rtc-template>
 
