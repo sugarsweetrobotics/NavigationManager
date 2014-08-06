@@ -15,6 +15,8 @@ public class MapPanel extends JPanel {
 
 	BufferedImage image;
 	
+	BufferedImage mapImage;
+	
 	RTC.Pose2D robotPose;
 	
 	RTC.RangeData rangeData;
@@ -46,9 +48,11 @@ public class MapPanel extends JPanel {
 		int h = map.config.height;
 		if (image == null) {
 			image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+			mapImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		}
 		else if (image.getWidth() != w || image.getHeight() != h) {
 			image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+			mapImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		}
 		double rx = map.config.xScale;
 		double ry = map.config.yScale;
@@ -57,12 +61,15 @@ public class MapPanel extends JPanel {
 		double oth = map.config.origin.heading;
 		for(int i = 0;i < h;i++) {
 			for(int j = 0;j < w;j++) {
-				byte r = map.map.cells[(h-i-1)*w+(w-j-1)];
+				byte r = map.map.cells[(i)*w+(j)];
+				//byte r = map.map.cells[i*w +j];
 				int rgb = (r << 24) | (r << 16) | (r << 8) | r;
 				
-				image.setRGB(j, i, rgb);
+				//image.setRGB(j, i, rgb);
+				image.setRGB(i,j,rgb);
 			}
 		}
+		image.copyData(mapImage.getRaster());
 	}
 	
 	
@@ -75,7 +82,7 @@ public class MapPanel extends JPanel {
 				Graphics2D g2d2 = (Graphics2D)image.getGraphics();
 				double rx = map.config.xScale;
 				double ry = map.config.yScale;
-				int ox = (int)(map.config.origin.position.x / rx);
+				int ox = -(int)(map.config.origin.position.x / rx);
 				int oy = (int)(map.config.origin.position.y / ry);
 				double oth = map.config.origin.heading;
 				
@@ -83,11 +90,11 @@ public class MapPanel extends JPanel {
 				double y = robotPose.position.y;
 				double th = robotPose.heading;
 				
-				double y2 = - x * Math.cos(oth) + y * Math.sin(oth);
-				double x2 =  x * Math.sin(oth) + y * Math.cos(oth);
+				double x2 =  x * Math.cos(oth) + y * Math.sin(oth);
+				double y2 =  x * Math.sin(oth) - y * Math.cos(oth);
 				
 				
-				double xd = ox - x2 / rx;
+				double xd = ox + x2 / rx;
 				double yd = oy + y2 / ry;
 				
 				int[] xpoints = {0, 7, 7, -7, -7};
@@ -95,7 +102,7 @@ public class MapPanel extends JPanel {
 				Polygon p = new Polygon(xpoints, ypoints, 5);
 				
 				g2d2.translate(xd, yd);
-				g2d2.rotate(-th);
+				g2d2.rotate(-th+Math.PI/2);
 				
 				Color oldColor = g2d2.getColor();
 				g2d2.setColor(Color.red);

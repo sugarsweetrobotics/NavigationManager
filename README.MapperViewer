@@ -204,6 +204,18 @@ Lang Type:
 		Exception:     
 		PreCondition:  
 		PostCondition: 
+	PortName:    mapServer
+	Description: 
+	Interface:   
+		[Service Consumer Interfaces]
+		Name:          mapServer
+		Type:          RTC::OGMapServer
+		Description:   
+		Argument:      
+		Return Value:  
+		Exception:     
+		PreCondition:  
+		PostCondition: 
 # </rtc-template> 
 
 ======================================================================

@@ -116,6 +116,7 @@ camera          InPort      RTC::CameraImage
 targetVelocity  OutPort     RTC::TimedVector2D             
 goal            OutPort     RTC::Waypoint2D                
 OGMapper        ServicePort RTC::OGMapper                  
+mapServer       ServicePort RTC::OGMapServer               
 =============== =========== ============================== ====
 
 例

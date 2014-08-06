@@ -18,12 +18,12 @@ import jp.go.aist.rtm.RTC.util.IntegerHolder;
 import RTC.CameraImage;
 import RTC.OGMap;
 import RTC.OGMapHolder;
-import RTC.OGMapServer;
 import RTC.OGMapper;
 import RTC.Path2D;
 import RTC.RETURN_VALUE;
 import RTC.RangeData;
 import RTC.ReturnCode_t;
+import RTC.Time;
 import RTC.TimedPose2D;
 import RTC.TimedVelocity2D;
 import RTC.Waypoint2D;
@@ -55,14 +55,13 @@ public class MapperViewerImpl extends DataFlowComponentBase {
         m_camera_val = new CameraImage();
         m_camera = new DataRef<CameraImage>(m_camera_val);
         m_cameraIn = new InPort<CameraImage>("camera", m_camera);
-        m_targetVelocity_val = new TimedVelocity2D(new RTC.Time(0, 0), new RTC.Velocity2D(0, 0, 0));
+        m_targetVelocity_val = new TimedVelocity2D(new Time(0,0), new RTC.Velocity2D(0, 0, 0));
         m_targetVelocity = new DataRef<TimedVelocity2D>(m_targetVelocity_val);
         m_targetVelocityOut = new OutPort<TimedVelocity2D>("targetVelocity", m_targetVelocity);
         m_goal_val = new Waypoint2D();
         m_goal = new DataRef<Waypoint2D>(m_goal_val);
         m_goalOut = new OutPort<Waypoint2D>("goal", m_goal);
-        m_mapperServicePort = new CorbaPort("mapperService");
-        m_mapServerPort = new CorbaPort("mapServer");
+        m_mapperServicePort = new CorbaPort("gridMapper");
         // </rtc-template>
 
     }
@@ -92,11 +91,9 @@ public class MapperViewerImpl extends DataFlowComponentBase {
         
         // Set service consumers to Ports
         m_mapperServicePort.registerConsumer("OGMapper", "RTC::OGMapper", m_mapperBase);
-        m_mapServerPort.registerConsumer("mapServer", "RTC::OGMapServer", m_OGMapServerBase);
         
         // Set CORBA Service Ports
         addPort(m_mapperServicePort);
-        addPort(m_mapServerPort);
         // </rtc-template>
         bindParameter("debug", m_debug, "0");
         
@@ -382,9 +379,6 @@ public class MapperViewerImpl extends DataFlowComponentBase {
     /*!
      */
     protected CorbaPort m_mapperServicePort;
-    /*!
-     */
-    protected CorbaPort m_mapServerPort;
     
     // </rtc-template>
 
@@ -399,13 +393,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
     /*!
      */
     protected OGMapper m_mapper;
-    protected CorbaConsumer<OGMapServer> m_OGMapServerBase = new CorbaConsumer<OGMapServer>(OGMapServer.class);
-    /*!
-     */
-    protected OGMapServer m_OGMapServer;
     
-    // </rtc-template>
-
     /**
      * requestMap
      * @return
@@ -415,10 +403,6 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		OGMapHolder mapHolder = new OGMapHolder(map);
 		if(m_mapperServicePort.get_connector_profiles().length != 0) {
 			if(this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
-				return mapHolder.value;
-			}
-		} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {
-			if(this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK){
 				return mapHolder.value;
 			}
 		}
@@ -443,5 +427,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		return false;
 	}
     
+    // </rtc-template>
+
 
 }

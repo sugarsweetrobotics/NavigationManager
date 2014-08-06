@@ -31,5 +31,8 @@
     <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="mapperService">
         <rtc:ServiceInterface xsi:type="rtcExt:serviceinterface_ext" rtcExt:variableName="mapper" rtc:path="C:\Users\ysuga\rtm\idl\" rtc:type="RTC::OGMapper" rtc:idlFile="C:\Users\ysuga\rtm\idl\MobileRobot.idl" rtc:instanceName="OGMapper" rtc:direction="Required" rtc:name="OGMapper"/>
     </rtc:ServicePorts>
+    <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="mapServer">
+        <rtc:ServiceInterface xsi:type="rtcExt:serviceinterface_ext" rtcExt:variableName="OGMapServer" rtc:path="C:\Users\ysuga\rtm\idl" rtc:type="RTC::OGMapServer" rtc:idlFile="C:\Users\ysuga\rtm\idl\MobileRobot.idl" rtc:instanceName="mapServer" rtc:direction="Required" rtc:name="mapServer"/>
+    </rtc:ServicePorts>
     <rtc:Language xsi:type="rtcExt:language_ext" rtc:kind="Java"/>
 </rtc:RtcProfile>

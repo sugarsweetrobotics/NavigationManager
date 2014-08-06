@@ -209,7 +209,7 @@ public class MapperViewerFrame extends JFrame {
 		    	double origin_x = mapPanel.map.config.origin.position.x;
 		    	double origin_y = mapPanel.map.config.origin.position.y;
 		    	double origin_th = mapPanel.map.config.origin.heading;
-				ImageIO.write(mapPanel.image,"png", f);
+				ImageIO.write(mapPanel.mapImage,"png", f);
 				File f2 = new File(fileContext + ".yaml");
 				FileWriter fw = new FileWriter(f2);
 				BufferedWriter bw = new BufferedWriter(fw);
@@ -217,6 +217,8 @@ public class MapperViewerFrame extends JFrame {
 				bw.write("\nresolution_x : " + xresolution);
 				bw.write("\nresolution_y : " + yresolution);
 				bw.write("\n# Pose of the Top-Left point in meter / radian");
+				bw.write("\n# X-Axis is horizontally, left to right.");
+				bw.write("\n# Y-Axis is vertically, bottom to top.");
 				bw.write("\norigin_x : " + origin_x);
 				bw.write("\norigin_y : " + origin_y);
 				bw.write("\norigin_th : " + origin_th);
@@ -248,7 +250,7 @@ public class MapperViewerFrame extends JFrame {
 		
 	}
 	private void onStop() {
-		rtc.startMapping();
+		rtc.stopMapping();
 	}
 	private void onEnableUpdating() {
 		this.timer = new Timer(100, new ActionListener() {
