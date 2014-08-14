@@ -102,7 +102,6 @@ public class MapperViewerImpl extends DataFlowComponentBase {
         
     	this.frame = new MapperViewerFrame(this);
     	
-    	
         return super.onInitialize();
     }
 

@@ -5,7 +5,7 @@ package RTC;
 * RTC/MAPPER_STATE.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
-* 2014年8月6日 9時22分31秒 JST
+* 2014年8月11日 11時46分06秒 JST
 */
 
 public class MAPPER_STATE implements org.omg.CORBA.portable.IDLEntity

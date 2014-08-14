@@ -61,9 +61,10 @@ public class MapPanel extends JPanel {
 		double oth = map.config.origin.heading;
 		for(int i = 0;i < h;i++) {
 			for(int j = 0;j < w;j++) {
-				byte r = map.map.cells[(i)*w+(j)];
-				//byte r = map.map.cells[i*w +j];
-				int rgb = (r << 24) | (r << 16) | (r << 8) | r;
+				int r = 0;
+				r |= (0x0FF & map.map.cells[(i)*w+(j)]);
+				Color c = new Color(r/255.0f, r/255.0f, r/255.0f);
+				int rgb = c.getRGB();// /* (r << 24) |*/ (r << 16) | (r << 8) | r;
 				
 				//image.setRGB(j, i, rgb);
 				image.setRGB(i,j,rgb);
@@ -77,12 +78,13 @@ public class MapPanel extends JPanel {
 	public void repaint() {//Graphics g) {
 		Graphics2D g2d = (Graphics2D)getGraphics();
 		if(image != null) {
+			image.copyData(mapImage.getRaster());
 			
 			if (robotPose != null) {
 				Graphics2D g2d2 = (Graphics2D)image.getGraphics();
 				double rx = map.config.xScale;
 				double ry = map.config.yScale;
-				int ox = -(int)(map.config.origin.position.x / rx);
+				int ox = (int)(map.config.origin.position.x / rx);
 				int oy = (int)(map.config.origin.position.y / ry);
 				double oth = map.config.origin.heading;
 				

@@ -193,9 +193,9 @@ public class MapperViewerFrame extends JFrame {
 	
 	private void onSaveAs() {
 		JFileChooser fc = new JFileChooser();
-		fc.setFileFilter(new FileNameExtensionFilter("*.png", "png"));    // (2)
+		fc.setFileFilter(new FileNameExtensionFilter("*.png", "png"));
 
-		if(fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {    // (3), (4)
+		if(fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 			String filename = fc.getSelectedFile().getAbsolutePath();
 			if (!filename.endsWith(".png")) {
 				filename = filename + ".png";
