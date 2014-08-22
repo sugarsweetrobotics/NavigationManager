@@ -16,6 +16,8 @@ import jp.go.aist.rtm.RTC.port.OutPort;
 import jp.go.aist.rtm.RTC.util.DataRef;
 import jp.go.aist.rtm.RTC.util.IntegerHolder;
 import RTC.CameraImage;
+import RTC.MAPPER_STATE;
+import RTC.MAPPER_STATEHolder;
 import RTC.OGMap;
 import RTC.OGMapHolder;
 import RTC.OGMapServer;
@@ -440,6 +442,18 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 			}
 		}
 		return false;
+	}
+
+	public MAPPER_STATE requestState() {
+		MAPPER_STATE mapper_state = RTC.MAPPER_STATE.MAPPER_UNKNOWN;
+		MAPPER_STATEHolder state = new MAPPER_STATEHolder(mapper_state);
+		
+		if(m_mapperServicePort.get_connector_profiles().length != 0) {
+			if(this.m_mapperBase._ptr().getState(state) == RETURN_VALUE.RETVAL_OK) {
+				return mapper_state;
+			}
+		}
+		return MAPPER_STATE.MAPPER_UNKNOWN;
 	}
     
 

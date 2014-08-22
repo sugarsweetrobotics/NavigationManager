@@ -59,6 +59,8 @@ public class MapPanel extends JPanel {
 		int ox = (int)(-map.config.origin.position.x / rx);
 		int oy = (int)(-map.config.origin.position.y / ry);
 		double oth = map.config.origin.heading;
+		int len = map.map.cells.length;
+		System.out.println("Length = "  + len);
 		for(int i = 0;i < h;i++) {
 			for(int j = 0;j < w;j++) {
 				int r = 0;
