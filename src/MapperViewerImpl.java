@@ -447,7 +447,6 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	public MAPPER_STATE requestState() {
 		MAPPER_STATE mapper_state = RTC.MAPPER_STATE.MAPPER_UNKNOWN;
 		MAPPER_STATEHolder state = new MAPPER_STATEHolder(mapper_state);
-		
 		if(m_mapperServicePort.get_connector_profiles().length != 0) {
 			if(this.m_mapperBase._ptr().getState(state) == RETURN_VALUE.RETVAL_OK) {
 				return mapper_state;
