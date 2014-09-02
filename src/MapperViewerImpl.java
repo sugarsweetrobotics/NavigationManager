@@ -412,6 +412,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
      * @return
      */
 	public OGMap requestMap() {
+		try {
 		OGMap map = new OGMap();
 		OGMapHolder mapHolder = new OGMapHolder(map);
 		if(m_mapperServicePort.get_connector_profiles().length != 0) {
@@ -422,6 +423,9 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 			if(this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK){
 				return mapHolder.value;
 			}
+		}
+		} catch (org.omg.CORBA.UNKNOWN e) {
+			e.printStackTrace();
 		}
 		return null;
 	}

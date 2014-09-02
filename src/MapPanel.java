@@ -98,8 +98,8 @@ public class MapPanel extends JPanel {
 				double y2 =  x * Math.sin(oth) - y * Math.cos(oth);
 				
 				
-				double xd = ox + x2 / rx;
-				double yd = oy + y2 / ry;
+				double xd = -ox + x2 / rx;
+				double yd = -oy + y2 / ry;
 				
 				int[] xpoints = {0, 7, 7, -7, -7};
 				int[] ypoints = {-7, 0, 7, 7, 0};

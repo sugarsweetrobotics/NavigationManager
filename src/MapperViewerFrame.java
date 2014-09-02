@@ -227,12 +227,16 @@ public class MapperViewerFrame extends JFrame {
 
 	private void onTimer() {
 		if (!mapMenu.isPopupMenuVisible() && !fileMenu.isPopupMenuVisible()) {
-			onRequest();
+			try {
+				onRequest();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 
 	private void startTimer() {
-		this.timer = new Timer(100, new ActionListener() {
+		this.timer = new Timer(500, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -266,16 +270,17 @@ public class MapperViewerFrame extends JFrame {
 		} else {
 			this.startMenu.setText("Start Mapping");
 		}
+		
 	}
 
 	private void onStart() {
 		if (mapper_state.equals(MAPPER_STATE.MAPPER_MAPPING)) {
-			if (rtc.startMapping()) {
+			if (rtc.stopMapping()) {
 				
 			}
 
 		} else {
-			if (rtc.stopMapping()) {
+			if (rtc.startMapping()) {
 				
 			}
 		}
