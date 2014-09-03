@@ -60,7 +60,7 @@ public class MapPanel extends JPanel {
 		int oy = (int)(-map.config.origin.position.y / ry);
 		double oth = map.config.origin.heading;
 		int len = map.map.cells.length;
-		System.out.println("Length = "  + len);
+		//System.out.println("Length = "  + len);
 		for(int i = 0;i < h;i++) {
 			for(int j = 0;j < w;j++) {
 				int r = 0;
@@ -68,8 +68,9 @@ public class MapPanel extends JPanel {
 				Color c = new Color(r/255.0f, r/255.0f, r/255.0f);
 				int rgb = c.getRGB();// /* (r << 24) |*/ (r << 16) | (r << 8) | r;
 				
+				image.setRGB(j, (h-1-i), rgb);
 				//image.setRGB(j, i, rgb);
-				image.setRGB(i,j,rgb);
+				//image.setRGB(i,j,rgb);
 			}
 		}
 		image.copyData(mapImage.getRaster());
@@ -90,6 +91,7 @@ public class MapPanel extends JPanel {
 				int oy = (int)(map.config.origin.position.y / ry);
 				double oth = map.config.origin.heading;
 				
+				
 				double x = robotPose.position.x;
 				double y = robotPose.position.y;
 				double th = robotPose.heading;
@@ -101,11 +103,20 @@ public class MapPanel extends JPanel {
 				double xd = -ox + x2 / rx;
 				double yd = -oy + y2 / ry;
 				
+				Color oc = g2d2.getColor();
+				g2d2.setColor(Color.yellow);
+				g2d2.drawLine((int)xd, 0, (int)xd, image.getHeight());
+				g2d2.drawLine(0, (int)yd, image.getWidth(), (int)yd);
+				g2d2.setColor(oc);
+				
 				int[] xpoints = {0, 7, 7, -7, -7};
 				int[] ypoints = {-7, 0, 7, 7, 0};
 				Polygon p = new Polygon(xpoints, ypoints, 5);
 				
+				g2d2.fill(p);
+				
 				g2d2.translate(xd, yd);
+				//g2d2.translate(yd, xd);
 				g2d2.rotate(-th+Math.PI/2);
 				
 				Color oldColor = g2d2.getColor();
@@ -114,18 +125,18 @@ public class MapPanel extends JPanel {
 				
 				if(rangeData != null) {
 					int skip = 5;
-					double rangeTh = rangeData.config.minAngle;
+					double rangeTh = rangeData.config.minAngle + Math.PI/2;
 					double step = rangeData.config.angularRes * skip;
 					double ofx = rangeData.geometry.geometry.pose.position.x;
 					double ofy = rangeData.geometry.geometry.pose.position.y;
 					
 					for(int i = 0;i < rangeData.ranges.length;i+=skip) {
 						double distance = rangeData.ranges[i];
-						double px = distance * Math.cos(rangeTh) + ofx;
-						double py = distance * Math.sin(rangeTh) + ofy;
+						double px = distance * Math.cos(-rangeTh) + ofx;
+						double py = distance * Math.sin(-rangeTh) + ofy;
 						
-						double pxd = -py / ry;
-						double pyd = -px / rx;
+						double pyd = py / ry;
+						double pxd = px / rx;
 						g2d2.fill(new Rectangle2D.Double(pxd-2, pyd-2, 4, 4));
 						rangeTh += step;
 					}

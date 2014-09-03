@@ -209,6 +209,12 @@ public class MapperViewerImpl extends DataFlowComponentBase {
     		this.frame.setRangeData(m_range.v);
     	}
     	
+    	if(m_targetVelocityOut.getConnectorProfiles().size() > 0) {
+    		frame.openJoystickFrame(true);
+    	} else {
+    		frame.openJoystickFrame(false);
+    	}
+    	
     	if(frame.isJoystick()) {
     		int state = frame.getJoyState();
     		double vx = 0;

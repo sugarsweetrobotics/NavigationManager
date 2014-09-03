@@ -316,13 +316,25 @@ public class MapperViewerFrame extends JFrame {
 		}
 	}
 
+	public void openJoystickFrame(boolean flag) {
+		if (flag) {
+			if (this.joyFrame == null) {
+				this.joyFrame = new JoyFrame();
+			}
+		} else {
+			if (this.joyFrame != null) {
+			this.joyFrame.setVisible(false);
+			this.joyFrame = null;	
+			}
+		}
+	}
+	
 	public void onOpenJoystick() {
 		if (joyFrame == null) { // JoyFrame inactive
-			this.joyFrame = new JoyFrame();
+			this.openJoystickFrame(true);
 			this.openJoystick.setText("Close Joystick");
 		} else { // JoyFrame active
-			this.joyFrame.setVisible(false);
-			this.joyFrame = null;
+			this.openJoystickFrame(false);
 			this.openJoystick.setText("Open Joystick");
 		}
 	}
