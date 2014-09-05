@@ -75,6 +75,25 @@ module RTC {
     RETURN_VALUE requestCurrentBuiltMap(out OGMap map);
   };
   
+  struct PathPlanParameter {
+    /// Location of the goal.
+    Pose2D targetPose;
+    /// Location of Robot.
+    Pose2D currentPose;
+    /// How far away from the waypoint is considered success (radius in metres).
+    double distanceTolerance;
+    /// How much off the target heading is considered success (in radians).
+    double headingTolerance;
+    /// Target time to arrive at the waypoint by.
+    Time timeLimit;
+    /// Maximum sped to travel at while heading to the waypoint.
+    Velocity2D maxSpeed;
+  };
+  
+  interface PathPlanner {
+    /// Plan Path from PathPlanParater.
+    RETURN_VALUE planPath(in PathPlanParameter param, out Path2D path);
+  };
 
 };
 

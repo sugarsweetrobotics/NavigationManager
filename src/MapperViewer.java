@@ -34,8 +34,10 @@ public class MapperViewer implements RtcNewFunc, RtcDeleteFunc, RegisterModuleFu
     	    "lang_type",         "compile",
             // Configuration variables
             "conf.default.debug", "0",
+            "conf.default.interval", "1.0", 
             // Widget
             "conf.__widget__.debug", "text",
+            "conf.__widget__.interval", "text", 
             // Constraints
     	    ""
             };

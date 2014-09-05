@@ -1,8 +1,9 @@
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -10,19 +11,22 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JToolBar;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import RTC.MAPPER_STATE;
-import RTC.MAPPER_STATEHolder;
 import RTC.OGMap;
+import RTC.PathPlanParameter;
 import RTC.Pose2D;
 import RTC.RangeData;
+import RTC.Velocity2D;
 
 public class MapperViewerFrame extends JFrame {
 
@@ -57,53 +61,46 @@ public class MapperViewerFrame extends JFrame {
 
 		this.rtc = rtc;
 		mapPanel = new MapPanel();
-		setContentPane(mapPanel);
-
+		// setContentPane(mapPanel);
+		add(mapPanel, BorderLayout.CENTER);
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		this.addWindowListener(new WindowListener() {
-
-			@Override
-			public void windowOpened(WindowEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
+		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				// TODO Auto-generated method stub
 				onExit();
 			}
+		});
+
+		JToolBar toolBar = new JToolBar();
+		this.add(toolBar, BorderLayout.NORTH);
+		JButton startButton = new JButton(new AbstractAction("Start") {
 
 			@Override
-			public void windowClosed(WindowEvent e) {
-				// TODO Auto-generated method stub
-			}
-
-			@Override
-			public void windowIconified(WindowEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void windowDeiconified(WindowEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void windowActivated(WindowEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void windowDeactivated(WindowEvent e) {
-				// TODO Auto-generated method stub
-
+			public void actionPerformed(ActionEvent e) {
+				onStart();
 			}
 
 		});
+		toolBar.add(startButton);
+		JButton saveAsButton = new JButton(new AbstractAction("Save") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onSaveAs();
+			}
+
+		});
+		toolBar.add(saveAsButton);
+		JButton planButton = new JButton(new AbstractAction("Plan") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onPlan();
+			}
+
+		});
+		toolBar.add(planButton);
+
 		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		this.fileMenu = new JMenu("File");
@@ -185,6 +182,12 @@ public class MapperViewerFrame extends JFrame {
 		setVisible(true);
 		startTimer();
 	}
+	
+	private double getGoalX() {
+		return mapPanel.getGoalX();
+	}
+	
+	private double getGoalY() { return mapPanel.getGoalY(); }
 
 	private void onSaveAs() {
 		JFileChooser fc = new JFileChooser();
@@ -236,23 +239,29 @@ public class MapperViewerFrame extends JFrame {
 	}
 
 	private void startTimer() {
-		this.timer = new Timer(500, new ActionListener() {
+		if (timer == null) {
+			this.timer = new Timer(this.rtc.getInterval(),
+					new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				onTimer();
-			}
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							onTimer();
+						}
 
-		});
-		timer.start();
+					});
+			timer.start();
+		}
 	}
 
 	private void stopTimer() {
-		timer.stop();
-		timer = null;
+		if (timer != null) {
+			timer.stop();
+			timer = null;
+		}
 	}
 
 	private void onExit() {
+		stopTimer();
 		System.exit(0);
 	}
 
@@ -263,29 +272,41 @@ public class MapperViewerFrame extends JFrame {
 		}
 		repaint();
 
-		
 		mapper_state = rtc.requestState();
 		if (mapper_state.equals(MAPPER_STATE.MAPPER_MAPPING)) {
 			this.startMenu.setText("Stop Mapping");
 		} else {
 			this.startMenu.setText("Start Mapping");
 		}
-		
+
 	}
 
 	private void onStart() {
 		if (mapper_state.equals(MAPPER_STATE.MAPPER_MAPPING)) {
 			if (rtc.stopMapping()) {
-				
+
 			}
 
 		} else {
 			if (rtc.startMapping()) {
-				
+
 			}
 		}
 	}
 
+	private void onPlan() {
+		PathPlanParameter param = new PathPlanParameter();
+		param.targetPose = new RTC.Pose2D(new RTC.Point2D(getGoalX(), getGoalY()), 0);
+		param.maxSpeed = new Velocity2D(1.0, 0, 1.0);
+		param.distanceTolerance = 0.1;
+		param.headingTolerance = 0.5;
+		param.timeLimit = new RTC.Time(1000000, 0);
+		
+		RTC.Path2D path = rtc.planPath(param);
+		if (path != null) {
+			mapPanel.setPath2D(path);
+		}
+	}
 	/*
 	 * private void onStop() { rtc.stopMapping(); }
 	 */
@@ -323,12 +344,12 @@ public class MapperViewerFrame extends JFrame {
 			}
 		} else {
 			if (this.joyFrame != null) {
-			this.joyFrame.setVisible(false);
-			this.joyFrame = null;	
+				this.joyFrame.setVisible(false);
+				this.joyFrame = null;
 			}
 		}
 	}
-	
+
 	public void onOpenJoystick() {
 		if (joyFrame == null) { // JoyFrame inactive
 			this.openJoystickFrame(true);
