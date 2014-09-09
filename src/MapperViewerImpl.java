@@ -27,10 +27,12 @@ import RTC.Path2D;
 import RTC.Path2DHolder;
 import RTC.PathPlanParameter;
 import RTC.PathPlanner;
+import RTC.Point2D;
 import RTC.Pose2D;
 import RTC.RETURN_VALUE;
 import RTC.RangeData;
 import RTC.ReturnCode_t;
+import RTC.Time;
 import RTC.TimedPose2D;
 import RTC.TimedVelocity2D;
 import RTC.Waypoint2D;
@@ -54,7 +56,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	public MapperViewerImpl(Manager manager) {
 		super(manager);
 		// <rtc-template block="initializer">
-		m_currentPose_val = new TimedPose2D();
+		m_currentPose_val = new TimedPose2D(new Time(0,0), new Pose2D(new Point2D(0,0), 0));
 		m_currentPose = new DataRef<TimedPose2D>(m_currentPose_val);
 		m_currentPoseIn = new InPort<TimedPose2D>("currentPose", m_currentPose);
 		m_range_val = new RangeData();
@@ -229,6 +231,11 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		if (m_rangeIn.isNew()) {
 			m_rangeIn.read();
 			this.frame.setRangeData(m_range.v);
+		}
+		
+		if (m_cameraIn.isNew()) {
+			m_cameraIn.read();
+			this.frame.setImage(m_camera.v);
 		}
 
 		if (m_targetVelocityOut.getConnectorProfiles().size() > 0) {

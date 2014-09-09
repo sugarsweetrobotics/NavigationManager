@@ -1,3 +1,4 @@
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -11,6 +12,7 @@ import javax.swing.JPanel;
 
 import RTC.OGMap;
 import RTC.Path2D;
+import RTC.Point2D;
 import RTC.Pose2D;
 import RTC.RangeData;
 import RTC.Waypoint2D;
@@ -44,26 +46,40 @@ public class MapPanel extends JPanel {
 	}
 
 
-	double goal_x, goal_y;
+	class Goal {
+		
+		public Goal(double x, double y, double th) {
+			this.x = x;
+			this.y = y;
+			this.th = th;
+		}
+		
+		public double x;
+		public double y;
+		public double th;
+	};
 	
-	public double getGoalX() {return goal_x; }
-	public double getGoalY() {return goal_y; }
+	Goal goal;
+	
+	public double getGoalX() {return goal.x; }
+	public double getGoalY() {return goal.y; }
+	public double getGoalTh() {return goal.th; }
+	
+	
 	private void onPanelClicked(MouseEvent e) {
 		Point p = e.getPoint();
 		//System.out.println("p = " + p.x + ", " + p.y);
 		if (mapImage != null) {
-			
-			
-
 			double rx = map.config.xScale;
 			double ry = map.config.yScale;
 			int ox = (int)(map.config.origin.position.x / rx);
 			int oy = (int)(map.config.origin.position.y / ry);
 			
-			goal_x = (p.x + ox) * rx;
-			goal_y = -(p.y + oy) * ry;
-			System.out.println("p = " + goal_x + ", " + goal_y);
-			
+			double goal_x = (p.x + ox) * rx;
+			double goal_y = -(p.y + oy) * ry;
+			double goal_th = 0;
+			//System.out.println("p = " + goal_x + ", " + goal_y);
+			goal = new Goal(goal_x, goal_y, goal_th);
 		}
 	}
 	
@@ -105,21 +121,33 @@ public class MapPanel extends JPanel {
 				Color c = new Color(r/255.0f, r/255.0f, r/255.0f);
 				int rgb = c.getRGB();// /* (r << 24) |*/ (r << 16) | (r << 8) | r;
 				
-				image.setRGB(j, (h-1-i), rgb);
+				mapImage.setRGB(j, (h-1-i), rgb);
 				//image.setRGB(j, i, rgb);
 				//image.setRGB(i,j,rgb);
 			}
 		}
-		image.copyData(mapImage.getRaster());
+		//mapImage.copyData(mapImage.getRaster());
+		
+		if(robotPose == null) {
+			robotPose = new Pose2D(new Point2D(0,0), 0);
+		}
 	}
 	
 	
 	@Override
 	public void repaint() {//Graphics g) {
 		Graphics2D g2d = (Graphics2D)getGraphics();
-		if(image != null) {
-			drawRobot(g2d);
-			drawPath(g2d);
+		if(mapImage != null) {
+			mapImage.copyData(image.getRaster());
+			Graphics2D g2d2 = (Graphics2D)image.getGraphics();
+			drawGoal(g2d2);
+			drawAxis(g2d2, image.getWidth(), image.getHeight());
+			drawPath(g2d2);
+			drawRobot(g2d2);
+
+			
+			
+			g2d.drawImage(image, 0, 0, this);
 		}
 		
 		
@@ -127,10 +155,8 @@ public class MapPanel extends JPanel {
 	
 	
 	private void drawRobot(Graphics2D g2d) {
-		image.copyData(mapImage.getRaster());
 		
 		if (robotPose != null) {
-			Graphics2D g2d2 = (Graphics2D)image.getGraphics();
 			double rx = map.config.xScale;
 			double ry = map.config.yScale;
 			int ox = (int)(map.config.origin.position.x / rx);
@@ -149,36 +175,68 @@ public class MapPanel extends JPanel {
 			double xd = -ox + x2 / rx;
 			double yd = -oy + y2 / ry;
 			
-			Color oc = g2d2.getColor();
-			g2d2.setColor(Color.yellow);
-			g2d2.drawLine((int)(-ox + goal_x/rx), 0, (int)(-ox + goal_x/rx), image.getHeight());
-			g2d2.drawLine(0, (int)(-oy - goal_y/ry), image.getWidth(), (int)(-oy - goal_y/ry));
-			g2d2.setColor(oc);
 			
 			int[] xpoints = {0, 7, 7, -7, -7};
 			int[] ypoints = {-7, 0, 7, 7, 0};
 			Polygon p = new Polygon(xpoints, ypoints, 5);
 			
-			g2d2.fill(p);
+			g2d.fill(p);
 			
-			g2d2.translate(xd, yd);
+			g2d.translate(xd, yd);
 			//g2d2.translate(yd, xd);
-			g2d2.rotate(-th+Math.PI/2);
+			g2d.rotate(-th+Math.PI/2);
 			
-			Color oldColor = g2d2.getColor();
-			g2d2.setColor(Color.red);
-			g2d2.fill(p);
+			Color oldColor = g2d.getColor();
+			g2d.setColor(Color.red);
+			g2d.fill(p);
 			
-			drawRange(g2d2);
+			drawRange(g2d);
 
-			g2d2.setColor(oldColor);
+			g2d.setColor(oldColor);
 		}
-		g2d.drawImage(image, 0, 0, this);
+	}
+	
+	private void drawAxis(Graphics2D g2d2, int width, int height) {
+		
+		double rx = map.config.xScale;
+		double ry = map.config.yScale;
+		int ox = -(int)(map.config.origin.position.x / rx);
+		int oy = -(int)(map.config.origin.position.y / ry);
+		
+		
+		Color oc = g2d2.getColor();
+		g2d2.setColor(Color.red);
+		g2d2.setStroke(new BasicStroke(1));
+		g2d2.drawLine(0, oy, width, oy);
+		g2d2.setColor(Color.green);
+		g2d2.drawLine(ox, 0, ox, height);
+		g2d2.setColor(oc);
+	}
+	
+	private void drawGoal(Graphics2D g2d2) {
+		if (goal == null) {
+			return;
+		}
+		double rx = map.config.xScale;
+		double ry = map.config.yScale;
+		int ox = (int)(map.config.origin.position.x / rx);
+		int oy = (int)(map.config.origin.position.y / ry);
+		int size = 5; // px
+		
+		int dx = (int)(-ox + goal.x/rx);
+		int dy = (int)(-oy - goal.y/ry);
+		
+		Color oc = g2d2.getColor();
+		g2d2.setColor(Color.magenta);
+		g2d2.setStroke(new BasicStroke(2));
+		g2d2.drawLine(dx - size, dy-size, dx + size, dy+size);
+		g2d2.drawLine(dx + size, dy-size, dx - size, dy+size);
+		g2d2.setColor(oc);
 	}
 	
 	private void drawPath(Graphics2D g2d) {
 		Color oc = g2d.getColor();
-		g2d.setColor(Color.yellow);
+		g2d.setColor(Color.cyan);
 		
 		if (path != null) {
 			double rx = map.config.xScale;
@@ -235,6 +293,7 @@ public class MapPanel extends JPanel {
 	public void setRangeData(RangeData range) {
 		rangeData = range;
 	}
+	
 	public void setPath2D(Path2D path) {
 		this.path = path;
 	}

@@ -17,6 +17,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -56,13 +58,45 @@ public class MapperViewerFrame extends JFrame {
 
 	private MAPPER_STATE mapper_state = MAPPER_STATE.MAPPER_UNKNOWN;
 
+	private JSplitPane vSplitPaneSmall;
+	
+	private JSplitPane vSplitPane;
+	
+	private JSplitPane hSplitPane;
+	
+	private CameraViewPanel cameraViewPanel;
+	
 	public MapperViewerFrame(MapperViewerImpl rtc) {
 		super("Mapper Viewer");
 
-		this.rtc = rtc;
+		int width = 800;
+		int height = 600;
+		
 		mapPanel = new MapPanel();
+		cameraViewPanel = new CameraViewPanel();
+		
+		hSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		vSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		vSplitPaneSmall = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		
+		vSplitPaneSmall.setDividerLocation(height / 2);
+		vSplitPaneSmall.add(new JPanel());
+		vSplitPaneSmall.add(cameraViewPanel);
+		
+		hSplitPane.setDividerLocation(width / 3);
+		hSplitPane.add(vSplitPaneSmall);
+		hSplitPane.add(vSplitPane);
+		
+		vSplitPane.setDividerLocation(height / 3 * 2);
+		vSplitPane.add(mapPanel);
+		vSplitPane.add(new JPanel());
+		
+		
+		this.rtc = rtc;
+		
 		// setContentPane(mapPanel);
-		add(mapPanel, BorderLayout.CENTER);
+		add(hSplitPane, BorderLayout.CENTER);
+		
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			@Override
@@ -178,16 +212,19 @@ public class MapperViewerFrame extends JFrame {
 		});
 		controlMenu.add(openJoystick);
 
-		setSize(new Dimension(640, 480));
+		setSize(new Dimension(width, height));
 		setVisible(true);
 		startTimer();
+		startAutoRefresh();
 	}
-	
+
 	private double getGoalX() {
 		return mapPanel.getGoalX();
 	}
-	
-	private double getGoalY() { return mapPanel.getGoalY(); }
+
+	private double getGoalY() {
+		return mapPanel.getGoalY();
+	}
 
 	private void onSaveAs() {
 		JFileChooser fc = new JFileChooser();
@@ -253,6 +290,31 @@ public class MapperViewerFrame extends JFrame {
 		}
 	}
 
+	Timer refreshTimer;
+
+	private void startAutoRefresh() {
+
+		refreshTimer = new Timer(100, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+					onRepaint();
+				
+			}
+
+		});
+
+		refreshTimer.start();
+	}
+
+	private synchronized void onRepaint() {
+		repaint();
+	}
+	
+	public synchronized void setImage(RTC.CameraImage image) {
+		cameraViewPanel.setImage(image);
+	}
+	
 	private void stopTimer() {
 		if (timer != null) {
 			timer.stop();
@@ -265,20 +327,19 @@ public class MapperViewerFrame extends JFrame {
 		System.exit(0);
 	}
 
-	private void onRequest() {
-		this.map = rtc.requestMap();
-		if (map != null) {
-			mapPanel.setMap(map);
-		}
-		repaint();
-
+	private synchronized void onRequest() {
+		
+			this.map = rtc.requestMap();
+			if (map != null) {
+				mapPanel.setMap(map);
+			}
+		
 		mapper_state = rtc.requestState();
 		if (mapper_state.equals(MAPPER_STATE.MAPPER_MAPPING)) {
 			this.startMenu.setText("Stop Mapping");
 		} else {
 			this.startMenu.setText("Start Mapping");
 		}
-
 	}
 
 	private void onStart() {
@@ -296,17 +357,19 @@ public class MapperViewerFrame extends JFrame {
 
 	private void onPlan() {
 		PathPlanParameter param = new PathPlanParameter();
-		param.targetPose = new RTC.Pose2D(new RTC.Point2D(getGoalX(), getGoalY()), 0);
+		param.targetPose = new RTC.Pose2D(new RTC.Point2D(getGoalX(),
+				getGoalY()), 0);
 		param.maxSpeed = new Velocity2D(1.0, 0, 1.0);
 		param.distanceTolerance = 0.1;
 		param.headingTolerance = 0.5;
 		param.timeLimit = new RTC.Time(1000000, 0);
-		
+
 		RTC.Path2D path = rtc.planPath(param);
 		if (path != null) {
 			mapPanel.setPath2D(path);
 		}
 	}
+
 	/*
 	 * private void onStop() { rtc.stopMapping(); }
 	 */
