@@ -19,6 +19,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -80,7 +81,7 @@ public class MapperViewerFrame extends JFrame {
 		vSplitPaneSmall = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		
 		vSplitPaneSmall.setDividerLocation(height / 2);
-		vSplitPaneSmall.add(new JPanel());
+		vSplitPaneSmall.add(new JTextField());
 		vSplitPaneSmall.add(cameraViewPanel);
 		
 		hSplitPane.setDividerLocation(width / 3);
@@ -89,7 +90,7 @@ public class MapperViewerFrame extends JFrame {
 		
 		vSplitPane.setDividerLocation(height / 3 * 2);
 		vSplitPane.add(mapPanel);
-		vSplitPane.add(new JPanel());
+		vSplitPane.add(new JTextField());
 		
 		
 		this.rtc = rtc;
