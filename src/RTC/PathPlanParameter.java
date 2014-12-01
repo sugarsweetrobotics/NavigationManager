@@ -5,7 +5,7 @@ package RTC;
 * RTC/PathPlanParameter.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
-* 2014年9月4日 22時56分50秒 JST
+* 2014年12月1日 16時59分53秒 JST
 */
 
 public final class PathPlanParameter implements org.omg.CORBA.portable.IDLEntity

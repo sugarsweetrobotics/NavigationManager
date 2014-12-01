@@ -92,10 +92,7 @@ module RTC {
   
   interface PathPlanner {
     /// Plan Path from PathPlanParater.
-    RETURN_VALUE planPath(in PathPlanParameter param, out Path2D path);
+	  RETURN_VALUE planPath(in OGMap map, in TimedPose2D currentPose, in TimedPose2D targetGoal, out Path2D outPath);
   };
-
 };
-
-
 #endif

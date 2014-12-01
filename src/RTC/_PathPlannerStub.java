@@ -5,7 +5,7 @@ package RTC;
 * RTC/_PathPlannerStub.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
-* 2014年9月4日 22時56分50秒 JST
+* 2014年12月1日 16時59分53秒 JST
 */
 
 public class _PathPlannerStub extends org.omg.CORBA.portable.ObjectImpl implements RTC.PathPlanner
@@ -13,22 +13,24 @@ public class _PathPlannerStub extends org.omg.CORBA.portable.ObjectImpl implemen
 
 
   /// Plan Path from PathPlanParater.
-  public RTC.RETURN_VALUE planPath (RTC.PathPlanParameter param, RTC.Path2DHolder path)
+  public RTC.RETURN_VALUE planPath (RTC.OGMap map, RTC.TimedPose2D currentPose, RTC.TimedPose2D targetGoal, RTC.Path2DHolder outPath)
   {
             org.omg.CORBA.portable.InputStream $in = null;
             try {
                 org.omg.CORBA.portable.OutputStream $out = _request ("planPath", true);
-                RTC.PathPlanParameterHelper.write ($out, param);
+                RTC.OGMapHelper.write ($out, map);
+                RTC.TimedPose2DHelper.write ($out, currentPose);
+                RTC.TimedPose2DHelper.write ($out, targetGoal);
                 $in = _invoke ($out);
                 RTC.RETURN_VALUE $result = RTC.RETURN_VALUEHelper.read ($in);
-                path.value = RTC.Path2DHelper.read ($in);
+                outPath.value = RTC.Path2DHelper.read ($in);
                 return $result;
             } catch (org.omg.CORBA.portable.ApplicationException $ex) {
                 $in = $ex.getInputStream ();
                 String _id = $ex.getId ();
                 throw new org.omg.CORBA.MARSHAL (_id);
             } catch (org.omg.CORBA.portable.RemarshalException $rm) {
-                return planPath (param, path        );
+                return planPath (map, currentPose, targetGoal, outPath        );
             } finally {
                 _releaseReply ($in);
             }

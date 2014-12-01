@@ -216,6 +216,18 @@ Lang Type:
 		Exception:     
 		PreCondition:  
 		PostCondition: 
+	PortName:    pathPlanner
+	Description: 
+	Interface:   
+		[Service Consumer Interfaces]
+		Name:          PathPlanner
+		Type:          RTC::PathPlanner
+		Description:   
+		Argument:      
+		Return Value:  
+		Exception:     
+		PreCondition:  
+		PostCondition: 
 # </rtc-template> 
 
 ======================================================================

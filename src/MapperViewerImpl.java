@@ -533,8 +533,17 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	public Path2D planPath(PathPlanParameter param) {
 		Path2D path = new Path2D();
 		Path2DHolder pathHolder = new Path2DHolder(path);
+		TimedPose2D start = new TimedPose2D();
+		TimedPose2D goal = new TimedPose2D();
+		
+		start.data = param.currentPose;
+		goal.data = param.targetPose;
+		
+		
+		/*
 		Pose2D currentPose = this.m_currentPose.v.data;
 		param.currentPose = currentPose;
+		param.targetPose = targetPose;
 		
 		path.tm = new RTC.Time(0, 0);
 		path.waypoints = new RTC.Waypoint2D[2];
@@ -542,6 +551,10 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		path.waypoints[0].target = currentPose;
 		path.waypoints[1] = new RTC.Waypoint2D();
 		path.waypoints[1].target = param.targetPose;
+		*/
+		
+		
+		this.m_pathPlanner.planPath(requestMap(), start, goal, pathHolder);
 		
 		return path;
 		/*

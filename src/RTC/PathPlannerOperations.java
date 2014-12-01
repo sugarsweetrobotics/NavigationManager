@@ -5,12 +5,12 @@ package RTC;
 * RTC/PathPlannerOperations.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
-* 2014年9月4日 22時56分50秒 JST
+* 2014年12月1日 16時59分53秒 JST
 */
 
 public interface PathPlannerOperations 
 {
 
   /// Plan Path from PathPlanParater.
-  RTC.RETURN_VALUE planPath (RTC.PathPlanParameter param, RTC.Path2DHolder path);
+  RTC.RETURN_VALUE planPath (RTC.OGMap map, RTC.TimedPose2D currentPose, RTC.TimedPose2D targetGoal, RTC.Path2DHolder outPath);
 } // interface PathPlannerOperations
