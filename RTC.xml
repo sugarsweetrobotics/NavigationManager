@@ -36,7 +36,7 @@
     <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="mapServer">
         <rtc:ServiceInterface xsi:type="rtcExt:serviceinterface_ext" rtcExt:variableName="OGMapServer" rtc:path="C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl" rtc:type="RTC::OGMapServer" rtc:idlFile="C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl\MobileRobot.idl" rtc:instanceName="mapServer" rtc:direction="Required" rtc:name="mapServer"/>
     </rtc:ServicePorts>
-    <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="pathPlanner">
+    <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="PathPlanner">
         <rtc:ServiceInterface xsi:type="rtcExt:serviceinterface_ext" rtcExt:variableName="pathPlanner" rtc:path="C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl" rtc:type="RTC::PathPlanner" rtc:idlFile="C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl\MobileRobot.idl" rtc:instanceName="pathPlanner" rtc:direction="Required" rtc:name="PathPlanner"/>
     </rtc:ServicePorts>
     <rtc:Language xsi:type="rtcExt:language_ext" rtc:kind="Java"/>
