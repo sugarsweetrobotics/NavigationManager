@@ -110,7 +110,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 				m_mapperBase);
 		m_mapServerPort.registerConsumer("mapServer", "RTC::OGMapServer",
 				m_OGMapServerBase);
-		m_pathPlannerPort.registerConsumer("pathPlanner", "RTC::PathPlanner",
+		m_pathPlannerPort.registerConsumer("PathPlanner", "RTC::PathPlanner",
 				m_pathPlannerBase);
 
 		// Set CORBA Service Ports
