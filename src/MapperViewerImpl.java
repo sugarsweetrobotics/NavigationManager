@@ -481,13 +481,12 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		try {
 			OGMap map = new OGMap();
 			OGMapHolder mapHolder = new OGMapHolder(map);
-			if (m_mapperServicePort.get_connector_profiles().length != 0) {
+			if (m_mapperServicePort.get_connector_profiles().length != 0) {//dose it connected with Mapper_MRPT?
 				if (this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
 					return mapHolder.value;
 				}
-			} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {
-				if (this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(
-						mapHolder) == RETURN_VALUE.RETVAL_OK) {
+			} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {//dose it connected with MapServer?
+				if (this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
 					return mapHolder.value;
 				}
 			}
@@ -531,22 +530,21 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	}
 
 	public Path2D planPath(PathPlanParameter param) {
-		Path2D path = new Path2D();
-		Path2DHolder pathHolder = new Path2DHolder(path);
-		TimedPose2D start = new TimedPose2D();
-		TimedPose2D goal = new TimedPose2D();
-		
-		Pose2D currentPose = this.m_currentPose.v.data;
-		param.currentPose = currentPose;
-		start.data = param.currentPose;
+		Path2DHolder pathHolder = new Path2DHolder();
+		TimedPose2D goal = new TimedPose2D(new Time(0,0), new Pose2D(new Point2D(0,0), 0));
+		//currentPose should be mapped for OGMap coordinate
 		goal.data = param.targetPose;
 		
-		this.m_pathPlanner.planPath(requestMap(), start, goal, pathHolder);
-		
-		return path;
-		/*
+		System.out.println(this.m_currentPose.v.data.position.x + "  "+ this.m_currentPose.v.data.position.y);
+		System.out.println(goal.data.position.x + "  " + goal.data.position.y);
+			
+		this.m_pathPlannerBase._ptr().planPath(requestMap(), this.m_currentPose.v, goal, pathHolder);
+		System.out.println(pathHolder);
+		return pathHolder.value;
+			/*
 		if (m_pathPlannerPort.get_connector_profiles().length != 0) {
-			if (this.m_pathPlannerBase._ptr().planPath(param, pathHolder) == RETURN_VALUE.RETVAL_OK) {
+			if (this.m_pathPlannerBase._ptr().planPath(requestMap(), this.m_currentPose.v, goal, pathHolder) == RETURN_VALUE.RETVAL_OK) {
+				System.out.println(pathHolder);
 				return pathHolder.value;
 			}
 		}
