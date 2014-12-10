@@ -539,7 +539,6 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		System.out.println(goal.data.position.x + "  " + goal.data.position.y);
 			
 		this.m_pathPlannerBase._ptr().planPath(requestMap(), this.m_currentPose.v, goal, pathHolder);
-		System.out.println(pathHolder);
 		return pathHolder.value;
 			/*
 		if (m_pathPlannerPort.get_connector_profiles().length != 0) {

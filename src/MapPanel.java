@@ -75,10 +75,10 @@ public class MapPanel extends JPanel {
 			int ox = (int)(map.config.origin.position.x / rx);
 			int oy = (int)(map.config.origin.position.y / ry);
 			
-			double goal_x = (p.x + ox) * rx;
-			double goal_y = -(p.y + oy) * ry;
+			double goal_x = (p.x - ox) * rx;
+			double goal_y = -(p.y - oy) * ry;
 			double goal_th = 0;
-			//System.out.println("p = " + goal_x + ", " + goal_y);
+			System.out.println("p = " + goal_x + ", " + goal_y);
 			goal = new Goal(goal_x, goal_y, goal_th);
 		}
 	}
@@ -223,8 +223,8 @@ public class MapPanel extends JPanel {
 		int oy = (int)(map.config.origin.position.y / ry);
 		int size = 5; // px
 		
-		int dx = (int)(-ox + goal.x/rx);
-		int dy = (int)(-oy - goal.y/ry);
+		int dx = (int)(ox + goal.x/rx);
+		int dy = (int)(oy - goal.y/ry);
 		
 		Color oc = g2d2.getColor();
 		g2d2.setColor(Color.magenta);
@@ -249,8 +249,8 @@ public class MapPanel extends JPanel {
 			for(Waypoint2D w : path.waypoints){
 				double x = w.target.position.x;
 				double y = w.target.position.y;
-				int dx = (int)(-ox + x / rx);
-				int dy = (int)(-oy - y / ry);
+				int dx = (int)(ox + x / rx);
+				int dy = (int)(oy - y / ry);
 				Point p = new Point(dx, dy);
 				if (old_p != null) {
 					g2d.drawLine(old_p.x, old_p.y, p.x, p.y);
