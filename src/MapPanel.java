@@ -68,7 +68,7 @@ public class MapPanel extends JPanel {
 	
 	private void onPanelClicked(MouseEvent e) {
 		Point p = e.getPoint();
-		//System.out.println("p = " + p.x + ", " + p.y);
+		System.out.println("p = " + p.x + ", " + p.y);
 		if (mapImage != null) {
 			double rx = map.config.xScale;
 			double ry = map.config.yScale;
@@ -78,7 +78,7 @@ public class MapPanel extends JPanel {
 			double goal_x = (p.x - ox) * rx;
 			double goal_y = -(p.y - oy) * ry;
 			double goal_th = 0;
-			System.out.println("p = " + goal_x + ", " + goal_y);
+			System.out.println("goal = " + goal_x + ", " + goal_y);
 			goal = new Goal(goal_x, goal_y, goal_th);
 		}
 	}
@@ -249,8 +249,8 @@ public class MapPanel extends JPanel {
 			for(Waypoint2D w : path.waypoints){
 				double x = w.target.position.x;
 				double y = w.target.position.y;
-				int dx = (int)(ox + x / rx);
-				int dy = (int)(oy - y / ry);
+				int dx = (int)(x);
+				int dy = (int)(y);
 				Point p = new Point(dx, dy);
 				if (old_p != null) {
 					g2d.drawLine(old_p.x, old_p.y, p.x, p.y);
