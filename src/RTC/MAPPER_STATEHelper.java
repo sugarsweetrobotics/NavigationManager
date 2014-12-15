@@ -5,7 +5,7 @@ package RTC;
 * RTC/MAPPER_STATEHelper.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
-* 2014年12月1日 16時59分53秒 JST
+* 2014年12月15日 15時01分43秒 JST
 */
 
 abstract public class MAPPER_STATEHelper

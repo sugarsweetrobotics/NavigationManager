@@ -531,14 +531,11 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 
 	public Path2D planPath(PathPlanParameter param) {
 		Path2DHolder pathHolder = new Path2DHolder();
-		TimedPose2D goal = new TimedPose2D(new Time(0,0), new Pose2D(new Point2D(0,0), 0));
-		//currentPose should be mapped for OGMap coordinate
-		goal.data = param.targetPose;
 		
-		System.out.println(this.m_currentPose.v.data.position.x + "  "+ this.m_currentPose.v.data.position.y);
-		System.out.println(goal.data.position.x + "  " + goal.data.position.y);
-			
-		this.m_pathPlannerBase._ptr().planPath(requestMap(), this.m_currentPose.v, goal, pathHolder);
+		param.currentPose = new RTC.Pose2D(new RTC.Point2D(this.m_currentPose.v.data.position.x, this.m_currentPose.v.data.position.y), 0);
+		param.map = requestMap();
+		
+		this.m_pathPlannerBase._ptr().planPath(param, pathHolder);
 		return pathHolder.value;
 			/*
 		if (m_pathPlannerPort.get_connector_profiles().length != 0) {

@@ -76,6 +76,8 @@ module RTC {
   };
   
   struct PathPlanParameter {
+	//Environmental Map
+	OGMap map;
     /// Location of the goal.
     Pose2D targetPose;
     /// Location of Robot.
@@ -92,7 +94,7 @@ module RTC {
   
   interface PathPlanner {
     /// Plan Path from PathPlanParater.
-	  RETURN_VALUE planPath(in OGMap map, in TimedPose2D currentPose, in TimedPose2D targetGoal, out Path2D outPath);
+	  RETURN_VALUE planPath(in PathPlanParameter param, out Path2D outPath);
   };
 };
 #endif

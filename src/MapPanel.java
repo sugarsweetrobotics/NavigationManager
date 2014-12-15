@@ -249,8 +249,8 @@ public class MapPanel extends JPanel {
 			for(Waypoint2D w : path.waypoints){
 				double x = w.target.position.x;
 				double y = w.target.position.y;
-				int dx = (int)(x);
-				int dy = (int)(y);
+				int dx = (int)(ox + x/rx);
+				int dy = (int)(oy - y/ry);
 				Point p = new Point(dx, dy);
 				if (old_p != null) {
 					g2d.drawLine(old_p.x, old_p.y, p.x, p.y);
