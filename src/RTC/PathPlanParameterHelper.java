@@ -5,7 +5,7 @@ package RTC;
 * RTC/PathPlanParameterHelper.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
-* 2014年9月4日 22時56分50秒 JST
+* 2014年12月15日 15時01分43秒 JST
 */
 
 abstract public class PathPlanParameterHelper
@@ -40,35 +40,40 @@ abstract public class PathPlanParameterHelper
             return org.omg.CORBA.ORB.init().create_recursive_tc ( _id );
           }
           __active = true;
-          org.omg.CORBA.StructMember[] _members0 = new org.omg.CORBA.StructMember [6];
+          org.omg.CORBA.StructMember[] _members0 = new org.omg.CORBA.StructMember [7];
           org.omg.CORBA.TypeCode _tcOf_members0 = null;
-          _tcOf_members0 = RTC.Pose2DHelper.type ();
+          _tcOf_members0 = RTC.OGMapHelper.type ();
           _members0[0] = new org.omg.CORBA.StructMember (
-            "targetPose",
+            "map",
             _tcOf_members0,
             null);
           _tcOf_members0 = RTC.Pose2DHelper.type ();
           _members0[1] = new org.omg.CORBA.StructMember (
+            "targetPose",
+            _tcOf_members0,
+            null);
+          _tcOf_members0 = RTC.Pose2DHelper.type ();
+          _members0[2] = new org.omg.CORBA.StructMember (
             "currentPose",
             _tcOf_members0,
             null);
           _tcOf_members0 = org.omg.CORBA.ORB.init ().get_primitive_tc (org.omg.CORBA.TCKind.tk_double);
-          _members0[2] = new org.omg.CORBA.StructMember (
+          _members0[3] = new org.omg.CORBA.StructMember (
             "distanceTolerance",
             _tcOf_members0,
             null);
           _tcOf_members0 = org.omg.CORBA.ORB.init ().get_primitive_tc (org.omg.CORBA.TCKind.tk_double);
-          _members0[3] = new org.omg.CORBA.StructMember (
+          _members0[4] = new org.omg.CORBA.StructMember (
             "headingTolerance",
             _tcOf_members0,
             null);
           _tcOf_members0 = RTC.TimeHelper.type ();
-          _members0[4] = new org.omg.CORBA.StructMember (
+          _members0[5] = new org.omg.CORBA.StructMember (
             "timeLimit",
             _tcOf_members0,
             null);
           _tcOf_members0 = RTC.Velocity2DHelper.type ();
-          _members0[5] = new org.omg.CORBA.StructMember (
+          _members0[6] = new org.omg.CORBA.StructMember (
             "maxSpeed",
             _tcOf_members0,
             null);
@@ -88,6 +93,7 @@ abstract public class PathPlanParameterHelper
   public static RTC.PathPlanParameter read (org.omg.CORBA.portable.InputStream istream)
   {
     RTC.PathPlanParameter value = new RTC.PathPlanParameter ();
+    value.map = RTC.OGMapHelper.read (istream);
     value.targetPose = RTC.Pose2DHelper.read (istream);
     value.currentPose = RTC.Pose2DHelper.read (istream);
     value.distanceTolerance = istream.read_double ();
@@ -99,6 +105,7 @@ abstract public class PathPlanParameterHelper
 
   public static void write (org.omg.CORBA.portable.OutputStream ostream, RTC.PathPlanParameter value)
   {
+    RTC.OGMapHelper.write (ostream, value.map);
     RTC.Pose2DHelper.write (ostream, value.targetPose);
     RTC.Pose2DHelper.write (ostream, value.currentPose);
     ostream.write_double (value.distanceTolerance);

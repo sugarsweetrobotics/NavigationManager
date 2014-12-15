@@ -5,11 +5,14 @@ package RTC;
 * RTC/PathPlanParameter.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
-* 2014年9月4日 22時56分50秒 JST
+* 2014年12月15日 15時01分43秒 JST
 */
 
 public final class PathPlanParameter implements org.omg.CORBA.portable.IDLEntity
 {
+
+  //Environmental Map
+  public RTC.OGMap map = null;
 
   /// Location of the goal.
   public RTC.Pose2D targetPose = null;
@@ -33,8 +36,9 @@ public final class PathPlanParameter implements org.omg.CORBA.portable.IDLEntity
   {
   } // ctor
 
-  public PathPlanParameter (RTC.Pose2D _targetPose, RTC.Pose2D _currentPose, double _distanceTolerance, double _headingTolerance, RTC.Time _timeLimit, RTC.Velocity2D _maxSpeed)
+  public PathPlanParameter (RTC.OGMap _map, RTC.Pose2D _targetPose, RTC.Pose2D _currentPose, double _distanceTolerance, double _headingTolerance, RTC.Time _timeLimit, RTC.Velocity2D _maxSpeed)
   {
+    map = _map;
     targetPose = _targetPose;
     currentPose = _currentPose;
     distanceTolerance = _distanceTolerance;

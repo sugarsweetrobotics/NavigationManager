@@ -5,7 +5,7 @@ package RTC;
 * RTC/PathPlannerPOA.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
-* 2014年9月4日 22時56分50秒 JST
+* 2014年12月15日 15時01分43秒 JST
 */
 
 public abstract class PathPlannerPOA extends org.omg.PortableServer.Servant
@@ -36,12 +36,12 @@ public abstract class PathPlannerPOA extends org.omg.PortableServer.Servant
        case 0:  // RTC/PathPlanner/planPath
        {
          RTC.PathPlanParameter param = RTC.PathPlanParameterHelper.read (in);
-         RTC.Path2DHolder path = new RTC.Path2DHolder ();
+         RTC.Path2DHolder outPath = new RTC.Path2DHolder ();
          RTC.RETURN_VALUE $result = null;
-         $result = this.planPath (param, path);
+         $result = this.planPath (param, outPath);
          out = $rh.createReply();
          RTC.RETURN_VALUEHelper.write (out, $result);
-         RTC.Path2DHelper.write (out, path.value);
+         RTC.Path2DHelper.write (out, outPath.value);
          break;
        }
 

@@ -110,7 +110,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 				m_mapperBase);
 		m_mapServerPort.registerConsumer("mapServer", "RTC::OGMapServer",
 				m_OGMapServerBase);
-		m_pathPlannerPort.registerConsumer("pathPlanner", "RTC::PathPlanner",
+		m_pathPlannerPort.registerConsumer("PathPlanner", "RTC::PathPlanner",
 				m_pathPlannerBase);
 
 		// Set CORBA Service Ports
@@ -481,13 +481,12 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		try {
 			OGMap map = new OGMap();
 			OGMapHolder mapHolder = new OGMapHolder(map);
-			if (m_mapperServicePort.get_connector_profiles().length != 0) {
+			if (m_mapperServicePort.get_connector_profiles().length != 0) {//dose it connected with Mapper_MRPT?
 				if (this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
 					return mapHolder.value;
 				}
-			} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {
-				if (this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(
-						mapHolder) == RETURN_VALUE.RETVAL_OK) {
+			} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {//dose it connected with MapServer?
+				if (this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
 					return mapHolder.value;
 				}
 			}
@@ -531,22 +530,17 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	}
 
 	public Path2D planPath(PathPlanParameter param) {
-		Path2D path = new Path2D();
-		Path2DHolder pathHolder = new Path2DHolder(path);
-		Pose2D currentPose = this.m_currentPose.v.data;
-		param.currentPose = currentPose;
+		Path2DHolder pathHolder = new Path2DHolder();
 		
-		path.tm = new RTC.Time(0, 0);
-		path.waypoints = new RTC.Waypoint2D[2];
-		path.waypoints[0] = new RTC.Waypoint2D();
-		path.waypoints[0].target = currentPose;
-		path.waypoints[1] = new RTC.Waypoint2D();
-		path.waypoints[1].target = param.targetPose;
+		param.currentPose = new RTC.Pose2D(new RTC.Point2D(this.m_currentPose.v.data.position.x, this.m_currentPose.v.data.position.y), 0);
+		param.map = requestMap();
 		
-		return path;
-		/*
+		this.m_pathPlannerBase._ptr().planPath(param, pathHolder);
+		return pathHolder.value;
+			/*
 		if (m_pathPlannerPort.get_connector_profiles().length != 0) {
-			if (this.m_pathPlannerBase._ptr().planPath(param, pathHolder) == RETURN_VALUE.RETVAL_OK) {
+			if (this.m_pathPlannerBase._ptr().planPath(requestMap(), this.m_currentPose.v, goal, pathHolder) == RETURN_VALUE.RETVAL_OK) {
+				System.out.println(pathHolder);
 				return pathHolder.value;
 			}
 		}

@@ -4,7 +4,7 @@ package RTC;
 * RTC/RETURN_VALUEHolder.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
-* 2014年9月4日 22時56分50秒 JST
+* 2014年12月15日 15時01分43秒 JST
 */
 
 public final class RETURN_VALUEHolder implements org.omg.CORBA.portable.Streamable
