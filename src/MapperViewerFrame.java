@@ -135,6 +135,15 @@ public class MapperViewerFrame extends JFrame {
 
 		});
 		toolBar.add(planButton);
+		JButton followButton = new JButton(new AbstractAction("Follow") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onFollow();
+			}
+
+		});
+		toolBar.add(followButton);
 
 		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
@@ -171,15 +180,19 @@ public class MapperViewerFrame extends JFrame {
 
 		});
 		mapMenu.add(startMenu);
-		/*
-		 * this.stopMenu = new JMenuItem(new AbstractAction("Stop mapping") {
-		 * 
-		 * @Override public void actionPerformed(ActionEvent e) { onStop(); }
-		 * 
-		 * 
-		 * 
-		 * }); mapMenu.add(stopMenu);
-		 */
+		
+	    this.stopMenu = new JMenuItem(new AbstractAction("Stop mapping") {
+		  
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		    	onStop();
+		    }
+		  
+		  
+		  
+		  });
+	    mapMenu.add(stopMenu);
+		 
 		enableUpdateMenu = new JMenuItem(new AbstractAction(
 				"Disable Auto Map Updating") {
 
@@ -371,9 +384,15 @@ public class MapperViewerFrame extends JFrame {
 		}
 	}
 
-	/*
-	 * private void onStop() { rtc.stopMapping(); }
-	 */
+	private void onFollow() {
+		rtc.followPath(mapPanel.getPath2D());
+	}
+	
+	
+	private void onStop() {
+		rtc.stopMapping();
+	}
+	
 	private void onEnableUpdating() {
 		if (this.timer != null) { // Timer is active
 			stopTimer();

@@ -297,4 +297,8 @@ public class MapPanel extends JPanel {
 	public void setPath2D(Path2D path) {
 		this.path = path;
 	}
+	
+	public Path2D getPath2D(){
+		return this.path;
+	}
 }

@@ -96,5 +96,11 @@ module RTC {
     /// Plan Path from PathPlanParater.
 	  RETURN_VALUE planPath(in PathPlanParameter param, out Path2D outPath);
   };
+
+  interface PathFollower {
+    RETURN_VALUE followPath(in Path2D path);
+  };
+
 };
+
 #endif

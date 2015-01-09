@@ -27,6 +27,7 @@ import RTC.Path2D;
 import RTC.Path2DHolder;
 import RTC.PathPlanParameter;
 import RTC.PathPlanner;
+import RTC.PathFollower;
 import RTC.Point2D;
 import RTC.Pose2D;
 import RTC.RETURN_VALUE;
@@ -79,6 +80,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		m_mapperServicePort = new CorbaPort("mapperService");
 		m_mapServerPort = new CorbaPort("mapServer");
 		m_pathPlannerPort = new CorbaPort("pathPlanner");
+        m_pathFollowerPort = new CorbaPort("pathFollower");
 		// </rtc-template>
 
 	}
@@ -112,11 +114,14 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 				m_OGMapServerBase);
 		m_pathPlannerPort.registerConsumer("PathPlanner", "RTC::PathPlanner",
 				m_pathPlannerBase);
-
+        m_pathFollowerPort.registerConsumer("PathFollower", "RTC::PathFollower",
+        		m_pathFollowerBase);
+        
 		// Set CORBA Service Ports
 		addPort(m_mapperServicePort);
 		addPort(m_mapServerPort);
 		addPort(m_pathPlannerPort);
+        addPort(m_pathFollowerPort);
 
 		// </rtc-template>
 		bindParameter("debug", m_debug, "0");
@@ -441,6 +446,10 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 * !
 	 */
 	protected CorbaPort m_pathPlannerPort;
+	/*
+	 * !
+	 */
+    protected CorbaPort m_pathFollowerPort;
 
 	// </rtc-template>
 
@@ -469,6 +478,11 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 * !
 	 */
 	protected PathPlanner m_pathPlanner;
+    protected CorbaConsumer<PathFollower> m_pathFollowerBase = new CorbaConsumer<PathFollower>(PathFollower.class);
+    /*!
+     */
+    protected PathFollower m_pathFollower;
+    
 
 	// </rtc-template>
 
@@ -546,6 +560,10 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		}
 		*/
 		//return null;
+	}
+	
+	public void followPath(Path2D path){		
+		this.m_pathFollowerBase._ptr().followPath(path);
 	}
 
 }
