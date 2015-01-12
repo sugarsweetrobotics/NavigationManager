@@ -72,8 +72,8 @@ public class MapPanel extends JPanel {
 		if (mapImage != null) {
 			double rx = map.config.xScale;
 			double ry = map.config.yScale;
-			int ox = (int)(map.config.origin.position.x / rx);
-			int oy = (int)(map.config.origin.position.y / ry);
+			int ox = -(int)(map.config.origin.position.x / rx);
+			int oy = -(int)(map.config.origin.position.y / ry);
 			
 			double goal_x = (p.x - ox) * rx;
 			double goal_y = -(p.y - oy) * ry;
@@ -219,8 +219,8 @@ public class MapPanel extends JPanel {
 		}
 		double rx = map.config.xScale;
 		double ry = map.config.yScale;
-		int ox = (int)(map.config.origin.position.x / rx);
-		int oy = (int)(map.config.origin.position.y / ry);
+		int ox = -(int)(map.config.origin.position.x / rx);
+		int oy = -(int)(map.config.origin.position.y / ry);
 		int size = 5; // px
 		
 		int dx = (int)(ox + goal.x/rx);
@@ -241,8 +241,8 @@ public class MapPanel extends JPanel {
 		if (path != null) {
 			double rx = map.config.xScale;
 			double ry = map.config.yScale;
-			int ox = (int)(map.config.origin.position.x / rx);
-			int oy = (int)(map.config.origin.position.y / ry);
+			int ox = -(int)(map.config.origin.position.x / rx);
+			int oy = -(int)(map.config.origin.position.y / ry);
 			double oth = map.config.origin.heading;
 			
 			Point old_p = null;
