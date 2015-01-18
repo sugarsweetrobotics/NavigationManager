@@ -496,9 +496,19 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 			OGMap map = new OGMap();
 			OGMapHolder mapHolder = new OGMapHolder(map);
 			if (m_mapperServicePort.get_connector_profiles().length != 0) {//dose it connected with Mapper_MRPT?
+				RETURN_VALUE  retval;
+				retval = this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder);
 				if (this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
 					return mapHolder.value;
 				}
+				else if(retval == RETURN_VALUE.RETVAL_ODOMETRY_TIME_OUT){
+					System.out.println("ERROR: Kobuki disconnected");
+				}else if(retval == RETURN_VALUE.RETVAL_RANGE_TIME_OUT){
+					System.out.println("ERROR: URG disconnected");
+				}else if(retval == RETURN_VALUE.RETVAL_ODOMETRY_INVALID_VALUE){
+					System.out.println("ERROR: Kobuki out of map range");
+				}
+				
 			} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {//dose it connected with MapServer?
 				if (this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
 					return mapHolder.value;
