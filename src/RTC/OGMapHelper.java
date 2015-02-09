@@ -5,7 +5,7 @@ package RTC;
 * RTC/OGMapHelper.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
-* 2015年1月3日 14時09分23秒 JST
+* 2015年1月14日 14時51分21秒 JST
 */
 
 abstract public class OGMapHelper

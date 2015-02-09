@@ -2,45 +2,38 @@ package RTC;
 
 
 /**
-* RTC/_OGMapServerStub.java .
+* RTC/_PathFollowerStub.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
 * 2015年1月14日 14時51分21秒 JST
 */
 
-
-/*!
-   * @interface OGMapServer
-   * @brief Occupancy Grid Map Service Interface
-   */
-public class _OGMapServerStub extends org.omg.CORBA.portable.ObjectImpl implements RTC.OGMapServer
+public class _PathFollowerStub extends org.omg.CORBA.portable.ObjectImpl implements RTC.PathFollower
 {
 
-
-  /// Request Current Build Map Data
-  public RTC.RETURN_VALUE requestCurrentBuiltMap (RTC.OGMapHolder map)
+  public RTC.RETURN_VALUE followPath (RTC.Path2D path)
   {
             org.omg.CORBA.portable.InputStream $in = null;
             try {
-                org.omg.CORBA.portable.OutputStream $out = _request ("requestCurrentBuiltMap", true);
+                org.omg.CORBA.portable.OutputStream $out = _request ("followPath", true);
+                RTC.Path2DHelper.write ($out, path);
                 $in = _invoke ($out);
                 RTC.RETURN_VALUE $result = RTC.RETURN_VALUEHelper.read ($in);
-                map.value = RTC.OGMapHelper.read ($in);
                 return $result;
             } catch (org.omg.CORBA.portable.ApplicationException $ex) {
                 $in = $ex.getInputStream ();
                 String _id = $ex.getId ();
                 throw new org.omg.CORBA.MARSHAL (_id);
             } catch (org.omg.CORBA.portable.RemarshalException $rm) {
-                return requestCurrentBuiltMap (map        );
+                return followPath (path        );
             } finally {
                 _releaseReply ($in);
             }
-  } // requestCurrentBuiltMap
+  } // followPath
 
   // Type-specific CORBA::Object operations
   private static String[] __ids = {
-    "IDL:RTC/OGMapServer:1.0"};
+    "IDL:RTC/PathFollower:1.0"};
 
   public String[] _ids ()
   {
@@ -74,4 +67,4 @@ public class _OGMapServerStub extends org.omg.CORBA.portable.ObjectImpl implemen
      orb.destroy() ;
    }
   }
-} // class _OGMapServerStub
+} // class _PathFollowerStub

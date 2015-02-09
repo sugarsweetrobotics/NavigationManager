@@ -2,22 +2,17 @@ package RTC;
 
 
 /**
-* RTC/OGMapperHelper.java .
+* RTC/PathFollowerHelper.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
 * 2015年1月14日 14時51分21秒 JST
 */
 
-
-/*!
-   * @interface OGMapper
-   * @brief Occupancy Grid Map Builder Service Interface
-   */
-abstract public class OGMapperHelper
+abstract public class PathFollowerHelper
 {
-  private static String  _id = "IDL:RTC/OGMapper:1.0";
+  private static String  _id = "IDL:RTC/PathFollower:1.0";
 
-  public static void insert (org.omg.CORBA.Any a, RTC.OGMapper that)
+  public static void insert (org.omg.CORBA.Any a, RTC.PathFollower that)
   {
     org.omg.CORBA.portable.OutputStream out = a.create_output_stream ();
     a.type (type ());
@@ -25,7 +20,7 @@ abstract public class OGMapperHelper
     a.read_value (out.create_input_stream (), type ());
   }
 
-  public static RTC.OGMapper extract (org.omg.CORBA.Any a)
+  public static RTC.PathFollower extract (org.omg.CORBA.Any a)
   {
     return read (a.create_input_stream ());
   }
@@ -35,7 +30,7 @@ abstract public class OGMapperHelper
   {
     if (__typeCode == null)
     {
-      __typeCode = org.omg.CORBA.ORB.init ().create_interface_tc (RTC.OGMapperHelper.id (), "OGMapper");
+      __typeCode = org.omg.CORBA.ORB.init ().create_interface_tc (RTC.PathFollowerHelper.id (), "PathFollower");
     }
     return __typeCode;
   }
@@ -45,43 +40,43 @@ abstract public class OGMapperHelper
     return _id;
   }
 
-  public static RTC.OGMapper read (org.omg.CORBA.portable.InputStream istream)
+  public static RTC.PathFollower read (org.omg.CORBA.portable.InputStream istream)
   {
-    return narrow (istream.read_Object (_OGMapperStub.class));
+    return narrow (istream.read_Object (_PathFollowerStub.class));
   }
 
-  public static void write (org.omg.CORBA.portable.OutputStream ostream, RTC.OGMapper value)
+  public static void write (org.omg.CORBA.portable.OutputStream ostream, RTC.PathFollower value)
   {
     ostream.write_Object ((org.omg.CORBA.Object) value);
   }
 
-  public static RTC.OGMapper narrow (org.omg.CORBA.Object obj)
+  public static RTC.PathFollower narrow (org.omg.CORBA.Object obj)
   {
     if (obj == null)
       return null;
-    else if (obj instanceof RTC.OGMapper)
-      return (RTC.OGMapper)obj;
+    else if (obj instanceof RTC.PathFollower)
+      return (RTC.PathFollower)obj;
     else if (!obj._is_a (id ()))
       throw new org.omg.CORBA.BAD_PARAM ();
     else
     {
       org.omg.CORBA.portable.Delegate delegate = ((org.omg.CORBA.portable.ObjectImpl)obj)._get_delegate ();
-      RTC._OGMapperStub stub = new RTC._OGMapperStub ();
+      RTC._PathFollowerStub stub = new RTC._PathFollowerStub ();
       stub._set_delegate(delegate);
       return stub;
     }
   }
 
-  public static RTC.OGMapper unchecked_narrow (org.omg.CORBA.Object obj)
+  public static RTC.PathFollower unchecked_narrow (org.omg.CORBA.Object obj)
   {
     if (obj == null)
       return null;
-    else if (obj instanceof RTC.OGMapper)
-      return (RTC.OGMapper)obj;
+    else if (obj instanceof RTC.PathFollower)
+      return (RTC.PathFollower)obj;
     else
     {
       org.omg.CORBA.portable.Delegate delegate = ((org.omg.CORBA.portable.ObjectImpl)obj)._get_delegate ();
-      RTC._OGMapperStub stub = new RTC._OGMapperStub ();
+      RTC._PathFollowerStub stub = new RTC._PathFollowerStub ();
       stub._set_delegate(delegate);
       return stub;
     }

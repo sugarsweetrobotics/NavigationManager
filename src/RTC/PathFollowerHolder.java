@@ -1,38 +1,38 @@
 package RTC;
 
 /**
-* RTC/PathPlannerHolder.java .
+* RTC/PathFollowerHolder.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
 * 2015年1月14日 14時51分21秒 JST
 */
 
-public final class PathPlannerHolder implements org.omg.CORBA.portable.Streamable
+public final class PathFollowerHolder implements org.omg.CORBA.portable.Streamable
 {
-  public RTC.PathPlanner value = null;
+  public RTC.PathFollower value = null;
 
-  public PathPlannerHolder ()
+  public PathFollowerHolder ()
   {
   }
 
-  public PathPlannerHolder (RTC.PathPlanner initialValue)
+  public PathFollowerHolder (RTC.PathFollower initialValue)
   {
     value = initialValue;
   }
 
   public void _read (org.omg.CORBA.portable.InputStream i)
   {
-    value = RTC.PathPlannerHelper.read (i);
+    value = RTC.PathFollowerHelper.read (i);
   }
 
   public void _write (org.omg.CORBA.portable.OutputStream o)
   {
-    RTC.PathPlannerHelper.write (o, value);
+    RTC.PathFollowerHelper.write (o, value);
   }
 
   public org.omg.CORBA.TypeCode _type ()
   {
-    return RTC.PathPlannerHelper.type ();
+    return RTC.PathFollowerHelper.type ();
   }
 
 }

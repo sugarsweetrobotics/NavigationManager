@@ -2,14 +2,14 @@ package RTC;
 
 
 /**
-* RTC/PathPlannerPOA.java .
+* RTC/PathFollowerPOA.java .
 * IDL-to-Javaコンパイラ(ポータブル)、バージョン"3.2"によって生成されました
 * idl/MobileRobot.idlから
 * 2015年1月14日 14時51分21秒 JST
 */
 
-public abstract class PathPlannerPOA extends org.omg.PortableServer.Servant
- implements RTC.PathPlannerOperations, org.omg.CORBA.portable.InvokeHandler
+public abstract class PathFollowerPOA extends org.omg.PortableServer.Servant
+ implements RTC.PathFollowerOperations, org.omg.CORBA.portable.InvokeHandler
 {
 
   // Constructors
@@ -17,7 +17,7 @@ public abstract class PathPlannerPOA extends org.omg.PortableServer.Servant
   private static java.util.Hashtable _methods = new java.util.Hashtable ();
   static
   {
-    _methods.put ("planPath", new java.lang.Integer (0));
+    _methods.put ("followPath", new java.lang.Integer (0));
   }
 
   public org.omg.CORBA.portable.OutputStream _invoke (String $method,
@@ -31,17 +31,13 @@ public abstract class PathPlannerPOA extends org.omg.PortableServer.Servant
 
     switch (__method.intValue ())
     {
-
-  /// Plan Path from PathPlanParater.
-       case 0:  // RTC/PathPlanner/planPath
+       case 0:  // RTC/PathFollower/followPath
        {
-         RTC.PathPlanParameter param = RTC.PathPlanParameterHelper.read (in);
-         RTC.Path2DHolder outPath = new RTC.Path2DHolder ();
+         RTC.Path2D path = RTC.Path2DHelper.read (in);
          RTC.RETURN_VALUE $result = null;
-         $result = this.planPath (param, outPath);
+         $result = this.followPath (path);
          out = $rh.createReply();
          RTC.RETURN_VALUEHelper.write (out, $result);
-         RTC.Path2DHelper.write (out, outPath.value);
          break;
        }
 
@@ -54,24 +50,24 @@ public abstract class PathPlannerPOA extends org.omg.PortableServer.Servant
 
   // Type-specific CORBA::Object operations
   private static String[] __ids = {
-    "IDL:RTC/PathPlanner:1.0"};
+    "IDL:RTC/PathFollower:1.0"};
 
   public String[] _all_interfaces (org.omg.PortableServer.POA poa, byte[] objectId)
   {
     return (String[])__ids.clone ();
   }
 
-  public PathPlanner _this() 
+  public PathFollower _this() 
   {
-    return PathPlannerHelper.narrow(
+    return PathFollowerHelper.narrow(
     super._this_object());
   }
 
-  public PathPlanner _this(org.omg.CORBA.ORB orb) 
+  public PathFollower _this(org.omg.CORBA.ORB orb) 
   {
-    return PathPlannerHelper.narrow(
+    return PathFollowerHelper.narrow(
     super._this_object(orb));
   }
 
 
-} // class PathPlannerPOA
+} // class PathFollowerPOA
