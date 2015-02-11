@@ -7,6 +7,8 @@
  * $Id$
  */
 
+import java.util.Calendar;
+
 import jp.go.aist.rtm.RTC.DataFlowComponentBase;
 import jp.go.aist.rtm.RTC.Manager;
 import jp.go.aist.rtm.RTC.port.CorbaConsumer;
@@ -47,6 +49,8 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 
 	private MapperViewerFrame frame;
 
+	private Calendar m_lastReceivedTime;
+	private float m_poseTimeout = (float) 3.0; //should be added config
 	/*
 	 * !
 	 * 
@@ -194,7 +198,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 */
 	@Override
 	protected ReturnCode_t onActivated(int ec_id) {
-
+		m_lastReceivedTime = Calendar.getInstance();
 		return super.onActivated(ec_id);
 	}
 
@@ -228,6 +232,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 */
 	@Override
 	protected ReturnCode_t onExecute(int ec_id) {
+		Calendar currentTime = Calendar.getInstance();
 		if (m_currentPoseIn.isNew()) {
 			m_currentPoseIn.read();
 			this.frame.setRobotPose(m_currentPose.v.data);
@@ -236,7 +241,13 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		if (m_rangeIn.isNew()) {
 			m_rangeIn.read();
 			this.frame.setRangeData(m_range.v);
-		}
+			m_lastReceivedTime = currentTime;
+		} else{
+		    double duration = currentTime.getTimeInMillis() - m_lastReceivedTime.getTimeInMillis();
+		    if (duration > m_poseTimeout && m_poseTimeout > 0) {
+		      System.out.println("Range  Disconnected");
+		    }
+		  }
 		
 		if (m_cameraIn.isNew()) {
 			m_cameraIn.read();
@@ -492,7 +503,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 * @return
 	 */
 	public OGMap requestMap() {
-		try {
+		//try {
 			OGMap map = new OGMap();
 			OGMapHolder mapHolder = new OGMapHolder(map);
 			if (m_mapperServicePort.get_connector_profiles().length != 0) {//dose it connected with Mapper_MRPT?
@@ -510,13 +521,17 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 				}
 				
 			} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {//dose it connected with MapServer?
-				if (this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
+				RETURN_VALUE  retval;
+				retval = this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(mapHolder);				
+				if (retval == RETURN_VALUE.RETVAL_OK) {
 					return mapHolder.value;
+				}else if(retval == RETURN_VALUE.RETVAL_EMPTY_MAP){
+					System.out.println("ERROR: Empty Map");
 				}
 			}
-		} catch (org.omg.CORBA.UNKNOWN e) {
-			e.printStackTrace();
-		}
+		//} catch (org.omg.CORBA.UNKNOWN e) {
+		//	e.printStackTrace();
+		//}
 		return null;
 	}
 
@@ -559,8 +574,21 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		param.currentPose = new RTC.Pose2D(new RTC.Point2D(this.m_currentPose.v.data.position.x, this.m_currentPose.v.data.position.y), 0);
 		param.map = requestMap();
 		
-		this.m_pathPlannerBase._ptr().planPath(param, pathHolder);
+		if (m_pathPlannerPort.get_connector_profiles().length != 0) {//dose it connected with Mapper_MRPT?
+			RETURN_VALUE  retval;
+			retval = this.m_pathPlannerBase._ptr().planPath(param, pathHolder);
+			if (retval == RETURN_VALUE.RETVAL_OK) {
+				System.out.println("Succeed");
+			}else if(retval == RETURN_VALUE.RETVAL_NOT_FOUND){
+				System.out.println("ERROR: Path Not Found");
+			}else if(retval == RETURN_VALUE.RETVAL_INVALID_PARAMETER){
+				System.out.println("ERROR: Invalid Start or Goal coordinates");		    
+			}
+		}
+
 		return pathHolder.value;
+		//this.m_pathPlannerBase._ptr().planPath(param, pathHolder);
+		//return pathHolder.value;
 			/*
 		if (m_pathPlannerPort.get_connector_profiles().length != 0) {
 			if (this.m_pathPlannerBase._ptr().planPath(requestMap(), this.m_currentPose.v, goal, pathHolder) == RETURN_VALUE.RETVAL_OK) {
@@ -572,8 +600,24 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		//return null;
 	}
 	
-	public void followPath(Path2D path){		
-		this.m_pathFollowerBase._ptr().followPath(path);
+	public void followPath(Path2D path){
+		if (m_pathFollowerPort.get_connector_profiles().length != 0) {//dose it connected with Mapper_MRPT?
+			RETURN_VALUE  retval;
+			retval = this.m_pathFollowerBase._ptr().followPath(path);
+			if (retval == RETURN_VALUE.RETVAL_OK) {
+				return;
+			}
+			else if(retval == RETURN_VALUE.RETVAL_EMERGENCY_STOP){
+				System.out.println("ERROR: EMERGENCY STOP");
+				return;
+			}else if(retval == RETURN_VALUE.RETVAL_CURRENT_POSE_TIME_OUT){
+				System.out.println("ERROR: Localization disconnected or Kobuki error");
+				return;
+			}else if(retval == RETURN_VALUE.RETVAL_CURRENT_POSE_INVALID_VALUE){
+				System.out.println("ERROR: Localization sent Strange Value");
+				return;
+			}
+		}		
 	}
 
 }
