@@ -172,7 +172,6 @@ public class MapPanel extends JPanel {
 			///g2d.fill(p);
 			
 			g2d.translate(xd, yd);
-			//g2d2.translate(yd, xd);
 			g2d.rotate(-th+Math.PI/2);
 			
 			Color oldColor = g2d.getColor();
@@ -254,7 +253,7 @@ public class MapPanel extends JPanel {
 	private void drawRange(Graphics2D g2d2) {
 		if(rangeData != null) {
 			int skip = 5;
-			double rangeTh = rangeData.config.minAngle + Math.PI/2;
+			double rangeTh = rangeData.config.minAngle;
 			double step = rangeData.config.angularRes * skip;
 			double ofx = rangeData.geometry.geometry.pose.position.x;
 			double ofy = rangeData.geometry.geometry.pose.position.y;
@@ -264,11 +263,11 @@ public class MapPanel extends JPanel {
 			for(int i = 0;i < rangeData.ranges.length;i+=skip) {
 				double distance = rangeData.ranges[i];
 				
-				double px = distance * Math.cos(-rangeTh) + ofx;
-				double py = distance * Math.sin(-rangeTh) + ofy;
+				double px = distance * Math.cos(rangeTh) + ofx;
+				double py = distance * Math.sin(rangeTh) + ofy;
 				
-				double pyd = py / rry;
-				double pxd = px / rrx;
+				double pyd = px / rry;
+				double pxd = -py / rrx;
 				g2d2.fill(new Rectangle2D.Double(pxd-1, pyd-1, 2, 2));
 				rangeTh += step;
 			}
