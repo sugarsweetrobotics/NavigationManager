@@ -155,14 +155,11 @@ public class MapPanel extends JPanel {
 			double y = robotPose.position.y;
 			double th = robotPose.heading;
 			
-			
 			double x2 =  x * Math.cos(oth) + y * Math.sin(oth);
 			double y2 =  x * Math.sin(oth) - y * Math.cos(oth);
 			
 			double xd = -offsetx + x2 / rx;
 			double yd = -offsety + y2 / ry;
-			
-			
 			
 			int[] xpoints = {0, 8, 8, -8, -8};
 			int[] ypoints = {-8, 0, 8, 8, 0};
@@ -178,9 +175,12 @@ public class MapPanel extends JPanel {
 			g2d.fill(p);
 			
 
+			g2d.rotate(2*Math.PI/2);
 			g2d.setColor(Color.yellow);
 			drawRange(g2d);
 
+			g2d.rotate(2*Math.PI/2);
+			
 			g2d.setColor(oldColor);
 		}
 	}
