@@ -134,8 +134,6 @@ public class MapPanel extends JPanel {
 			drawAxis(g2d2, image.getWidth(), image.getHeight());
 			drawPath(g2d2);
 			drawRobot(g2d2);
-
-			
 			
 			g2d.drawImage(image, 0, 0, this);
 		}
@@ -165,8 +163,9 @@ public class MapPanel extends JPanel {
 			double yd = -offsety + y2 / ry;
 			
 			
-			int[] xpoints = {0, 7, 7, -7, -7};
-			int[] ypoints = {7, 0, -7, -7, 0};
+			
+			int[] xpoints = {0, 8, 8, -8, -8};
+			int[] ypoints = {-8, 0, 8, 8, 0};
 			Polygon p = new Polygon(xpoints, ypoints, 5);
 			
 			///g2d.fill(p);
