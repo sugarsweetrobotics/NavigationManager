@@ -149,28 +149,27 @@ public class MapPanel extends JPanel {
 		if (robotPose != null) {
 			double rx = map.config.xScale;
 			double ry = map.config.yScale;
-			int ox = (int)(map.config.origin.position.x / rx);
-			int oy = (int)(map.config.origin.position.y / ry);
+			int offsetx = (int)(map.config.origin.position.x / ry);
+			int offsety = (int)(map.config.origin.position.y / rx);
 			double oth = map.config.origin.heading;
-			
 			
 			double x = robotPose.position.x;
 			double y = robotPose.position.y;
 			double th = robotPose.heading;
 			
+			
 			double x2 =  x * Math.cos(oth) + y * Math.sin(oth);
 			double y2 =  x * Math.sin(oth) - y * Math.cos(oth);
 			
-			
-			double xd = -ox + x2 / rx;
-			double yd = -oy + y2 / ry;
+			double xd = -offsetx + x2 / rx;
+			double yd = -offsety + y2 / ry;
 			
 			
 			int[] xpoints = {0, 7, 7, -7, -7};
-			int[] ypoints = {-7, 0, 7, 7, 0};
+			int[] ypoints = {7, 0, -7, -7, 0};
 			Polygon p = new Polygon(xpoints, ypoints, 5);
 			
-			g2d.fill(p);
+			///g2d.fill(p);
 			
 			g2d.translate(xd, yd);
 			//g2d2.translate(yd, xd);
@@ -270,7 +269,7 @@ public class MapPanel extends JPanel {
 				
 				double pyd = py / rry;
 				double pxd = px / rrx;
-				g2d2.fill(new Rectangle2D.Double(pyd-1, pxd-1, 2, 2));
+				g2d2.fill(new Rectangle2D.Double(pxd-1, pyd-1, 2, 2));
 				rangeTh += step;
 			}
 		}
