@@ -20,6 +20,7 @@ import java.util.ArrayList;
  * @author ysuga
  *
  */
+@SuppressWarnings("serial")
 public class RTNamingContext extends ArrayList<RTNamingContext> {
 	
 	private RTNamingContext parentContext;

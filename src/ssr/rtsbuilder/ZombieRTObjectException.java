@@ -13,6 +13,7 @@ package ssr.rtsbuilder;
  * @author ysuga
  *
  */
+@SuppressWarnings("serial")
 public class ZombieRTObjectException extends Exception {
 
 	/**

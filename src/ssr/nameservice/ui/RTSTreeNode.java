@@ -14,6 +14,7 @@ import ssr.nameservice.RTNamingContext;
 import ssr.rtsbuilder.RTCCondition;
 import ssr.rtsprofile.RTComponent;
 
+@SuppressWarnings("serial")
 public class RTSTreeNode extends DefaultMutableTreeNode {
 
 	private RTNamingContext rtNamingContext;
@@ -52,7 +53,6 @@ public class RTSTreeNode extends DefaultMutableTreeNode {
 	 * @param e
 	 */
 	public void onPressed(MouseEvent e) {
-		// TODO 自動生成されたメソ�?��・スタ�?
 
 	}
 
@@ -118,7 +118,6 @@ public class RTSTreeNode extends DefaultMutableTreeNode {
 					return errorRTCImageIcon;
 				}
 			} catch (Exception e) {
-				// TODO 自動生成された catch ブロ�?��
 				e.printStackTrace();
 			}
 			return unknownRTCImageIcon;
@@ -127,7 +126,6 @@ public class RTSTreeNode extends DefaultMutableTreeNode {
 		} else if (this.toString().endsWith("cxt")) {
 			return cxtImageIcon;
 		}
-		// TODO 自動生成されたメソ�?��・スタ�?
 		return unknownImageIcon;
 	}
 }

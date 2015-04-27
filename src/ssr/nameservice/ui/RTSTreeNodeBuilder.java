@@ -8,7 +8,13 @@
  */
 package ssr.nameservice.ui;
 
+import java.util.ArrayList;
+
+import ssr.nameservice.CorbaNamingCannotFindException;
+import ssr.nameservice.CorbaNamingResolveException;
 import ssr.nameservice.RTNamingContext;
+import ssr.rtsbuilder.RTSystemBuilder;
+import RTC.PortService;
 
 /**
  * <div lang="ja">
@@ -51,10 +57,34 @@ public class RTSTreeNodeBuilder {
 	 */
 	public static RTSTreeNode buildRTSTreeNode(RTNamingContext namingContext) {
 		RTSTreeNode rootNode = new RTSTreeNode(namingContext);
+		if (namingContext.getKind().equals("rtc")) {
+			for(RTSTreeNode n : buildRTCPropertyNodes(namingContext)) {
+				rootNode.add(n);
+			}
+		}
 		for(RTNamingContext nc : namingContext) {
 			rootNode.add(buildRTSTreeNode(nc));
 		}
 		return rootNode;
 		
+	}
+	
+	
+	public static ArrayList<RTSTreeNode> buildRTCPropertyNodes(RTNamingContext namingContext) {
+		ArrayList<RTSTreeNode> list = new ArrayList<RTSTreeNode>();
+		
+		try {
+			RTC.RTObject obj = RTSystemBuilder.getComponent(namingContext.getFullPath());
+			for(PortService ps : obj.get_ports()) {
+				System.out.println("Port:" + ps.get_port_profile().name);
+			}
+		} catch (CorbaNamingCannotFindException | CorbaNamingResolveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (org.omg.CORBA.COMM_FAILURE ex) {
+			ex.printStackTrace();
+		}
+		
+		return list;
 	}
 }

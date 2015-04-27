@@ -20,6 +20,8 @@ import ssr.nameservice.RTNamingContext;
 import ssr.rtsbuilder.RTSystemBuilder;
 import ssr.rtsprofile.RTSystemProfile;
 
+
+@SuppressWarnings("serial")
 public class RTSystemTreeView extends JPanel {
 
 	static Logger logger = Logger.getLogger("net.ysuga.rtsbuilder.ui");

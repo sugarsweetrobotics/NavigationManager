@@ -516,9 +516,9 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 					return mapHolder.value;
 				}
 				else if(retval == RETURN_VALUE.RETVAL_ODOMETRY_TIME_OUT){
-					System.out.println("ERROR: Mobile Robot disconnected");
+					System.out.println("ERROR: Mobile Robot is timeout in Mapper RTC.");
 				}else if(retval == RETURN_VALUE.RETVAL_RANGE_TIME_OUT){
-					System.out.println("ERROR: Range Sensor disconnected");
+					System.out.println("ERROR: Range Sensor is timeout in Mapper RTC.");
 				}else if(retval == RETURN_VALUE.RETVAL_ODOMETRY_INVALID_VALUE){
 					System.out.println("ERROR: Kobuki out of map range");
 				}

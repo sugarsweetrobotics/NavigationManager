@@ -7,6 +7,7 @@ import java.awt.Insets;
 
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public class GridLayoutPanel extends JPanel {
 
 	/**

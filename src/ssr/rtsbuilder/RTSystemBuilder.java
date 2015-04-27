@@ -26,7 +26,6 @@ import ssr.rtsprofile.DataPortConnector;
 import ssr.rtsprofile.ExecutionContext;
 import ssr.rtsprofile.Location;
 import ssr.rtsprofile.PortConnector;
-import ssr.rtsprofile.PortConnector.Port;
 import ssr.rtsprofile.Properties;
 import ssr.rtsprofile.PyIOComponent;
 import ssr.rtsprofile.RTComponent;

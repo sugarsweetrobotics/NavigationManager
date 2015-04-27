@@ -263,8 +263,8 @@ public class MapPanel extends JPanel {
 			for(int i = 0;i < rangeData.ranges.length;i+=skip) {
 				double distance = rangeData.ranges[i];
 				
-				double px = distance * Math.cos(-rangeTh) + ofx;
-				double py = distance * Math.sin(-rangeTh) + ofy;
+				double py = distance * Math.cos(-rangeTh) + ofx;
+				double px = distance * Math.sin(-rangeTh) + ofy;
 				
 				double pyd = py / rry;
 				double pxd = px / rrx;

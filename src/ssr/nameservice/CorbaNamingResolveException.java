@@ -13,6 +13,7 @@ package ssr.nameservice;
  * @author ysuga
  *
  */
+@SuppressWarnings("serial")
 public class CorbaNamingResolveException extends Exception {
 
 	/**

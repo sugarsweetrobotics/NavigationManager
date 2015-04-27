@@ -32,6 +32,7 @@ import ssr.nameservice.RTNamingContext;
  * @author ysuga
  * 
  */
+@SuppressWarnings("serial")
 public class RTSTree extends JTree {
 
 	class RTSTreeCellRenderer extends DefaultTreeCellRenderer {
@@ -110,9 +111,9 @@ public class RTSTree extends JTree {
 			if (isExpanded(parent)) {
 				expandedNodeName.add(node.toString());
 			}
-			Enumeration e = node.children();
+			Enumeration<TreeNode> e = node.children();
 			while (e.hasMoreElements()) {
-				TreeNode n = (TreeNode) e.nextElement();
+				TreeNode n = e.nextElement();
 				TreePath path = parent.pathByAddingChild(n);
 				saveExpandedNodeName(path);
 			}
@@ -128,9 +129,9 @@ public class RTSTree extends JTree {
 			if (expandedNodeName.contains(node.toString())) {
 				expandPath(parent);
 			}
-			Enumeration e = node.children();
+			Enumeration<TreeNode> e = node.children();
 			while (e.hasMoreElements()) {
-				TreeNode n = (TreeNode) e.nextElement();
+				TreeNode n = e.nextElement();
 				TreePath path = parent.pathByAddingChild(n);
 				restoreExpandedNode(path);
 			}
