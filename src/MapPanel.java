@@ -177,7 +177,7 @@ public class MapPanel extends JPanel {
 			g2d.rotate(-th+Math.PI/2);
 			
 			Color oldColor = g2d.getColor();
-			g2d.setColor(Color.orange);
+			g2d.setColor(Color.red);
 			g2d.fill(p);
 			
 

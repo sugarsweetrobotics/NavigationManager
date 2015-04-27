@@ -50,7 +50,8 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	private MapperViewerFrame frame;
 
 	private Calendar m_lastReceivedTime;
-	private float m_poseTimeout = (float) 3.0; //should be added config
+	private float m_poseTimeout = (float) 3.0; // should be added config
+
 	/*
 	 * !
 	 * 
@@ -61,7 +62,8 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	public MapperViewerImpl(Manager manager) {
 		super(manager);
 		// <rtc-template block="initializer">
-		m_currentPose_val = new TimedPose2D(new Time(0,0), new Pose2D(new Point2D(0,0), 0));
+		m_currentPose_val = new TimedPose2D(new Time(0, 0), new Pose2D(
+				new Point2D(0, 0), 0));
 		m_currentPose = new DataRef<TimedPose2D>(m_currentPose_val);
 		m_currentPoseIn = new InPort<TimedPose2D>("currentPose", m_currentPose);
 		m_range_val = new RangeData();
@@ -84,7 +86,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		m_mapperServicePort = new CorbaPort("mapperService");
 		m_mapServerPort = new CorbaPort("mapServer");
 		m_pathPlannerPort = new CorbaPort("pathPlanner");
-        m_pathFollowerPort = new CorbaPort("pathFollower");
+		m_pathFollowerPort = new CorbaPort("pathFollower");
 		// </rtc-template>
 
 	}
@@ -118,14 +120,14 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 				m_OGMapServerBase);
 		m_pathPlannerPort.registerConsumer("PathPlanner", "RTC::PathPlanner",
 				m_pathPlannerBase);
-        m_pathFollowerPort.registerConsumer("PathFollower", "RTC::PathFollower",
-        		m_pathFollowerBase);
-        
+		m_pathFollowerPort.registerConsumer("PathFollower",
+				"RTC::PathFollower", m_pathFollowerBase);
+
 		// Set CORBA Service Ports
 		addPort(m_mapperServicePort);
 		addPort(m_mapServerPort);
 		addPort(m_pathPlannerPort);
-        addPort(m_pathFollowerPort);
+		addPort(m_pathFollowerPort);
 
 		// </rtc-template>
 		bindParameter("debug", m_debug, "0");
@@ -242,13 +244,15 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 			m_rangeIn.read();
 			this.frame.setRangeData(m_range.v);
 			m_lastReceivedTime = currentTime;
-		} else{
-		    double duration = currentTime.getTimeInMillis() - m_lastReceivedTime.getTimeInMillis();
-		    if (duration > m_poseTimeout && m_poseTimeout > 0) {
-		      System.out.println("Range  Disconnected");
-		    }
-		  }
-		
+		} else {
+			double duration = currentTime.getTimeInMillis()
+					- m_lastReceivedTime.getTimeInMillis();
+			if (duration > m_poseTimeout && m_poseTimeout > 0) {
+				System.out.println("Range Data is Timeout to MapperViewer");
+				this.frame.setRangeData(null);
+			}
+		}
+
 		if (m_cameraIn.isNew()) {
 			m_cameraIn.read();
 			this.frame.setImage(m_camera.v);
@@ -460,7 +464,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	/*
 	 * !
 	 */
-    protected CorbaPort m_pathFollowerPort;
+	protected CorbaPort m_pathFollowerPort;
 
 	// </rtc-template>
 
@@ -489,11 +493,12 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 * !
 	 */
 	protected PathPlanner m_pathPlanner;
-    protected CorbaConsumer<PathFollower> m_pathFollowerBase = new CorbaConsumer<PathFollower>(PathFollower.class);
-    /*!
-     */
-    protected PathFollower m_pathFollower;
-    
+	protected CorbaConsumer<PathFollower> m_pathFollowerBase = new CorbaConsumer<PathFollower>(
+			PathFollower.class);
+	/*
+	 * !
+	 */
+	protected PathFollower m_pathFollower;
 
 	// </rtc-template>
 
@@ -503,38 +508,48 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 * @return
 	 */
 	public OGMap requestMap() {
-		//try {
-			OGMap map = new OGMap();
-			OGMapHolder mapHolder = new OGMapHolder(map);
-			if (this.get_context(0).get_component_state(this.m_objref) != RTC.LifeCycleState.ACTIVE_STATE) {
-				return null;
+		// try {
+		OGMap map = new OGMap();
+		OGMapHolder mapHolder = new OGMapHolder(map);
+		if (this.get_context(0).get_component_state(this.m_objref) != RTC.LifeCycleState.ACTIVE_STATE) {
+			return null;
+		}
+		if (m_mapperServicePort.get_connector_profiles().length != 0) {// dose
+																		// it
+																		// connected
+																		// with
+																		// Mapper_MRPT?
+			RETURN_VALUE retval;
+			retval = this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder);
+			if (this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
+				return mapHolder.value;
+			} else if (retval == RETURN_VALUE.RETVAL_ODOMETRY_TIME_OUT) {
+				System.out
+						.println("ERROR: Mobile Robot is timeout in Mapper RTC.");
+			} else if (retval == RETURN_VALUE.RETVAL_RANGE_TIME_OUT) {
+				System.out
+						.println("ERROR: Range Sensor is timeout in Mapper RTC.");
+			} else if (retval == RETURN_VALUE.RETVAL_ODOMETRY_INVALID_VALUE) {
+				System.out.println("ERROR: Kobuki out of map range");
 			}
-			if (m_mapperServicePort.get_connector_profiles().length != 0) {//dose it connected with Mapper_MRPT?
-				RETURN_VALUE  retval;
-				retval = this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder);
-				if (this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
-					return mapHolder.value;
-				}
-				else if(retval == RETURN_VALUE.RETVAL_ODOMETRY_TIME_OUT){
-					System.out.println("ERROR: Mobile Robot is timeout in Mapper RTC.");
-				}else if(retval == RETURN_VALUE.RETVAL_RANGE_TIME_OUT){
-					System.out.println("ERROR: Range Sensor is timeout in Mapper RTC.");
-				}else if(retval == RETURN_VALUE.RETVAL_ODOMETRY_INVALID_VALUE){
-					System.out.println("ERROR: Kobuki out of map range");
-				}
-				
-			} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {//dose it connected with MapServer?
-				RETURN_VALUE  retval;
-				retval = this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(mapHolder);				
-				if (retval == RETURN_VALUE.RETVAL_OK) {
-					return mapHolder.value;
-				}else if(retval == RETURN_VALUE.RETVAL_EMPTY_MAP){
-					System.out.println("ERROR: Empty Map");
-				}
+
+		} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {// dose
+																				// it
+																				// connected
+																				// with
+																				// MapServer?
+			RETURN_VALUE retval;
+			retval = this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(
+					mapHolder);
+			if (retval == RETURN_VALUE.RETVAL_OK) {
+				return mapHolder.value;
+			} else if (retval == RETURN_VALUE.RETVAL_EMPTY_MAP) {
+				System.out.println("ERROR: Empty Map");
 			}
-		//} catch (org.omg.CORBA.UNKNOWN e) {
-		//	e.printStackTrace();
-		//}
+		}
+		// } catch (org.omg.CORBA.UNKNOWN e) {
+		// e.printStackTrace();
+		// }
 		return null;
 	}
 
@@ -573,54 +588,60 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 
 	public Path2D planPath(PathPlanParameter param) {
 		Path2DHolder pathHolder = new Path2DHolder();
-		
-		param.currentPose = new RTC.Pose2D(new RTC.Point2D(this.m_currentPose.v.data.position.x, this.m_currentPose.v.data.position.y), 0);
+
+		param.currentPose = new RTC.Pose2D(new RTC.Point2D(
+				this.m_currentPose.v.data.position.x,
+				this.m_currentPose.v.data.position.y), 0);
 		param.map = requestMap();
-		
-		if (m_pathPlannerPort.get_connector_profiles().length != 0) {//dose it connected with Mapper_MRPT?
-			RETURN_VALUE  retval;
+
+		if (m_pathPlannerPort.get_connector_profiles().length != 0) {// dose it
+																		// connected
+																		// with
+																		// Mapper_MRPT?
+			RETURN_VALUE retval;
 			retval = this.m_pathPlannerBase._ptr().planPath(param, pathHolder);
 			if (retval == RETURN_VALUE.RETVAL_OK) {
 				System.out.println("Succeed");
-			}else if(retval == RETURN_VALUE.RETVAL_NOT_FOUND){
+			} else if (retval == RETURN_VALUE.RETVAL_NOT_FOUND) {
 				System.out.println("ERROR: Path Not Found");
-			}else if(retval == RETURN_VALUE.RETVAL_INVALID_PARAMETER){
-				System.out.println("ERROR: Invalid Start or Goal coordinates");		    
+			} else if (retval == RETURN_VALUE.RETVAL_INVALID_PARAMETER) {
+				System.out.println("ERROR: Invalid Start or Goal coordinates");
 			}
 		}
 
 		return pathHolder.value;
-		//this.m_pathPlannerBase._ptr().planPath(param, pathHolder);
-		//return pathHolder.value;
-			/*
-		if (m_pathPlannerPort.get_connector_profiles().length != 0) {
-			if (this.m_pathPlannerBase._ptr().planPath(requestMap(), this.m_currentPose.v, goal, pathHolder) == RETURN_VALUE.RETVAL_OK) {
-				System.out.println(pathHolder);
-				return pathHolder.value;
-			}
-		}
-		*/
-		//return null;
+		// this.m_pathPlannerBase._ptr().planPath(param, pathHolder);
+		// return pathHolder.value;
+		/*
+		 * if (m_pathPlannerPort.get_connector_profiles().length != 0) { if
+		 * (this.m_pathPlannerBase._ptr().planPath(requestMap(),
+		 * this.m_currentPose.v, goal, pathHolder) == RETURN_VALUE.RETVAL_OK) {
+		 * System.out.println(pathHolder); return pathHolder.value; } }
+		 */
+		// return null;
 	}
-	
-	public void followPath(Path2D path){
-		if (m_pathFollowerPort.get_connector_profiles().length != 0) {//dose it connected with Mapper_MRPT?
-			RETURN_VALUE  retval;
+
+	public void followPath(Path2D path) {
+		if (m_pathFollowerPort.get_connector_profiles().length != 0) {// dose it
+																		// connected
+																		// with
+																		// Mapper_MRPT?
+			RETURN_VALUE retval;
 			retval = this.m_pathFollowerBase._ptr().followPath(path);
 			if (retval == RETURN_VALUE.RETVAL_OK) {
 				return;
-			}
-			else if(retval == RETURN_VALUE.RETVAL_EMERGENCY_STOP){
+			} else if (retval == RETURN_VALUE.RETVAL_EMERGENCY_STOP) {
 				System.out.println("ERROR: EMERGENCY STOP");
 				return;
-			}else if(retval == RETURN_VALUE.RETVAL_CURRENT_POSE_TIME_OUT){
-				System.out.println("ERROR: Localization disconnected or Kobuki error");
+			} else if (retval == RETURN_VALUE.RETVAL_CURRENT_POSE_TIME_OUT) {
+				System.out
+						.println("ERROR: Localization disconnected or Kobuki error");
 				return;
-			}else if(retval == RETURN_VALUE.RETVAL_CURRENT_POSE_INVALID_VALUE){
+			} else if (retval == RETURN_VALUE.RETVAL_CURRENT_POSE_INVALID_VALUE) {
 				System.out.println("ERROR: Localization sent Strange Value");
 				return;
 			}
-		}		
+		}
 	}
 
 }
