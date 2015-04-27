@@ -266,7 +266,7 @@ public class MapPanel extends JPanel {
 				double py = distance * Math.sin(rangeTh) + ofy;
 				
 				double pyd = px / rry;
-				double pxd = -py / rrx;
+				double pxd = py / rrx;
 				g2d2.fill(new Rectangle2D.Double(pxd-1, pyd-1, 2, 2));
 				rangeTh += step;
 			}
