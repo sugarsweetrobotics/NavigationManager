@@ -247,7 +247,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		} else {
 			double duration = currentTime.getTimeInMillis()
 					- m_lastReceivedTime.getTimeInMillis();
-			if (duration > m_poseTimeout && m_poseTimeout > 0) {
+			if (duration > m_poseTimeout*1000 && m_poseTimeout > 0) {
 				System.out.println("Range Data is Timeout to MapperViewer");
 				this.frame.setRangeData(null);
 			}
