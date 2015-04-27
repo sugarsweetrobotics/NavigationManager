@@ -17,7 +17,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -31,6 +30,8 @@ import RTC.Pose2D;
 import RTC.RangeData;
 import RTC.Velocity2D;
 
+
+@SuppressWarnings("serial")
 public class MapperViewerFrame extends JFrame {
 
 	private MapPanel mapPanel;

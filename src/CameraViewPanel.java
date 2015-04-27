@@ -2,11 +2,10 @@ import java.awt.BorderLayout;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JToolBar;
 
 
+@SuppressWarnings("serial")
 public class CameraViewPanel extends JPanel {
 
 	

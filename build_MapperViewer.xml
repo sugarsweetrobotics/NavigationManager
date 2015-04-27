@@ -17,23 +17,14 @@
 
 	<target name="idlcompile"  depends="mkdir">
 		<exec executable="${java.home}/../bin/idlj">
-			<arg line="-td 'src' -i 'C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl' -i 'C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl' -i 'C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl' -fall 'idl/MobileRobot.idl'"/>
-		</exec>
-		<exec executable="${java.home}/../bin/idlj">
-			<arg line="-td 'src' -i 'C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl' -i 'C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl' -i 'C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl' -fall 'idl/BasicDataType.idl'"/>
-		</exec>
-		<exec executable="${java.home}/../bin/idlj">
-			<arg line="-td 'src' -i 'C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl' -i 'C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl' -i 'C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl' -fall 'idl/ExtendedDataTypes.idl'"/>
-		</exec>
-		<exec executable="${java.home}/../bin/idlj">
-			<arg line="-td 'src' -i 'C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl' -i 'C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl' -i 'C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl' -fall 'idl/InterfaceDataTypes.idl'"/>
+			<arg line="-td 'src' -i 'idl' -fall 'idl/MobileRobot.idl'"/>
 		</exec>
 	</target>
 
 	<target name="compile" depends="idlcompile">
 		<javac srcdir="${source}" destdir="${dest}">
 			<classpath>
-				<fileset dir="${env.RTM_JAVA_ROOT}">
+				<fileset dir="${env.HOME}/.wasanbon/jar">
 					<include name="*.jar"/>
 				</fileset>
 			</classpath>

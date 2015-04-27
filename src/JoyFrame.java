@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
+
+@SuppressWarnings("serial")
 public class JoyFrame extends JFrame {
 
 	private int state = DEF;
@@ -83,7 +85,7 @@ public class JoyFrame extends JFrame {
 	public double getTranslationVelocity() {
 		return sp.js0.getValue() / 100.0 * 1;
 	}
-	
+
 	public class SpeedPanel extends JPanel {
 		
 		private JSlider js0, js1;
@@ -169,7 +171,7 @@ public class JoyFrame extends JFrame {
 	}
 
 	public static void main(String[] s) {
-		JoyFrame j = new JoyFrame();
+		new JoyFrame();
 	}
 
 }

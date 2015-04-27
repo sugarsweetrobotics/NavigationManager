@@ -18,6 +18,7 @@ import RTC.RangeData;
 import RTC.Waypoint2D;
 
 
+@SuppressWarnings("serial")
 public class MapPanel extends JPanel {
 
 	BufferedImage image;
@@ -33,8 +34,6 @@ public class MapPanel extends JPanel {
 	OGMap map;
 	public MapPanel() {
 		super();
-		int w = 640;
-		int h = 640;
 		//image = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
 		this.addMouseListener(new MouseAdapter() {
 			@Override
@@ -107,13 +106,6 @@ public class MapPanel extends JPanel {
 			image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 			mapImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		}
-		double rx = map.config.xScale;
-		double ry = map.config.yScale;
-		int ox = (int)(-map.config.origin.position.x / rx);
-		int oy = (int)(-map.config.origin.position.y / ry);
-		double oth = map.config.origin.heading;
-		int len = map.map.cells.length;
-		//System.out.println("Length = "  + len);
 		for(int i = 0;i < h;i++) {
 			for(int j = 0;j < w;j++) {
 				int r = 0;
@@ -122,8 +114,6 @@ public class MapPanel extends JPanel {
 				int rgb = c.getRGB();// /* (r << 24) |*/ (r << 16) | (r << 8) | r;
 				
 				mapImage.setRGB(j, (h-1-i), rgb);
-				//image.setRGB(j, i, rgb);
-				//image.setRGB(i,j,rgb);
 			}
 		}
 		//mapImage.copyData(mapImage.getRaster());
@@ -243,7 +233,6 @@ public class MapPanel extends JPanel {
 			double ry = map.config.yScale;
 			int ox = -(int)(map.config.origin.position.x / rx);
 			int oy = -(int)(map.config.origin.position.y / ry);
-			double oth = map.config.origin.heading;
 			
 			Point old_p = null;
 			for(Waypoint2D w : path.waypoints){
