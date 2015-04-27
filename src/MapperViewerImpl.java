@@ -506,6 +506,9 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		//try {
 			OGMap map = new OGMap();
 			OGMapHolder mapHolder = new OGMapHolder(map);
+			if (this.get_context(0).get_component_state(this.m_objref) != RTC.LifeCycleState.ACTIVE_STATE) {
+				return null;
+			}
 			if (m_mapperServicePort.get_connector_profiles().length != 0) {//dose it connected with Mapper_MRPT?
 				RETURN_VALUE  retval;
 				retval = this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder);
@@ -513,9 +516,9 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 					return mapHolder.value;
 				}
 				else if(retval == RETURN_VALUE.RETVAL_ODOMETRY_TIME_OUT){
-					System.out.println("ERROR: Kobuki disconnected");
+					System.out.println("ERROR: Mobile Robot disconnected");
 				}else if(retval == RETURN_VALUE.RETVAL_RANGE_TIME_OUT){
-					System.out.println("ERROR: URG disconnected");
+					System.out.println("ERROR: Range Sensor disconnected");
 				}else if(retval == RETURN_VALUE.RETVAL_ODOMETRY_INVALID_VALUE){
 					System.out.println("ERROR: Kobuki out of map range");
 				}

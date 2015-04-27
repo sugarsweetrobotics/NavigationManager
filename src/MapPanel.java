@@ -113,7 +113,7 @@ public class MapPanel extends JPanel {
 				Color c = new Color(r/255.0f, r/255.0f, r/255.0f);
 				int rgb = c.getRGB();// /* (r << 24) |*/ (r << 16) | (r << 8) | r;
 				
-				mapImage.setRGB(j, (h-1-i), rgb);
+				mapImage.setRGB(i, (h-1-j), rgb);
 			}
 		}
 		//mapImage.copyData(mapImage.getRaster());

@@ -16,7 +16,7 @@
 	</target>
 
 	<target name="idlcompile"  depends="mkdir">
-		<exec executable="${java.home}/../bin/idlj">
+		<exec executable="${java.home}/../jdk1.7.0_17/bin/idlj">
 			<arg line="-td 'src' -i 'idl' -fall 'idl/MobileRobot.idl'"/>
 		</exec>
 	</target>
@@ -24,7 +24,7 @@
 	<target name="compile" depends="idlcompile">
 		<javac srcdir="${source}" destdir="${dest}">
 			<classpath>
-				<fileset dir="${env.HOME}/.wasanbon/jar">
+				<fileset dir="jar">
 					<include name="*.jar"/>
 				</fileset>
 			</classpath>

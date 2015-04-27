@@ -23,6 +23,7 @@ import javax.swing.JToolBar;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import ssr.nameservice.ui.RTSystemTreeView;
 import RTC.MAPPER_STATE;
 import RTC.OGMap;
 import RTC.PathPlanParameter;
@@ -68,6 +69,8 @@ public class MapperViewerFrame extends JFrame {
 	
 	private CameraViewPanel cameraViewPanel;
 	
+	private RTSystemTreeView systemTreeView;
+	
 	public MapperViewerFrame(MapperViewerImpl rtc) {
 		super("Mapper Viewer");
 
@@ -76,13 +79,14 @@ public class MapperViewerFrame extends JFrame {
 		
 		mapPanel = new MapPanel();
 		cameraViewPanel = new CameraViewPanel();
+		systemTreeView  = new RTSystemTreeView();
 		
 		hSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		vSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		vSplitPaneSmall = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		
 		vSplitPaneSmall.setDividerLocation(height / 2);
-		vSplitPaneSmall.add(new JTextField());
+		vSplitPaneSmall.add(systemTreeView);
 		vSplitPaneSmall.add(cameraViewPanel);
 		
 		hSplitPane.setDividerLocation(width / 3);
@@ -109,11 +113,11 @@ public class MapperViewerFrame extends JFrame {
 
 		JToolBar toolBar = new JToolBar();
 		this.add(toolBar, BorderLayout.NORTH);
-		JButton startButton = new JButton(new AbstractAction("Start") {
+		JButton startButton = new JButton(new AbstractAction("Start Mapping") {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				onStart();
+				onStartMapping();
 			}
 
 		});
@@ -176,7 +180,7 @@ public class MapperViewerFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				onStart();
+				onStartMapping();
 			}
 
 		});
@@ -344,10 +348,10 @@ public class MapperViewerFrame extends JFrame {
 
 	private synchronized void onRequest() {
 		
-			this.map = rtc.requestMap();
-			if (map != null) {
-				mapPanel.setMap(map);
-			}
+		this.map = rtc.requestMap();
+		if (map != null) {
+			mapPanel.setMap(map);
+		}
 		
 		mapper_state = rtc.requestState();
 		if (mapper_state.equals(MAPPER_STATE.MAPPER_MAPPING)) {
@@ -357,7 +361,7 @@ public class MapperViewerFrame extends JFrame {
 		}
 	}
 
-	private void onStart() {
+	private void onStartMapping() {
 		if (mapper_state.equals(MAPPER_STATE.MAPPER_MAPPING)) {
 			if (rtc.stopMapping()) {
 
