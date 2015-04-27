@@ -76,7 +76,7 @@ public class RTSTreeNodeBuilder {
 		try {
 			RTC.RTObject obj = RTSystemBuilder.getComponent(namingContext.getFullPath());
 			for(PortService ps : obj.get_ports()) {
-				System.out.println("Port:" + ps.get_port_profile().name);
+				list.add(new RTSTreeNode(new RTNamingContext(ps.get_port_profile().name, "port")));
 			}
 		} catch (CorbaNamingCannotFindException | CorbaNamingResolveException e) {
 			// TODO Auto-generated catch block

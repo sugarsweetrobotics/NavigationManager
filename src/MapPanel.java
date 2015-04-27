@@ -177,9 +177,11 @@ public class MapPanel extends JPanel {
 			g2d.rotate(-th+Math.PI/2);
 			
 			Color oldColor = g2d.getColor();
-			g2d.setColor(Color.red);
+			g2d.setColor(Color.orange);
 			g2d.fill(p);
 			
+
+			g2d.setColor(Color.yellow);
 			drawRange(g2d);
 
 			g2d.setColor(oldColor);
@@ -263,12 +265,12 @@ public class MapPanel extends JPanel {
 			for(int i = 0;i < rangeData.ranges.length;i+=skip) {
 				double distance = rangeData.ranges[i];
 				
-				double py = distance * Math.cos(-rangeTh) + ofx;
-				double px = distance * Math.sin(-rangeTh) + ofy;
+				double px = distance * Math.cos(-rangeTh) + ofx;
+				double py = distance * Math.sin(-rangeTh) + ofy;
 				
 				double pyd = py / rry;
 				double pxd = px / rrx;
-				g2d2.fill(new Rectangle2D.Double(pxd-2, pyd-2, 4, 4));
+				g2d2.fill(new Rectangle2D.Double(pyd-1, pxd-1, 2, 2));
 				rangeTh += step;
 			}
 		}
