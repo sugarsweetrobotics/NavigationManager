@@ -18,11 +18,11 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSplitPane;
-import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import ssr.logger.ui.LoggerView;
 import ssr.nameservice.ui.RTSystemTreeView;
 import RTC.MAPPER_STATE;
 import RTC.OGMap;
@@ -95,7 +95,7 @@ public class MapperViewerFrame extends JFrame {
 		
 		vSplitPane.setDividerLocation(height / 3 * 2);
 		vSplitPane.add(mapPanel);
-		vSplitPane.add(new JTextField());
+		vSplitPane.add(new LoggerView("MapperViewer"));
 		
 		
 		this.rtc = rtc;

@@ -8,6 +8,7 @@
  */
 
 import java.util.Calendar;
+import java.util.logging.Logger;
 
 import jp.go.aist.rtm.RTC.DataFlowComponentBase;
 import jp.go.aist.rtm.RTC.Manager;
@@ -27,9 +28,9 @@ import RTC.OGMapServer;
 import RTC.OGMapper;
 import RTC.Path2D;
 import RTC.Path2DHolder;
+import RTC.PathFollower;
 import RTC.PathPlanParameter;
 import RTC.PathPlanner;
-import RTC.PathFollower;
 import RTC.Point2D;
 import RTC.Pose2D;
 import RTC.RETURN_VALUE;
@@ -51,6 +52,8 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 
 	private Calendar m_lastReceivedTime;
 	private float m_poseTimeout = (float) 3.0; // should be added config
+	
+	private Logger logger;
 
 	/*
 	 * !
@@ -88,6 +91,8 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		m_pathPlannerPort = new CorbaPort("pathPlanner");
 		m_pathFollowerPort = new CorbaPort("pathFollower");
 		// </rtc-template>
+		
+		logger = Logger.getLogger("MapperViewer");
 
 	}
 
@@ -135,6 +140,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 
 		this.frame = new MapperViewerFrame(this);
 
+		logger.info("Initialized");
 		return super.onInitialize();
 	}
 
