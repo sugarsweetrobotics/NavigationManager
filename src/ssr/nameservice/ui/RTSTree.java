@@ -63,7 +63,7 @@ public class RTSTree extends JTree {
 		this.setCellRenderer(new RTSTreeCellRenderer());
 	}
 
-	public synchronized void refreshModel() {
+	public synchronized void refreshModel(RTSystemTreeView view) {
 		DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) this
 				.getModel().getRoot();
 		int count = rootNode.getChildCount();
@@ -88,7 +88,7 @@ public class RTSTree extends JTree {
 				 * RTSProfileHolder.getInstance() .get(RTSProfileHolder.ONLINE);
 				 * onlineProfile.addAllComponent(nc);
 				 */
-				rootNode.add(RTSTreeNodeBuilder.buildRTSTreeNode(nc));
+				rootNode.add(RTSTreeNodeBuilder.buildRTSTreeNode(view, nc));
 			} catch (Exception e1) {
 				// logger.warning("Refreshing Name Server View failed.");
 			}
@@ -111,6 +111,7 @@ public class RTSTree extends JTree {
 			if (isExpanded(parent)) {
 				expandedNodeName.add(node.toString());
 			}
+			
 			Enumeration<TreeNode> e = node.children();
 			while (e.hasMoreElements()) {
 				TreeNode n = e.nextElement();

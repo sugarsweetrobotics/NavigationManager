@@ -10,6 +10,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -29,6 +30,7 @@ public class RTSystemTreeView extends JPanel {
 	JToolBar toolBar;
 
 	private RTSTree treeView;
+	public JPopupMenu pop;
 
 	public RTSTree getTree() {
 		return treeView;
@@ -52,7 +54,7 @@ public class RTSystemTreeView extends JPanel {
 				RTSystemBuilder.downwardSynchronization(onlineProfile);
 				RTSProfileHolder.getInstance().addNamingAddress(hostAddress);
 				onlineProfile.addAllComponent(nc);
-				rootNode.add(RTSTreeNodeBuilder.buildRTSTreeNode(nc));
+				rootNode.add(RTSTreeNodeBuilder.buildRTSTreeNode(this, nc));
 				treeView.invalidate();
 				treeView.validate();
 				((DefaultTreeModel) treeView.getModel()).reload();
@@ -70,7 +72,7 @@ public class RTSystemTreeView extends JPanel {
 	}
 
 	public void refresh() {
-		treeView.refreshModel();
+		treeView.refreshModel(this);
 		treeView.repaint();
 	}
 
