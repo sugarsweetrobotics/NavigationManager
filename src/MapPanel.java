@@ -17,24 +17,22 @@ import RTC.Pose2D;
 import RTC.RangeData;
 import RTC.Waypoint2D;
 
-
 @SuppressWarnings("serial")
 public class MapPanel extends JPanel {
 
-	BufferedImage image;
-	
-	BufferedImage mapImage;
-	
+	BufferedImage bufferImage;
+
 	RTC.Pose2D robotPose;
-	
+
 	RTC.RangeData rangeData;
-	
+
 	RTC.Path2D path;
-	
-	OGMap map;
+
+	private MapImageHolder mapImageHolder;
+
 	public MapPanel() {
 		super();
-		//image = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+		// image = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
 		this.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -44,201 +42,139 @@ public class MapPanel extends JPanel {
 		});
 	}
 
-
 	class Goal {
-		
+
 		public Goal(double x, double y, double th) {
 			this.x = x;
 			this.y = y;
 			this.th = th;
 		}
-		
+
 		public double x;
 		public double y;
 		public double th;
 	};
-	
+
 	Goal goal;
-	
-	public double getGoalX() {return goal.x; }
-	public double getGoalY() {return goal.y; }
-	public double getGoalTh() {return goal.th; }
-	
-	
+
+	public double getGoalX() {
+		return goal.x;
+	}
+
+	public double getGoalY() {
+		return goal.y;
+	}
+
+	public double getGoalTh() {
+		return goal.th;
+	}
+
 	private void onPanelClicked(MouseEvent e) {
-		Point p = e.getPoint();
-		System.out.println("p = " + p.x + ", " + p.y);
-		if (mapImage != null) {
-			double rx = map.config.xScale;
-			double ry = map.config.yScale;
-			int ox = -(int)(map.config.origin.position.x / rx);
-			int oy = -(int)(map.config.origin.position.y / ry);
-			
-			double goal_x = (p.x - ox) * rx;
-			double goal_y = -(p.y - oy) * ry;
-			double goal_th = 0;
-			System.out.println("goal = " + goal_x + ", " + goal_y);
-			goal = new Goal(goal_x, goal_y, goal_th);
+		if (mapImageHolder != null) {
+			Point2D p = mapImageHolder.pixelToPosition(e.getPoint());
+			goal = new Goal(p.x, p.y, 0);
 		}
 	}
-	
+
 	public void setMap(OGMap map) {
-		this.map = map;
-		if (map == null) {
-			int h = image.getHeight();
-			int w = image.getWidth();
-			for(int i = 0;i < h;i++) {
-				for(int j = 0;j < w;j++) {
-					int rgb = 0xFF0000;
-					image.setRGB(j, i, rgb);
-				}
-			}			
-			return ;
-		}
-		
-		int w = map.config.width;
-		int h = map.config.height;
-		if (image == null) {
-			image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-			mapImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-		}
-		else if (image.getWidth() != w || image.getHeight() != h) {
-			image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-			mapImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-		}
-		for(int i = 0;i < h;i++) {
-			for(int j = 0;j < w;j++) {
-				int r = 0;
-				r |= (0x0FF & map.map.cells[(i)*w+(j)]);
-				Color c = new Color(r/255.0f, r/255.0f, r/255.0f);
-				int rgb = c.getRGB();// /* (r << 24) |*/ (r << 16) | (r << 8) | r;
-				
-				mapImage.setRGB(i, (h-1-j), rgb);
-			}
-		}
-		//mapImage.copyData(mapImage.getRaster());
-		
-		if(robotPose == null) {
-			robotPose = new Pose2D(new Point2D(0,0), 0);
+		this.mapImageHolder = new MapImageHolder(map);
+		this.bufferImage = new BufferedImage(mapImageHolder.getPixelWidth(),
+				mapImageHolder.getPixelHeight(), BufferedImage.TYPE_INT_ARGB);
+		if (robotPose == null) {
+			robotPose = new Pose2D(new Point2D(0, 0), 0);
 		}
 	}
-	
-	
+
 	@Override
-	public void repaint() {//Graphics g) {
-		Graphics2D g2d = (Graphics2D)getGraphics();
-		if(mapImage != null) {
-			mapImage.copyData(image.getRaster());
-			Graphics2D g2d2 = (Graphics2D)image.getGraphics();
+	public void repaint() {// Graphics g) {
+		Graphics2D g2d = (Graphics2D) getGraphics();
+		if (bufferImage != null) {
+			mapImageHolder.getImage().copyData(bufferImage.getRaster());
+			Graphics2D g2d2 = (Graphics2D) bufferImage.getGraphics();
 			drawGoal(g2d2);
-			drawAxis(g2d2, image.getWidth(), image.getHeight());
+			drawAxis(g2d2);
 			drawPath(g2d2);
 			drawRobot(g2d2);
-			
-			g2d.drawImage(image, 0, 0, this);
+			g2d.drawImage(bufferImage, 0, 0, this);
 		}
-		
-		
+
 	}
-	
-	
+
 	private void drawRobot(Graphics2D g2d) {
-		
+
 		if (robotPose != null) {
-			double rx = map.config.xScale;
-			double ry = map.config.yScale;
-			int offsetx = (int)(map.config.origin.position.x / ry);
-			int offsety = (int)(map.config.origin.position.y / rx);
-			double oth = map.config.origin.heading;
-			
-			double x = robotPose.position.x;
-			double y = robotPose.position.y;
-			double th = robotPose.heading;
-			
-			double x2 =  x * Math.cos(oth) + y * Math.sin(oth);
-			double y2 =  x * Math.sin(oth) - y * Math.cos(oth);
-			
-			double xd = -offsetx + x2 / rx;
-			double yd = -offsety + y2 / ry;
-			
-			int[] xpoints = {0, 8, 8, -8, -8};
-			int[] ypoints = {-8, 0, 8, 8, 0};
-			Polygon p = new Polygon(xpoints, ypoints, 5);
-			
-			///g2d.fill(p);
-			
-			g2d.translate(xd, yd);
-			g2d.rotate(-th+Math.PI/2);
-			
+			double d = 0.3;
+			double[] body_polygon_xs = { d, 0, -d, -d, 0 };
+			double[] body_polygon_ys = { 0, d, d, -d, -d };
+			int[] body_xs = new int[body_polygon_xs.length];
+			int[] body_ys = new int[body_polygon_xs.length];
+
+			Point[] polygonPoints = new Point[body_polygon_xs.length];
+			for (int i = 0; i < body_polygon_xs.length; i++) {
+				double cos = Math.cos(robotPose.heading);
+				double sin = Math.sin(robotPose.heading);
+				double rotated_x = body_polygon_xs[i] * cos
+						+ body_polygon_ys[i] * sin;
+				double rotated_y = body_polygon_xs[i] * sin
+						- body_polygon_ys[i] * cos;
+				polygonPoints[i] = mapImageHolder.positionToPixel(
+						robotPose.position.x + rotated_x, robotPose.position.y
+								+ rotated_y);
+				body_xs[i] = polygonPoints[i].x;
+				body_ys[i] = polygonPoints[i].y;
+			}
+
+			Polygon p = new Polygon(body_xs, body_ys, body_xs.length);
+
 			Color oldColor = g2d.getColor();
 			g2d.setColor(Color.red);
 			g2d.fill(p);
-			
-			//g2d.rotate(th-Math.PI/2);
-			
-			//g2d.rotate(Math.PI);
+
 			g2d.setColor(Color.blue);
 			drawRange(g2d);
 
 			g2d.setColor(oldColor);
 		}
 	}
-	
-	private void drawAxis(Graphics2D g2d2, int width, int height) {
-		
-		double rx = map.config.xScale;
-		double ry = map.config.yScale;
-		int ox = -(int)(map.config.origin.position.x / rx);
-		int oy = -(int)(map.config.origin.position.y / ry);
-		
-		
+
+	private void drawAxis(Graphics2D g2d2) {
+
+		Point originPoint = mapImageHolder.positionToPixel(0, 0);
+
 		Color oc = g2d2.getColor();
 		g2d2.setColor(Color.red);
 		g2d2.setStroke(new BasicStroke(1));
-		g2d2.drawLine(0, oy, width, oy);
+		g2d2.drawLine(0, originPoint.y, mapImageHolder.getPixelWidth(),
+				originPoint.y);
 		g2d2.setColor(Color.green);
-		g2d2.drawLine(ox, 0, ox, height);
+		g2d2.drawLine(originPoint.x, 0, originPoint.x,
+				mapImageHolder.getPixelHeight());
 		g2d2.setColor(oc);
 	}
-	
+
 	private void drawGoal(Graphics2D g2d2) {
-		if (goal == null) {
-			return;
+		if (goal != null) {
+			Point goalPoint = mapImageHolder.positionToPixel(goal.x, goal.y);
+			Color oc = g2d2.getColor();
+			g2d2.setColor(Color.magenta);
+			g2d2.setStroke(new BasicStroke(2));
+			int size = 5;
+			g2d2.drawLine(goalPoint.x - size, goalPoint.y - size, goalPoint.x
+					+ size, goalPoint.y + size);
+			g2d2.drawLine(goalPoint.x + size, goalPoint.y - size, goalPoint.x
+					- size, goalPoint.y + size);
+			g2d2.setColor(oc);
 		}
-		double rx = map.config.xScale;
-		double ry = map.config.yScale;
-		int ox = -(int)(map.config.origin.position.x / rx);
-		int oy = -(int)(map.config.origin.position.y / ry);
-		int size = 5; // px
-		
-		int dx = (int)(ox + goal.x/rx);
-		int dy = (int)(oy - goal.y/ry);
-		
-		Color oc = g2d2.getColor();
-		g2d2.setColor(Color.magenta);
-		g2d2.setStroke(new BasicStroke(2));
-		g2d2.drawLine(dx - size, dy-size, dx + size, dy+size);
-		g2d2.drawLine(dx + size, dy-size, dx - size, dy+size);
-		g2d2.setColor(oc);
 	}
-	
+
 	private void drawPath(Graphics2D g2d) {
 		Color oc = g2d.getColor();
 		g2d.setColor(Color.cyan);
-		
+
 		if (path != null) {
-			double rx = map.config.xScale;
-			double ry = map.config.yScale;
-			int ox = -(int)(map.config.origin.position.x / rx);
-			int oy = -(int)(map.config.origin.position.y / ry);
-			
 			Point old_p = null;
-			for(Waypoint2D w : path.waypoints){
-				double x = w.target.position.x;
-				double y = w.target.position.y;
-				int dx = (int)(ox + x/rx);
-				int dy = (int)(oy - y/ry);
-				Point p = new Point(dx, dy);
+			for (Waypoint2D w : path.waypoints) {
+				Point p = mapImageHolder.positionToPixel(w.target.position);
 				if (old_p != null) {
 					g2d.drawLine(old_p.x, old_p.y, p.x, p.y);
 				}
@@ -247,32 +183,41 @@ public class MapPanel extends JPanel {
 		}
 		g2d.setColor(oc);
 	}
-	
+
 	private void drawRange(Graphics2D g2d2) {
-		if(rangeData != null) {
+		if (rangeData != null) {
 			int skip = 5;
-			double rangeTh = rangeData.config.minAngle;
 			double step = rangeData.config.angularRes * skip;
 			double ofx = rangeData.geometry.geometry.pose.position.x;
 			double ofy = rangeData.geometry.geometry.pose.position.y;
-			double rrx = map.config.xScale;
-			double rry = map.config.yScale;
+			double rangeTh = rangeData.config.maxAngle;
 			
-			for(int i = 0;i < rangeData.ranges.length;i+=skip) {
+			for (int i = 0; i < rangeData.ranges.length; i += skip) {
 				double distance = rangeData.ranges[i];
-				
-				double px = distance * Math.cos(rangeTh) + ofx;
-				double py = distance * Math.sin(rangeTh) + ofy;
-				
-				double pyd = py / rry;
-				double pxd = px / rrx;
-				g2d2.fill(new Rectangle2D.Double(-pyd-1, -pxd-1, 2, 2));
-				rangeTh += step;
+				double x_in_robot = distance * Math.cos(rangeTh) + ofx; // in
+																		// robot
+																		// coordinates
+				double y_in_robot = distance * Math.sin(rangeTh) + ofy; // in
+																		// robot
+																		// coordinates
+
+				double cos = Math.cos(robotPose.heading);
+				double sin = Math.sin(robotPose.heading);
+
+				double x_in_map = x_in_robot * cos + y_in_robot * sin
+						+ robotPose.position.x;
+				double y_in_map = x_in_robot * sin - y_in_robot * cos
+						+ robotPose.position.y;
+
+				Point point = mapImageHolder
+						.positionToPixel(x_in_map, y_in_map);
+
+				g2d2.fill(new Rectangle2D.Double(point.x - 1, point.y - 1, 2, 2));
+				rangeTh -= step;
 			}
 		}
 	}
 
-	
 	public void setRobotPose(Pose2D pose) {
 		robotPose = pose;
 	}
@@ -280,12 +225,16 @@ public class MapPanel extends JPanel {
 	public void setRangeData(RangeData range) {
 		rangeData = range;
 	}
-	
+
 	public void setPath2D(Path2D path) {
 		this.path = path;
 	}
-	
-	public Path2D getPath2D(){
+
+	public Path2D getPath2D() {
 		return this.path;
+	}
+
+	public void saveImage(String filename) {
+		mapImageHolder.saveImage(filename);
 	}
 }

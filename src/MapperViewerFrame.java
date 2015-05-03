@@ -4,12 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -17,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
@@ -86,7 +82,7 @@ public class MapperViewerFrame extends JFrame {
 		vSplitPaneSmall = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		
 		vSplitPaneSmall.setDividerLocation(height / 2);
-		vSplitPaneSmall.add(systemTreeView);
+		vSplitPaneSmall.add((systemTreeView));
 		vSplitPaneSmall.add(cameraViewPanel);
 		
 		hSplitPane.setDividerLocation(width / 3);
@@ -251,36 +247,8 @@ public class MapperViewerFrame extends JFrame {
 
 		if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 			String filename = fc.getSelectedFile().getAbsolutePath();
-			if (!filename.endsWith(".png")) {
-				filename = filename + ".png";
-			}
-			String fileContext = filename.substring(0, filename.length() - 4);
-			System.out.println("You chose to open this file: " + fileContext);
-			File f = new File(filename);
-			try {
-				double xresolution = mapPanel.map.config.xScale;
-				double yresolution = mapPanel.map.config.yScale;
-				double origin_x = mapPanel.map.config.origin.position.x;
-				double origin_y = mapPanel.map.config.origin.position.y;
-				double origin_th = mapPanel.map.config.origin.heading;
-				ImageIO.write(mapPanel.mapImage, "png", f);
-				File f2 = new File(fileContext + ".yaml");
-				FileWriter fw = new FileWriter(f2);
-				BufferedWriter bw = new BufferedWriter(fw);
-				bw.write("# Resolution of Map. Length of 1 px in meter.");
-				bw.write("\nresolution_x : " + xresolution);
-				bw.write("\nresolution_y : " + yresolution);
-				bw.write("\n# Pose of the Top-Left point in meter / radian");
-				bw.write("\n# X-Axis is horizontally, left to right.");
-				bw.write("\n# Y-Axis is vertically, bottom to top.");
-				bw.write("\norigin_x : " + origin_x);
-				bw.write("\norigin_y : " + origin_y);
-				bw.write("\norigin_th : " + origin_th);
-				bw.write("\nimage : " + f.getName());
-				bw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+
+			mapPanel.saveImage(filename);
 		}
 	}
 

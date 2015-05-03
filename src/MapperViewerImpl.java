@@ -52,8 +52,10 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 
 	private Calendar m_lastReceivedTime;
 	private float m_poseTimeout = (float) 3.0; // should be added config
-	
+
 	private Logger logger;
+
+	private MapImageHolder m_mapImageHolder;
 
 	/*
 	 * !
@@ -91,9 +93,8 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		m_pathPlannerPort = new CorbaPort("pathPlanner");
 		m_pathFollowerPort = new CorbaPort("pathFollower");
 		// </rtc-template>
-		
-		logger = Logger.getLogger("MapperViewer");
 
+		logger = Logger.getLogger("MapperViewer");
 	}
 
 	/*
@@ -140,7 +141,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 
 		this.frame = new MapperViewerFrame(this);
 
-		logger.info("Initialized");
+		logger.info("Successfully Initialized");
 		return super.onInitialize();
 	}
 
@@ -207,6 +208,8 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	@Override
 	protected ReturnCode_t onActivated(int ec_id) {
 		m_lastReceivedTime = Calendar.getInstance();
+
+		logger.info("Successfully Activated");
 		return super.onActivated(ec_id);
 	}
 
@@ -224,6 +227,8 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 */
 	@Override
 	protected ReturnCode_t onDeactivated(int ec_id) {
+
+		logger.info("Successfully Deactivated");
 		return super.onDeactivated(ec_id);
 	}
 
@@ -251,11 +256,17 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 			this.frame.setRangeData(m_range.v);
 			m_lastReceivedTime = currentTime;
 		} else {
-			double duration = currentTime.getTimeInMillis()
-					- m_lastReceivedTime.getTimeInMillis();
-			if (duration > m_poseTimeout*1000 && m_poseTimeout > 0) {
-				System.out.println("Range Data is Timeout to MapperViewer");
-				this.frame.setRangeData(null);
+			if (m_lastReceivedTime != null) {
+				double duration = currentTime.getTimeInMillis()
+						- m_lastReceivedTime.getTimeInMillis();
+				if (duration > m_poseTimeout * 1000 && m_poseTimeout > 0) {
+					// System.out.println("Range Data is Timeout to MapperViewer");
+					logger.warning("Range Data Timeout");
+					this.frame.setRangeData(null);
+					m_lastReceivedTime = null;
+				}
+			} else {
+				
 			}
 		}
 
@@ -514,7 +525,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 * @return
 	 */
 	public OGMap requestMap() {
-		// try {
+		logger.entering("MapperViewerImpl", "requestMap");
 		OGMap map = new OGMap();
 		OGMapHolder mapHolder = new OGMapHolder(map);
 		if (this.get_context(0).get_component_state(this.m_objref) != RTC.LifeCycleState.ACTIVE_STATE) {
@@ -530,13 +541,11 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 			if (this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
 				return mapHolder.value;
 			} else if (retval == RETURN_VALUE.RETVAL_ODOMETRY_TIME_OUT) {
-				System.out
-						.println("ERROR: Mobile Robot is timeout in Mapper RTC.");
+				logger.warning("ERROR: Mobile Robot is timeout in Mapper RTC.");
 			} else if (retval == RETURN_VALUE.RETVAL_RANGE_TIME_OUT) {
-				System.out
-						.println("ERROR: Range Sensor is timeout in Mapper RTC.");
+				logger.warning("ERROR: Range Sensor is timeout in Mapper RTC.");
 			} else if (retval == RETURN_VALUE.RETVAL_ODOMETRY_INVALID_VALUE) {
-				System.out.println("ERROR: Kobuki out of map range");
+				logger.warning("ERROR: Kobuki out of map range");
 			}
 
 		} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {// dose
@@ -550,7 +559,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 			if (retval == RETURN_VALUE.RETVAL_OK) {
 				return mapHolder.value;
 			} else if (retval == RETURN_VALUE.RETVAL_EMPTY_MAP) {
-				System.out.println("ERROR: Empty Map");
+				logger.warning("ERROR: Empty Map");
 			}
 		}
 		// } catch (org.omg.CORBA.UNKNOWN e) {
@@ -593,6 +602,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	}
 
 	public Path2D planPath(PathPlanParameter param) {
+		logger.entering("MapperViewerImpl", "planPath");
 		Path2DHolder pathHolder = new Path2DHolder();
 
 		param.currentPose = new RTC.Pose2D(new RTC.Point2D(
@@ -607,11 +617,11 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 			RETURN_VALUE retval;
 			retval = this.m_pathPlannerBase._ptr().planPath(param, pathHolder);
 			if (retval == RETURN_VALUE.RETVAL_OK) {
-				System.out.println("Succeed");
+				logger.warning("Succeed");
 			} else if (retval == RETURN_VALUE.RETVAL_NOT_FOUND) {
-				System.out.println("ERROR: Path Not Found");
+				logger.warning("ERROR: Path Not Found");
 			} else if (retval == RETURN_VALUE.RETVAL_INVALID_PARAMETER) {
-				System.out.println("ERROR: Invalid Start or Goal coordinates");
+				logger.warning("ERROR: Invalid Start or Goal coordinates");
 			}
 		}
 
@@ -628,6 +638,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	}
 
 	public void followPath(Path2D path) {
+		logger.entering("MapperViewerImpl", "followPath");
 		if (m_pathFollowerPort.get_connector_profiles().length != 0) {// dose it
 																		// connected
 																		// with
@@ -637,14 +648,13 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 			if (retval == RETURN_VALUE.RETVAL_OK) {
 				return;
 			} else if (retval == RETURN_VALUE.RETVAL_EMERGENCY_STOP) {
-				System.out.println("ERROR: EMERGENCY STOP");
+				logger.warning("ERROR: EMERGENCY STOP");
 				return;
 			} else if (retval == RETURN_VALUE.RETVAL_CURRENT_POSE_TIME_OUT) {
-				System.out
-						.println("ERROR: Localization disconnected or Kobuki error");
+				logger.warning("ERROR: Localization disconnected or Kobuki error");
 				return;
 			} else if (retval == RETURN_VALUE.RETVAL_CURRENT_POSE_INVALID_VALUE) {
-				System.out.println("ERROR: Localization sent Strange Value");
+				logger.warning("ERROR: Localization sent Strange Value");
 				return;
 			}
 		}

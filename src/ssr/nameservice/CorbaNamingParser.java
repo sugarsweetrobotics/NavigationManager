@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import jp.go.aist.rtm.RTC.CorbaNaming;
-import jp.go.aist.rtm.RTC.util.ORBUtil;
 
 import org.omg.CosNaming.Binding;
 import org.omg.CosNaming.BindingIteratorHolder;
@@ -24,6 +23,7 @@ import org.omg.CosNaming.NamingContextPackage.CannotProceed;
 import org.omg.CosNaming.NamingContextPackage.InvalidName;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 
+import ssr.RTMHelper;
 import ssr.rtsbuilder.RTSystemBuilder;
 import ssr.rtsprofile.DataPortConnector;
 import ssr.rtsprofile.RTComponent;
@@ -34,75 +34,8 @@ import RTC.RTObject;
  * 
  */
 public class CorbaNamingParser {
-
-	/**
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	public static Set<String> getRTObjectPathUriSet(String hostAddress)
-			throws Exception {
-		Set<String> pathUriSet = new HashSet<String>();
-		BindingListHolder bl = new BindingListHolder();
-		BindingIteratorHolder bi = new BindingIteratorHolder();
-
-		String namingUri = hostAddress;
-		StringTokenizer tokenizer2 = new StringTokenizer(namingUri, ":");
-		if (tokenizer2.countTokens() == 1) {
-			namingUri = namingUri + ":2809";
-		}
-		CorbaNaming corbaNaming = new CorbaNaming(ORBUtil.getOrb(), namingUri);
-
-		NamingContext namingContext = corbaNaming.getRootContext();
-		namingContext.list(30, bl, bi);
-		for (Binding binding : bl.value) {
-			String bindingName = binding.binding_name[0].id + "."
-					+ binding.binding_name[0].kind;
-
-			if (binding.binding_type == BindingType.ncontext) {
-				Set<String> childSet = getRTObjectPathUriSetSub((NamingContext) namingContext
-						.resolve(binding.binding_name));
-				for (String childPathUri : childSet) {
-					pathUriSet.add(hostAddress + "/" + bindingName + "/"
-							+ childPathUri);
-				}
-			} else {
-				pathUriSet.add(hostAddress + "/" + bindingName);
-			}
-		}
-		return pathUriSet;
-	}
-
-	/**
-	 * 
-	 * @param namingContext
-	 * @return
-	 * @throws Exception
-	 */
-	protected static Set<String> getRTObjectPathUriSetSub(
-			NamingContext namingContext) throws Exception {
-		Set<String> pathUriSet = new HashSet<String>();
-		BindingListHolder bl = new BindingListHolder();
-		BindingIteratorHolder bi = new BindingIteratorHolder();
-		namingContext.list(30, bl, bi);
-
-		for (Binding binding : bl.value) {
-			String bindingName = binding.binding_name[0].id + "."
-					+ binding.binding_name[0].kind;
-
-			if (binding.binding_type == BindingType.ncontext) {
-				Set<String> childSet = getRTObjectPathUriSetSub((NamingContext) namingContext
-						.resolve(binding.binding_name));
-				for (String childPathUri : childSet) {
-					pathUriSet.add(bindingName + "/" + childPathUri);
-				}
-			} else {
-				pathUriSet.add(bindingName);
-			}
-		}
-		return pathUriSet;
-	}
-
+	
+	
 	/**
 	 * 
 	 * @return
@@ -111,7 +44,7 @@ public class CorbaNamingParser {
 	public static Set<RTComponent> getRegisteredComponentSet(String hostAddress)
 			throws Exception {
 		Set<RTComponent> componentSet = new HashSet<RTComponent>();
-		Set<String> componentUriSet = getRTObjectPathUriSet(hostAddress);
+		Set<String> componentUriSet = RTMHelper.getRTObjectPathUriSet(hostAddress);
 
 		String namingUri = hostAddress;
 		StringTokenizer tokenizer2 = new StringTokenizer(namingUri, ":");
@@ -128,6 +61,9 @@ public class CorbaNamingParser {
 
 		return componentSet;
 	}
+
+
+
 
 	/**
 	 * �ｽQ�ｽ�ｽ�ｽ�ｽ�ｽﾄゑｿｽ�ｽ�ｽRTC�ｽﾔの接托ｿｽ�ｽﾌみゑｿｽ�ｽo�ｽ�ｽ

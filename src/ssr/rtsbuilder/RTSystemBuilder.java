@@ -877,6 +877,30 @@ public class RTSystemBuilder {
 		RTObject rtObject = corbaConsumer._ptr();
 		return rtObject;
 	}
+	
+	final static public RTM.Manager getManager(String pathUri)
+			throws CorbaNamingCannotFindException, CorbaNamingResolveException {
+		logger.entering(RTSystemBuilder.class.getName(), "getComponent:",
+				pathUri);
+		String namingURI = RTSystemBuilder.getNamingUri(pathUri);
+		String compURI = RTSystemBuilder.getComponentUri(pathUri);
+
+		// load naming service reference
+		CorbaNaming naming = CorbaNamingManager.get(namingURI);
+
+		org.omg.CORBA.Object obj;
+		try {
+			obj = naming.resolve(compURI);
+		} catch (Exception e) {
+			// e.printStackTrace();
+			throw new CorbaNamingResolveException();
+		}
+		
+		CorbaConsumer<RTM.Manager> corbaConsumer = new CorbaConsumer<RTM.Manager>(
+				RTM.Manager.class);
+		corbaConsumer.setObject(obj);
+		return corbaConsumer._ptr();
+	}
 
 	/**
 	 * 

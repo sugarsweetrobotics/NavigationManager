@@ -3,6 +3,8 @@ package ssr.nameservice.ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
@@ -11,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -29,6 +32,7 @@ public class RTSystemTreeView extends JPanel {
 	DefaultMutableTreeNode rootNode;
 	JToolBar toolBar;
 
+	private List<String> hostAddresses;
 	private RTSTree treeView;
 	public JPopupMenu pop;
 
@@ -41,11 +45,16 @@ public class RTSystemTreeView extends JPanel {
 				"localhost:2809");
 		if (hostAddress != null) {
 			try {
-
 				StringTokenizer tokenizer2 = new StringTokenizer(hostAddress, ":");
 				if (tokenizer2.countTokens() == 1) {
 					hostAddress = hostAddress + ":2809";
 				}
+
+				if(hostAddresses.contains(hostAddress)) {
+					logger.info("Host " + hostAddress + " is already connected.");
+					return;
+				}
+				hostAddresses.add(hostAddress);
 				
 				RTNamingContext nc = CorbaNamingParser
 						.buildRTNamingContext(hostAddress);
@@ -113,10 +122,16 @@ public class RTSystemTreeView extends JPanel {
 		model.setRoot(rootNode);
 
 		setLayout(new BorderLayout());
-		add(BorderLayout.CENTER, treeView);
+		add(BorderLayout.CENTER, new JScrollPane(treeView));
 		add(BorderLayout.NORTH, toolBar);
 
+		hostAddresses = new ArrayList<String>();
 		this.setPreferredSize(new Dimension(1400, 1200));
+	}
+
+	public List<String> getHostAddresses() {
+		// TODO Auto-generated method stub
+		return hostAddresses;
 	}
 
 }

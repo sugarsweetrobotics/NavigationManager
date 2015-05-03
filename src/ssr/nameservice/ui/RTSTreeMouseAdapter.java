@@ -56,7 +56,6 @@ public class RTSTreeMouseAdapter implements MouseListener, MouseMotionListener {
 	 * @param e
 	 */
 	public void mouseClicked(MouseEvent e) {
-		System.out.println("Clicked.");
 		this.rtSystemTree.getModel();
 		TreePath path = rtSystemTree.getPathForLocation(e.getPoint().x, e.getPoint().y);
 		rtSystemTree.setSelectionPath(path);
@@ -75,7 +74,6 @@ public class RTSTreeMouseAdapter implements MouseListener, MouseMotionListener {
 	 * @param e
 	 */
 	public void mousePressed(MouseEvent e) {
-		System.out.println("Pressed");
 		this.rtSystemTree.getModel();
 		TreePath path = rtSystemTree.getPathForLocation(e.getPoint().x, e.getPoint().y);
 		rtSystemTree.setSelectionPath(path);
