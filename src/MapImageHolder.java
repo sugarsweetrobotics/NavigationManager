@@ -69,7 +69,7 @@ public class MapImageHolder {
 					r |= (0x0FF & map.map.cells[(i)*w+(j)]);
 					Color c = new Color(r/255.0f, r/255.0f, r/255.0f);
 					int rgb = c.getRGB();
-					image.setRGB(i, j, rgb);
+					image.setRGB(j, i, rgb);
 				}
 			}
 		}
