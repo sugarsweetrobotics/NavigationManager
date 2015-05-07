@@ -4,63 +4,63 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-
 @SuppressWarnings("serial")
 public class CameraViewPanel extends JPanel {
 
 	
-	class CameraImagePanel extends JPanel {
-		public BufferedImage img;
-		
-		public CameraImagePanel() {
-			super();
-		}
-		
-		public void setImage(RTC.CameraImage image) {
-			if (img == null) {
-				img = new BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_RGB);
-			}
-			for (int y = 0;y < image.height;y++) {
-				for (int x = 0;x < image.width;x++) {
-					int index = y * image.width + x;
-					byte r = image.pixels[index*3 + 2];
-					byte g = image.pixels[index*3 + 1];
-					byte b = image.pixels[index*3 + 0];
-					int rgb = (0x00FF & (int)r) << 16 | (0x00FF & (int)g) << 8 | (0x00FF & (int)b);
-					img.setRGB(x, y, rgb);
-				}
-			}
-		}
+	private RTC.CameraImage image;
 
-		@Override
-		public void repaint() {
-			if (img != null) {
-				Graphics2D g = (Graphics2D)getGraphics();
-				int width = this.getWidth();
-				int height = this.getHeight();
-				g.drawImage(img, 0, 0, width, height, this);
-			}
-		}
+	public void setImage(RTC.CameraImage image) {
+		this.image = image;
 	}
-	
-	private CameraImagePanel cameraImagePanel;
-	public BufferedImage img;
-	
+
+	private BufferedImage img;
+
 	public CameraViewPanel() {
 		super();
 		setLayout(new BorderLayout());
+		setSize(640, 480);
 		/*
-		JToolBar toolBar = new JToolBar();
-		this.add(toolBar, BorderLayout.NORTH);
-		JButton ctrlBtn = new JButton("Ctrl");
-		toolBar.add(ctrlBtn);
-		*/
-		cameraImagePanel = new CameraImagePanel();
-		add(cameraImagePanel, BorderLayout.CENTER);
+		 * JToolBar toolBar = new JToolBar(); this.add(toolBar,
+		 * BorderLayout.NORTH); JButton ctrlBtn = new JButton("Ctrl");
+		 * toolBar.add(ctrlBtn);
+		 */
+		// add(cameraImagePanel, BorderLayout.CENTER);
 	}
-	
 
-	public void setImage(RTC.CameraImage image) {
-		cameraImagePanel.setImage(image);
+	@Override
+	public void repaint() {
+		if (image == null) {
+			Graphics2D g = (Graphics2D) getGraphics();
+			if (g != null) {
+				g.drawString("No Image", 10, 20);
+			}
+		} else {
+			Graphics2D g2d = (Graphics2D) getGraphics();
+			int width = this.getWidth();
+			int height = this.getHeight();
+			synchronized (this) {
+				if (img == null) {
+					img = new BufferedImage(image.width, image.height,
+							BufferedImage.TYPE_INT_RGB);
+				} else if (img.getWidth() != image.width || img.getHeight() != image.height) {
+					img = new BufferedImage(image.width, image.height,
+							BufferedImage.TYPE_INT_RGB);
+				}
+				
+				for (int y = 0; y < image.height; y++) {
+					for (int x = 0; x < image.width; x++) {
+						int index = y * image.width + x;
+						byte r = image.pixels[index * 3 + 2];
+						byte g = image.pixels[index * 3 + 1];
+						byte b = image.pixels[index * 3 + 0];
+						int rgb = (0x00FF & (int) r) << 16
+								| (0x00FF & (int) g) << 8 | (0x00FF & (int) b);
+						img.setRGB(x, y, rgb);
+					}
+				}
+				g2d.drawImage(img, 0, 0, width, height, this);
+			}
+		}
 	}
 }

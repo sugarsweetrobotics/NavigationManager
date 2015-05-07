@@ -29,7 +29,7 @@ public class LoggerView extends JPanel {
 		logger = Logger.getLogger(loggerName);
 		jTextArea = new JTextArea();
 		scrollPane = new JScrollPane(jTextArea);
-		os = new JTextAreaOutputStream(jTextArea, "UTF-8");
+		os = new JTextAreaOutputStream(jTextArea, System.getProperty("file.encoding"));
 		this.setLayout(new BorderLayout());
 		this.add(BorderLayout.CENTER, scrollPane);
 		

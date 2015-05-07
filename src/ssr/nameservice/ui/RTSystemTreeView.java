@@ -3,6 +3,7 @@ package ssr.nameservice.ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -15,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import javax.swing.Timer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -24,17 +26,17 @@ import ssr.nameservice.RTNamingContext;
 import ssr.rtsbuilder.RTSystemBuilder;
 import ssr.rtsprofile.RTSystemProfile;
 
-
 @SuppressWarnings("serial")
 public class RTSystemTreeView extends JPanel {
 
-	static Logger logger = Logger.getLogger("net.ysuga.rtsbuilder.ui");
+	static Logger logger = Logger.getLogger("MapperViewer");
 	DefaultMutableTreeNode rootNode;
 	JToolBar toolBar;
 
 	private List<String> hostAddresses;
 	private RTSTree treeView;
 	public JPopupMenu pop;
+	private JButton autoRefreshButton;
 
 	public RTSTree getTree() {
 		return treeView;
@@ -45,17 +47,19 @@ public class RTSystemTreeView extends JPanel {
 				"localhost:2809");
 		if (hostAddress != null) {
 			try {
-				StringTokenizer tokenizer2 = new StringTokenizer(hostAddress, ":");
+				StringTokenizer tokenizer2 = new StringTokenizer(hostAddress,
+						":");
 				if (tokenizer2.countTokens() == 1) {
 					hostAddress = hostAddress + ":2809";
 				}
 
-				if(hostAddresses.contains(hostAddress)) {
-					logger.info("Host " + hostAddress + " is already connected.");
+				if (hostAddresses.contains(hostAddress)) {
+					logger.info("Host " + hostAddress
+							+ " is already connected.");
 					return;
 				}
 				hostAddresses.add(hostAddress);
-				
+
 				RTNamingContext nc = CorbaNamingParser
 						.buildRTNamingContext(hostAddress);
 				RTSystemProfile onlineProfile = RTSProfileHolder.getInstance()
@@ -69,9 +73,11 @@ public class RTSystemTreeView extends JPanel {
 				((DefaultTreeModel) treeView.getModel()).reload();
 
 			} catch (CorbaNamingCannotFindException ex) {
-				JOptionPane.showMessageDialog(null, "Cannot connect to Name Service (" + hostAddress + ")");
+				JOptionPane.showMessageDialog(null,
+						"Cannot connect to Name Service (" + hostAddress + ")");
 			} catch (Exception ex) {
-				logger.warning("RTSystemTreeView.onConnect(): connecting " + hostAddress + " failed.");
+				logger.warning("RTSystemTreeView.onConnect(): connecting "
+						+ hostAddress + " failed.");
 				ex.printStackTrace();
 			}
 		}
@@ -108,7 +114,38 @@ public class RTSystemTreeView extends JPanel {
 				onRefresh();
 			}
 		}));
+
+		autoRefreshButton = new JButton(
+				new AbstractAction("Start Auto Refresh") {
+					public void actionPerformed(ActionEvent e) {
+						onStartAutoRefresh();
+					}
+				});
+		toolBar.add(autoRefreshButton);
 	}
+
+	private void onStartAutoRefresh() {
+
+		if (refreshTimer == null) {
+			refreshTimer = new Timer(1000, new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					onRefresh();
+				}
+
+			});
+
+			refreshTimer.start();
+			autoRefreshButton.setText("Stop Auto Refresh");
+		} else {
+			refreshTimer.stop();
+			refreshTimer = null;
+			autoRefreshButton.setText("Start Auto Refresh");
+		}
+	}
+
+	Timer refreshTimer;
 
 	public RTSystemTreeView() {
 		super();

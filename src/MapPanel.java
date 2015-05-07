@@ -88,16 +88,19 @@ public class MapPanel extends JPanel {
 	@Override
 	public void repaint() {// Graphics g) {
 		Graphics2D g2d = (Graphics2D) getGraphics();
-		if (bufferImage != null) {
-			mapImageHolder.getImage().copyData(bufferImage.getRaster());
-			Graphics2D g2d2 = (Graphics2D) bufferImage.getGraphics();
-			drawGoal(g2d2);
-			drawAxis(g2d2);
-			drawPath(g2d2);
-			drawRobot(g2d2);
-			g2d.drawImage(bufferImage, 0, 0, this);
+		if(g2d != null) {
+			if (bufferImage != null) {
+				mapImageHolder.getImage().copyData(bufferImage.getRaster());
+				Graphics2D g2d2 = (Graphics2D) bufferImage.getGraphics();
+				drawGoal(g2d2);
+				drawAxis(g2d2);
+				drawPath(g2d2);
+				drawRobot(g2d2);
+				g2d.drawImage(bufferImage, 0, 0, this);
+			} else {
+				g2d.drawString("No Map Loaded", 10, 20);
+			}
 		}
-
 	}
 
 	private void drawRobot(Graphics2D g2d) {

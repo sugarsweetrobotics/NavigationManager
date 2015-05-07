@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -63,9 +64,11 @@ public class MapperViewerFrame extends JFrame {
 	
 	private JSplitPane hSplitPane;
 	
-	private CameraViewPanel cameraViewPanel;
+	public CameraViewPanel cameraViewPanel;
 	
 	private RTSystemTreeView systemTreeView;
+	
+	private Logger logger;
 	
 	public MapperViewerFrame(MapperViewerImpl rtc) {
 		super("Mapper Viewer");
@@ -75,20 +78,22 @@ public class MapperViewerFrame extends JFrame {
 		
 		mapPanel = new MapPanel();
 		cameraViewPanel = new CameraViewPanel();
+		
 		systemTreeView  = new RTSystemTreeView();
 		
 		hSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		vSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		vSplitPaneSmall = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		
-		vSplitPaneSmall.setDividerLocation(height / 2);
-		vSplitPaneSmall.add((systemTreeView));
-		vSplitPaneSmall.add(cameraViewPanel);
 		
 		hSplitPane.setDividerLocation(width / 3);
 		hSplitPane.add(vSplitPaneSmall);
 		hSplitPane.add(vSplitPane);
 		
+		vSplitPaneSmall.setDividerLocation(height / 2);
+		vSplitPaneSmall.add((systemTreeView));
+		vSplitPaneSmall.add(new JScrollPane(cameraViewPanel));
+
 		vSplitPane.setDividerLocation(height / 3 * 2);
 		vSplitPane.add(mapPanel);
 		vSplitPane.add(new LoggerView("MapperViewer"));
@@ -231,6 +236,8 @@ public class MapperViewerFrame extends JFrame {
 		setVisible(true);
 		startTimer();
 		startAutoRefresh();
+		
+		logger = Logger.getLogger("MapperViewer");
 	}
 
 	private double getGoalX() {
@@ -247,7 +254,7 @@ public class MapperViewerFrame extends JFrame {
 
 		if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 			String filename = fc.getSelectedFile().getAbsolutePath();
-
+			logger.info("Saving File to " + filename);
 			mapPanel.saveImage(filename);
 		}
 	}
@@ -256,6 +263,7 @@ public class MapperViewerFrame extends JFrame {
 		if (!mapMenu.isPopupMenuVisible() && !fileMenu.isPopupMenuVisible()) {
 			try {
 				onRequest();
+				repaintCamera();
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -286,7 +294,6 @@ public class MapperViewerFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 					onRepaint();
-				
 			}
 
 		});
@@ -318,6 +325,7 @@ public class MapperViewerFrame extends JFrame {
 		
 		this.map = rtc.requestMap();
 		if (map != null) {
+			logger.info("Map is successfully acquired. Rendering....");
 			mapPanel.setMap(map);
 		}
 		
@@ -343,6 +351,7 @@ public class MapperViewerFrame extends JFrame {
 	}
 
 	private void onPlan() {
+		logger.info("Start Planning....");
 		PathPlanParameter param = new PathPlanParameter();
 		param.targetPose = new RTC.Pose2D(new RTC.Point2D(getGoalX(),
 				getGoalY()), 0);
@@ -353,12 +362,15 @@ public class MapperViewerFrame extends JFrame {
 
 		RTC.Path2D path = rtc.planPath(param);
 		if (path != null) {
+			logger.info("Path is successfully acquired. Rendering....");
 			mapPanel.setPath2D(path);
 		}
 	}
 
 	private void onFollow() {
+		logger.info("Start Following...");
 		rtc.followPath(mapPanel.getPath2D());
+		logger.info("Following End");
 	}
 	
 	
@@ -379,6 +391,11 @@ public class MapperViewerFrame extends JFrame {
 	@Override
 	public void repaint() {
 		mapPanel.repaint();
+		cameraViewPanel.repaint();
+	}
+	
+	public void repaintCamera() {
+		cameraViewPanel.repaint();
 	}
 
 	public void setRobotPose(Pose2D pose) {

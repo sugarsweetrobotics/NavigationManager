@@ -55,8 +55,6 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 
 	private Logger logger;
 
-	private MapImageHolder m_mapImageHolder;
-
 	/*
 	 * !
 	 * 
@@ -271,8 +269,11 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		}
 
 		if (m_cameraIn.isNew()) {
-			m_cameraIn.read();
-			this.frame.setImage(m_camera.v);
+			logger.info("Camera Received.");
+			synchronized(this.frame.cameraViewPanel) {
+				m_cameraIn.read();
+				this.frame.setImage(m_camera.v);
+			}
 		}
 
 		if (m_targetVelocityOut.getConnectorProfiles().size() > 0) {
@@ -602,7 +603,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	}
 
 	public Path2D planPath(PathPlanParameter param) {
-		logger.entering("MapperViewerImpl", "planPath");
+		logger.entering("MapperViewerImpl", "planPath", param);
 		Path2DHolder pathHolder = new Path2DHolder();
 
 		param.currentPose = new RTC.Pose2D(new RTC.Point2D(
@@ -617,7 +618,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 			RETURN_VALUE retval;
 			retval = this.m_pathPlannerBase._ptr().planPath(param, pathHolder);
 			if (retval == RETURN_VALUE.RETVAL_OK) {
-				logger.warning("Succeed");
+				logger.info("SUCCESS: Planning Success");
 			} else if (retval == RETURN_VALUE.RETVAL_NOT_FOUND) {
 				logger.warning("ERROR: Path Not Found");
 			} else if (retval == RETURN_VALUE.RETVAL_INVALID_PARAMETER) {
@@ -626,19 +627,10 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		}
 
 		return pathHolder.value;
-		// this.m_pathPlannerBase._ptr().planPath(param, pathHolder);
-		// return pathHolder.value;
-		/*
-		 * if (m_pathPlannerPort.get_connector_profiles().length != 0) { if
-		 * (this.m_pathPlannerBase._ptr().planPath(requestMap(),
-		 * this.m_currentPose.v, goal, pathHolder) == RETURN_VALUE.RETVAL_OK) {
-		 * System.out.println(pathHolder); return pathHolder.value; } }
-		 */
-		// return null;
 	}
 
 	public void followPath(Path2D path) {
-		logger.entering("MapperViewerImpl", "followPath");
+		logger.entering("MapperViewerImpl","followPath()",path);
 		if (m_pathFollowerPort.get_connector_profiles().length != 0) {// dose it
 																		// connected
 																		// with
@@ -646,15 +638,16 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 			RETURN_VALUE retval;
 			retval = this.m_pathFollowerBase._ptr().followPath(path);
 			if (retval == RETURN_VALUE.RETVAL_OK) {
+				logger.info("SUCCESS: FOLLOW SUCCESS");
 				return;
 			} else if (retval == RETURN_VALUE.RETVAL_EMERGENCY_STOP) {
-				logger.warning("ERROR: EMERGENCY STOP");
+				logger.warning("ERROR: FOLLOWING EMERGENCY STOP");
 				return;
 			} else if (retval == RETURN_VALUE.RETVAL_CURRENT_POSE_TIME_OUT) {
-				logger.warning("ERROR: Localization disconnected or Kobuki error");
+				logger.warning("ERROR: FOLLOWING Localization disconnected or Kobuki error");
 				return;
 			} else if (retval == RETURN_VALUE.RETVAL_CURRENT_POSE_INVALID_VALUE) {
-				logger.warning("ERROR: Localization sent Strange Value");
+				logger.warning("ERROR: FOLLOWING Localization sent Strange Value");
 				return;
 			}
 		}

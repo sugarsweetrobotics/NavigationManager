@@ -43,33 +43,28 @@ public class JoyFrame extends JFrame {
 			this.add(new JLabel("Up:(0,1)"));
 			this.add(new JButton(new AbstractAction("Up") {
 				public void actionPerformed(ActionEvent arg0) {
-					System.out.println("[RTC::VirtualJoystick] - Push Up");
 					state = UP;
 				}
 			}));
 			this.add(new JLabel("Right:(1,0)"));
 			this.add(new JButton(new AbstractAction("Left") {
 				public void actionPerformed(ActionEvent arg0) {
-					System.out.println("[RTC::VirtualJoystick] - Push Left");
 					state = LEFT;
 				}
 			}));
 			this.add(new JButton(new AbstractAction("Default") {
 				public void actionPerformed(ActionEvent arg0) {
-					System.out.println("[RTC::VirtualJoystick] - Push Default");
 					state = DEF;
 				}
 			}));
 			this.add(new JButton(new AbstractAction("Right") {
 				public void actionPerformed(ActionEvent arg0) {
-					System.out.println("[RTC::VirtualJoystick] - Push Right");
 					state = RIGHT;
 				}
 			}));
 			this.add(new JLabel("Left:(-1,0)"));
 			this.add(new JButton(new AbstractAction("Down") {
 				public void actionPerformed(ActionEvent arg0) {
-					System.out.println("[RTC::VirtualJoystick] - Push Down");
 					state = DOWN;
 				}
 			}));
