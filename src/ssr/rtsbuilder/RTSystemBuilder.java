@@ -428,8 +428,7 @@ public class RTSystemBuilder {
 
 	/**
 	 * 
-	 * <div lang="ja"> �ｽv�ｽ�ｽ�ｽt�ｽ@�ｽC�ｽ�ｽ�ｽﾉ登�ｽ^�ｽ�ｽ�ｽ�ｽﾄゑｿｽ�ｽ驍ｷ�ｽﾗてゑｿｽRTC�ｽ�ｽreset
-	 * 
+	 * <div lang="ja">
 	 * @param rtSystemProfile
 	 * @throws Exception
 	 *             </div> <div lang="en">
