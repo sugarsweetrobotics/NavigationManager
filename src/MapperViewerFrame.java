@@ -95,7 +95,7 @@ public class MapperViewerFrame extends JFrame {
 		vSplitPaneSmall.add(new JScrollPane(cameraViewPanel));
 
 		vSplitPane.setDividerLocation(height / 3 * 2);
-		vSplitPane.add(mapPanel);
+		vSplitPane.add(new JScrollPane(mapPanel));
 		vSplitPane.add(new LoggerView("MapperViewer"));
 		
 		
