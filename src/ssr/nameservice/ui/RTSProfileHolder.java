@@ -74,7 +74,6 @@ public class RTSProfileHolder extends HashMap<String, RTSystemProfile> implement
 				onlineProfile.addAllComponent(nc);
 			} catch (Exception e) {
 				
-				// TODO 自動生成された catch ブロ�?��
 				e.printStackTrace();
 			}
 		}
@@ -83,7 +82,6 @@ public class RTSProfileHolder extends HashMap<String, RTSystemProfile> implement
 			try {
 				RTSystemBuilder.downwardSynchronization(rtsProfile);
 			} catch (Exception e) {
-				// TODO 自動生成された catch ブロ�?��
 				e.printStackTrace();
 			}
 		}
@@ -96,7 +94,6 @@ public class RTSProfileHolder extends HashMap<String, RTSystemProfile> implement
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO 自動生成された catch ブロ�?��
 				e.printStackTrace();
 			}
 		}

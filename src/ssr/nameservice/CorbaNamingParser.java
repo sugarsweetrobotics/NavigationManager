@@ -66,7 +66,6 @@ public class CorbaNamingParser {
 
 
 	/**
-	 * �ｽQ�ｽ�ｽ�ｽ�ｽ�ｽﾄゑｿｽ�ｽ�ｽRTC�ｽﾔの接托ｿｽ�ｽﾌみゑｿｽ�ｽo�ｽ�ｽ
 	 * 
 	 * @param componentSet
 	 * @return

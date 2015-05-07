@@ -366,7 +366,6 @@ public class RTSystemProfile extends RTSProperties {
 				}
 				return new Integer(0);
 			} catch (Exception e) {
-				// TODO 髢ｾ�ｪ陷肴�蜃ｽ隰瑚���ｹｧ蠕娯螺 catch 郢晄じﾎ溽ｹ晢ｿｽ縺�
 				return new Integer(-1);
 			}
 		}
@@ -384,10 +383,8 @@ public class RTSystemProfile extends RTSProperties {
 			try {
 				t.get();
 			} catch (ExecutionException e) {
-				// TODO 髢ｾ�ｪ陷肴�蜃ｽ隰瑚���ｹｧ蠕娯螺 catch 郢晄じﾎ溽ｹ晢ｿｽ縺�
 				e.printStackTrace();
 			} catch (InterruptedException e) {
-				// TODO 髢ｾ�ｪ陷肴�蜃ｽ隰瑚���ｹｧ蠕娯螺 catch 郢晄じﾎ溽ｹ晢ｿｽ縺�
 				e.printStackTrace();
 			}
 		}
@@ -414,7 +411,6 @@ public class RTSystemProfile extends RTSProperties {
 					try {
 						this.addComponentAsynch(fullpath);
 					} catch (Exception e) {
-						// TODO 髢ｾ�ｪ陷肴�蜃ｽ隰瑚���ｹｧ蠕娯螺 catch 郢晄じﾎ溽ｹ晢ｿｽ縺�
 						e.printStackTrace();
 						ebuf = e;
 					}

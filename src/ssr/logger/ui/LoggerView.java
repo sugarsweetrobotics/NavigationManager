@@ -78,7 +78,6 @@ public class LoggerView extends JPanel {
 		
 		@Override
 		public void flush() throws IOException {
-			// ?½?½?½?½?½?½ÌƒG?½?½?½R?½[?½h
 			final String str = new String(this.os.toByteArray(), this.encode);
 			
 			SwingUtilities.invokeLater(new Runnable(){
@@ -86,7 +85,6 @@ public class LoggerView extends JPanel {
 					JTextAreaOutputStream.this.textArea.append(str);
 				}
 			});
-			// ?½?½?½?½?½o?½?½?½?½?½?½?½e?½ÍƒN?½?½?½A?½?½?½?½
 			this.os.reset();
 		}
 	}

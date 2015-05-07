@@ -184,7 +184,6 @@ public class DataPort extends RTSObject {
 	 */
 	@Override
 	public void downwardSynchronize() throws Exception {
-		// TODO 閾ｪ蜍慕函謌舌＆繧後◆繝｡繧ｽ繝�ラ繝ｻ繧ｹ繧ｿ繝�
 		
 	}
 

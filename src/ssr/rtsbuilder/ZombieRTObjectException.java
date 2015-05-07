@@ -20,7 +20,6 @@ public class ZombieRTObjectException extends Exception {
 	 * Constructor
 	 */
 	public ZombieRTObjectException() {
-		// TODO 閾ｪ蜍慕函謌舌＆繧後◆繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ繝ｼ繝ｻ繧ｹ繧ｿ繝�
 	}
 
 	/**
@@ -29,7 +28,6 @@ public class ZombieRTObjectException extends Exception {
 	 */
 	public ZombieRTObjectException(String message) {
 		super(message);
-		// TODO 閾ｪ蜍慕函謌舌＆繧後◆繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ繝ｼ繝ｻ繧ｹ繧ｿ繝�
 	}
 
 	/**
@@ -38,7 +36,6 @@ public class ZombieRTObjectException extends Exception {
 	 */
 	public ZombieRTObjectException(Throwable cause) {
 		super(cause);
-		// TODO 閾ｪ蜍慕函謌舌＆繧後◆繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ繝ｼ繝ｻ繧ｹ繧ｿ繝�
 	}
 
 	/**
@@ -48,7 +45,6 @@ public class ZombieRTObjectException extends Exception {
 	 */
 	public ZombieRTObjectException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO 閾ｪ蜍慕函謌舌＆繧後◆繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ繝ｼ繝ｻ繧ｹ繧ｿ繝�
 	}
 
 }

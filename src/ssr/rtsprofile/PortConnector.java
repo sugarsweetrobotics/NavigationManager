@@ -58,7 +58,6 @@ public abstract  class PortConnector extends RTSProperties {
 	 * Constructor
 	 */
 	public PortConnector() {
-		// TODO 閾ｪ蜍慕函謌舌＆繧後◆繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ繝ｼ繝ｻ繧ｹ繧ｿ繝�
 	}
 
 	/**
@@ -73,7 +72,6 @@ public abstract  class PortConnector extends RTSProperties {
 	 * </div>
 	 */
 	public PivotList getPivotList() {
-		// TODO �ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ黷ｽ�ｽ�ｽ�ｽ\�ｽb�ｽh�ｽE�ｽX�ｽ^�ｽu
 		return pivotList;
 	}
 
@@ -89,7 +87,6 @@ public abstract  class PortConnector extends RTSProperties {
 	 * </div>
 	 */
 	public Point getSelectedPivot() {
-		// TODO �ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ黷ｽ�ｽ�ｽ�ｽ\�ｽb�ｽh�ｽE�ｽX�ｽ^�ｽu
 		return selectedPivot;
 	}
 

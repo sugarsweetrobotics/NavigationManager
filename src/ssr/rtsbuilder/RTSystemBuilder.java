@@ -1034,7 +1034,6 @@ public class RTSystemBuilder {
 	/**
 	 * 
 	 * <div lang="ja">
-	 * �ｽR�ｽ�ｽ�ｽ|�ｽ[�ｽl�ｽ�ｽ�ｽg�ｽv�ｽ�ｽ�ｽt�ｽ@�ｽC�ｽ�ｽ�ｽ�ｽ�ｽ�ｽRTObject�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽﾄ托ｿｽ�ｽ�ｽ�ｽ�ｽactivate
 	 * 
 	 * @param component
 	 * @throws Exception
@@ -1080,7 +1079,6 @@ public class RTSystemBuilder {
 	/**
 	 * 
 	 * <div lang="ja">
-	 * �ｽR�ｽ�ｽ�ｽ|�ｽ[�ｽl�ｽ�ｽ�ｽg�ｽv�ｽ�ｽ�ｽt�ｽ@�ｽC�ｽ�ｽ�ｽ�ｽ�ｽ�ｽRTObject�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽ�ｽﾄ托ｿｽ�ｽ�ｽ�ｽ�ｽdeactivate
 	 * 
 	 * @param component
 	 * @throws Exception

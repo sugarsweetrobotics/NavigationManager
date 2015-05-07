@@ -42,7 +42,6 @@ public class RTNamingContext extends ArrayList<RTNamingContext> {
 	}
 	/**
 	 * <div lang="ja">
-	 * �ｽR�ｽ�ｽ�ｽX�ｽg�ｽ�ｽ�ｽN�ｽ^
 	 * </div>
 	 * <div lang="en">
 	 * Constructor
@@ -56,7 +55,6 @@ public class RTNamingContext extends ArrayList<RTNamingContext> {
 	
 	/**
 	 * <div lang="ja">
-	 * �ｽR�ｽ�ｽ�ｽX�ｽg�ｽ�ｽ�ｽN�ｽ^
 	 * </div>
 	 * <div lang="en">
 	 * Constructor

@@ -65,7 +65,6 @@ public class PythonRTCLauncher implements Runnable {
 			process = processBuilder.start();
 
 		} catch (IOException e) {
-			// TODO 閾ｪ蜍慕函謌舌＆繧後◆ catch 繝悶Ο繝�け
 			e.printStackTrace();
 		}
 	}
@@ -79,7 +78,6 @@ public class PythonRTCLauncher implements Runnable {
 	}
 	
 	/*
-	 * 縺薙％縺ｧ繧ｹ繝ｬ繝�ラ繧堤ｫ九■荳翫￡縺ｦ�檎ｵゆｺ�凾縺ｫ縺ｯjoin縺吶ｋ繧医≧縺ｫ縺励↑縺�→繝､繝舌う��
 	 */
 	public void run()  {
 

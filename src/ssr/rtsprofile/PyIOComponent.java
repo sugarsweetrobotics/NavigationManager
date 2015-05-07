@@ -113,7 +113,6 @@ public class PyIOComponent extends RTComponent {
 	 * @return
 	 */
 	public String getNamingContext() {
-		// TODO 髢ｾ�ｪ陷肴�蜃ｽ隰瑚���ｹｧ蠕娯螺郢晢ｽ｡郢ｧ�ｽ郢晢ｿｽ繝ｩ郢晢ｽｻ郢ｧ�ｹ郢ｧ�ｿ郢晢ｿｽ
 		return namingContext;
 	}
 
@@ -295,7 +294,6 @@ public class PyIOComponent extends RTComponent {
 	 * @return
 	 */
 	public String getNameServers() {
-		// TODO 髢ｾ�ｪ陷肴�蜃ｽ隰瑚���ｹｧ蠕娯螺郢晢ｽ｡郢ｧ�ｽ郢晢ｿｽ繝ｩ郢晢ｽｻ郢ｧ�ｹ郢ｧ�ｿ郢晢ｿｽ
 		return nameServers;
 	}
 	
