@@ -388,8 +388,7 @@ public class RTSystemBuilder {
 	 */
 	/**
 	 * 
-	 * <div lang="ja"> �ｽv�ｽ�ｽ�ｽt�ｽ@�ｽC�ｽ�ｽ�ｽﾉ登�ｽ^�ｽ�ｽ�ｽ�ｽﾄゑｿｽ�ｽ驍ｷ�ｽﾗてゑｿｽRTC�ｽ�ｽactivate
-	 * 
+	 * <div lang="ja">
 	 * @param rtSystemProfile
 	 * @throws Exception
 	 *             </div> <div lang="en">
@@ -409,8 +408,7 @@ public class RTSystemBuilder {
 
 	/**
 	 * 
-	 * <div lang="ja"> �ｽv�ｽ�ｽ�ｽt�ｽ@�ｽC�ｽ�ｽ�ｽﾉ登�ｽ^�ｽ�ｽ�ｽ�ｽﾄゑｿｽ�ｽ驍ｷ�ｽﾗてゑｿｽRTC�ｽ�ｽdeactivate
-	 * 
+	 * <div lang="ja">
 	 * @param rtSystemProfile
 	 * @throws Exception
 	 *             </div> <div lang="en">
@@ -688,7 +686,6 @@ public class RTSystemBuilder {
 			try {
 				upwardSynchronization(portConnector);
 			} catch (Exception e) {
-				// TODO 閾ｪ蜍慕函謌舌＆繧後◆ catch 繝悶Ο繝�け
 				// e.printStackTrace();
 			}
 		}
@@ -707,12 +704,8 @@ public class RTSystemBuilder {
 			targetRTObject = getComponent(connector.getTargetComponentPathUri());
 			sourceRTObject = getComponent(connector.getSourceComponentPathUri());
 		} catch (CorbaNamingCannotFindException e) {
-			// TODO 閾ｪ蜍慕函謌舌＆繧後◆ catch 繝悶Ο繝�け
-			// e.printStackTrace();
 			return;
 		} catch (CorbaNamingResolveException e) {
-			// TODO 閾ｪ蜍慕函謌舌＆繧後◆ catch 繝悶Ο繝�け
-			// e.printStackTrace();
 			return;
 		}
 
