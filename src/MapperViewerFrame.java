@@ -325,7 +325,7 @@ public class MapperViewerFrame extends JFrame {
 		
 		this.map = rtc.requestMap();
 		if (map != null) {
-			logger.info("Map is successfully acquired. Rendering....");
+			logger.fine("Map is successfully acquired. Rendering....");
 			mapPanel.setMap(map);
 		}
 		
