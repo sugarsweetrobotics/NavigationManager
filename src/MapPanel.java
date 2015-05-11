@@ -78,6 +78,8 @@ public class MapPanel extends JPanel {
 
 	public void setMap(OGMap map) {
 		this.mapImageHolder = new MapImageHolder(map);
+		this.setSize(
+				mapImageHolder.getPixelWidth(), mapImageHolder.getPixelHeight());
 		this.bufferImage = new BufferedImage(mapImageHolder.getPixelWidth(),
 				mapImageHolder.getPixelHeight(), BufferedImage.TYPE_INT_ARGB);
 		if (robotPose == null) {
