@@ -356,8 +356,8 @@ public class MapperViewerFrame extends JFrame {
 		param.targetPose = new RTC.Pose2D(new RTC.Point2D(getGoalX(),
 				getGoalY()), 0);
 		param.maxSpeed = new Velocity2D(1.0, 0, 1.0);
-		param.distanceTolerance = 0.1;
-		param.headingTolerance = 0.5;
+		param.distanceTolerance = 9999;
+		param.headingTolerance = 9999;
 		param.timeLimit = new RTC.Time(1000000, 0);
 
 		RTC.Path2D path = rtc.planPath(param);

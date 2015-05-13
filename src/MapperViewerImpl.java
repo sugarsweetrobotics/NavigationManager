@@ -136,6 +136,8 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		// </rtc-template>
 		bindParameter("debug", m_debug, "0");
 		bindParameter("interval", m_interval, "1.0");
+		bindParameter("pathDistanceTolerance", m_pathDistanceTolerance, "1.0");
+		bindParameter("pathHeadingTolerance", m_pathHeadingTolerance, "1.0");
 
 		this.frame = new MapperViewerFrame(this);
 
@@ -413,7 +415,12 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 * - Name: interval - DefaultValue: 1.0
 	 */
 	protected DoubleHolder m_interval = new DoubleHolder();
-	// </rtc-template>
+	
+
+	protected DoubleHolder m_pathDistanceTolerance = new DoubleHolder();
+
+	protected DoubleHolder m_pathHeadingTolerance = new DoubleHolder();
+// </rtc-template>
 
 	// DataInPort declaration
 	// <rtc-template block="inport_declare">
@@ -610,6 +617,8 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 				this.m_currentPose.v.data.position.x,
 				this.m_currentPose.v.data.position.y), 0);
 		param.map = requestMap();
+		param.distanceTolerance = this.m_pathDistanceTolerance.getValue();
+		param.headingTolerance = this.m_pathHeadingTolerance.getValue();
 
 		if (m_pathPlannerPort.get_connector_profiles().length != 0) {// dose it
 																		// connected
@@ -648,6 +657,9 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 				return;
 			} else if (retval == RETURN_VALUE.RETVAL_CURRENT_POSE_INVALID_VALUE) {
 				logger.warning("ERROR: FOLLOWING Localization sent Strange Value");
+				return;
+			} else {
+				logger.warning("ERROR: FOLLOWING FAILED with UNKNOWN ERROR");
 				return;
 			}
 		}
