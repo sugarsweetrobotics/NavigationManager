@@ -609,6 +609,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		return (int) (m_interval.getValue() * 1000);
 	}
 
+	
 	public Path2D planPath(PathPlanParameter param) {
 		logger.entering("MapperViewerImpl", "planPath", param);
 		Path2DHolder pathHolder = new Path2DHolder();
@@ -638,7 +639,25 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		return pathHolder.value;
 	}
 
+	Path2D followingTargetPath;
+	Thread followingTask;
 	public void followPath(Path2D path) {
+		followingTargetPath = path;
+		
+		followingTask = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				follow();
+			}
+			
+		});
+		
+		followingTask.start();
+	}
+	
+	private void follow() {
+		Path2D path = followingTargetPath;
 		logger.entering("MapperViewerImpl","followPath()",path);
 		if (m_pathFollowerPort.get_connector_profiles().length != 0) {// dose it
 																		// connected
