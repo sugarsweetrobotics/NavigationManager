@@ -16,6 +16,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -30,7 +31,7 @@ import RTC.Velocity2D;
 
 
 @SuppressWarnings("serial")
-public class MapperViewerFrame extends JFrame {
+public class MapperViewerFrame extends JFrame implements Runnable {
 
 	private MapPanel mapPanel;
 
@@ -204,7 +205,7 @@ public class MapperViewerFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				onEnableUpdating();
+				onEnableAutoUpdating();
 			}
 
 		});
@@ -234,20 +235,33 @@ public class MapperViewerFrame extends JFrame {
 
 		setSize(new Dimension(width, height));
 		setVisible(true);
-		startTimer();
-		startAutoRefresh();
+		//startTimer();
+		//startAutoRefresh();
+		//mapPanel.startAutoRepaint();
+		
+		(new Thread(this)).start();
 		
 		logger = Logger.getLogger("MapperViewer");
 	}
 
-	private double getGoalX() {
-		return mapPanel.getGoalX();
-	}
 
-	private double getGoalY() {
-		return mapPanel.getGoalY();
-	}
+	public void run() {
+		while (true) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					repaint();
+				}
+			});
 
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private void onSaveAs() {
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new FileNameExtensionFilter("*.png", "png"));
@@ -259,16 +273,6 @@ public class MapperViewerFrame extends JFrame {
 		}
 	}
 
-	private void onTimer() {
-		if (!mapMenu.isPopupMenuVisible() && !fileMenu.isPopupMenuVisible()) {
-			try {
-				onRequest();
-				repaintCamera();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
 
 	private void startTimer() {
 		if (timer == null) {
@@ -285,36 +289,21 @@ public class MapperViewerFrame extends JFrame {
 		}
 	}
 
-	Timer refreshTimer;
-
-	private void startAutoRefresh() {
-
-		refreshTimer = new Timer(100, new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-					onRepaint();
-			}
-
-		});
-
-		refreshTimer.start();
-	}
-
-	private synchronized void onRepaint() {
-		repaint();
-	}
-	
-	public synchronized void setImage(RTC.CameraImage image) {
-		cameraViewPanel.setImage(image);
-	}
-	
 	private void stopTimer() {
 		if (timer != null) {
 			timer.stop();
 			timer = null;
 		}
 	}
+	
+	private void onTimer() {
+		onRequest();
+	}
+	
+	public synchronized void setImage(RTC.CameraImage image) {
+		cameraViewPanel.setImage(image);
+	}
+	
 
 	private void onExit() {
 		stopTimer();
@@ -353,8 +342,7 @@ public class MapperViewerFrame extends JFrame {
 	private void onPlan() {
 		logger.info("Start Planning....");
 		PathPlanParameter param = new PathPlanParameter();
-		param.targetPose = new RTC.Pose2D(new RTC.Point2D(getGoalX(),
-				getGoalY()), 0);
+		param.targetPose = mapPanel.getGoal();//new RTC.Pose2D(new RTC.Point2D(getGoalX(), getGoalY()), 0);
 		param.maxSpeed = new Velocity2D(1.0, 0, 1.0);
 		param.distanceTolerance = 9999;
 		param.headingTolerance = 9999;
@@ -378,7 +366,7 @@ public class MapperViewerFrame extends JFrame {
 		rtc.stopMapping();
 	}
 	
-	private void onEnableUpdating() {
+	private void onEnableAutoUpdating() {
 		if (this.timer != null) { // Timer is active
 			stopTimer();
 			this.enableUpdateMenu.setText("Enable Auto Map Updating");
@@ -386,8 +374,10 @@ public class MapperViewerFrame extends JFrame {
 			startTimer();
 			this.enableUpdateMenu.setText("Disable Auto Map Updating");
 		}
+		
 	}
 
+	/*
 	@Override
 	public void repaint() {
 		mapPanel.repaint();
@@ -397,6 +387,7 @@ public class MapperViewerFrame extends JFrame {
 	public void repaintCamera() {
 		cameraViewPanel.repaint();
 	}
+	*/
 
 	public void setRobotPose(Pose2D pose) {
 		if (map != null) {
