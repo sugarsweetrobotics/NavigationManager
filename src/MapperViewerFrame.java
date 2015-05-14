@@ -10,6 +10,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -70,6 +71,8 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 	private RTSystemTreeView systemTreeView;
 	
 	private Logger logger;
+
+	private StatusBar statusBar;
 	
 	public MapperViewerFrame(MapperViewerImpl rtc) {
 		super("Mapper Viewer");
@@ -77,7 +80,7 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 		int width = 800;
 		int height = 600;
 		
-		mapPanel = new MapPanel();
+		mapPanel = new MapPanel(this);
 		cameraViewPanel = new CameraViewPanel();
 		
 		systemTreeView  = new RTSystemTreeView();
@@ -116,6 +119,9 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 		setupToolbar();
 
 		setupMenu();
+		
+		statusBar = new StatusBar("Ready");
+		this.add(BorderLayout.SOUTH, statusBar);
 
 		setSize(new Dimension(width, height));
 		setVisible(true);
@@ -129,6 +135,10 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 	}
 
 
+	public void setStatus(String text) {
+		statusBar.setText(text);
+	}
+	
 	private void setupToolbar() {
 		JToolBar toolBar = new JToolBar();
 		this.add(toolBar, BorderLayout.NORTH);
@@ -467,4 +477,10 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 		return joyFrame.getRotationVelocity();
 	}
 
+	public class StatusBar extends JLabel {
+		
+		public StatusBar(String title) {
+			super(title);
+		}
+	}
 }

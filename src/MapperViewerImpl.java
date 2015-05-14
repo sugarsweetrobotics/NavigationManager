@@ -142,6 +142,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		this.frame = new MapperViewerFrame(this);
 
 		logger.info("Successfully Initialized");
+		frame.setStatus("Initialized");
 		return super.onInitialize();
 	}
 
@@ -210,6 +211,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		m_lastReceivedTime = Calendar.getInstance();
 
 		logger.info("Successfully Activated");
+		frame.setStatus("Activated");
 		return super.onActivated(ec_id);
 	}
 
@@ -229,6 +231,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	protected ReturnCode_t onDeactivated(int ec_id) {
 
 		logger.info("Successfully Deactivated");
+		frame.setStatus("Deactivated");
 		return super.onDeactivated(ec_id);
 	}
 
@@ -266,13 +269,13 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 					m_lastReceivedTime = null;
 				}
 			} else {
-				
+
 			}
 		}
 
 		if (m_cameraIn.isNew()) {
 			logger.info("Camera Received.");
-			synchronized(this.frame.cameraViewPanel) {
+			synchronized (this.frame.cameraViewPanel) {
 				m_cameraIn.read();
 				this.frame.setImage(m_camera.v);
 			}
@@ -346,9 +349,10 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 * 
 	 */
 	// @Override
-	// public ReturnCode_t onError(int ec_id) {
-	// return super.onError(ec_id);
-	// }
+	public ReturnCode_t onError(int ec_id) {
+		frame.setStatus("Error");
+		return super.onError(ec_id);
+	}
 
 	/***
 	 * 
@@ -415,12 +419,11 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 * - Name: interval - DefaultValue: 1.0
 	 */
 	protected DoubleHolder m_interval = new DoubleHolder();
-	
 
 	protected DoubleHolder m_pathDistanceTolerance = new DoubleHolder();
 
 	protected DoubleHolder m_pathHeadingTolerance = new DoubleHolder();
-// </rtc-template>
+	// </rtc-template>
 
 	// DataInPort declaration
 	// <rtc-template block="inport_declare">
@@ -609,7 +612,6 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		return (int) (m_interval.getValue() * 1000);
 	}
 
-	
 	public Path2D planPath(PathPlanParameter param) {
 		logger.entering("MapperViewerImpl", "planPath", param);
 		Path2DHolder pathHolder = new Path2DHolder();
@@ -641,24 +643,25 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 
 	Path2D followingTargetPath;
 	Thread followingTask;
+
 	public void followPath(Path2D path) {
 		followingTargetPath = path;
-		
+
 		followingTask = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				follow();
 			}
-			
+
 		});
-		
+
 		followingTask.start();
 	}
-	
+
 	private void follow() {
 		Path2D path = followingTargetPath;
-		logger.entering("MapperViewerImpl","followPath()",path);
+		logger.entering("MapperViewerImpl", "followPath()", path);
 		if (m_pathFollowerPort.get_connector_profiles().length != 0) {// dose it
 																		// connected
 																		// with
