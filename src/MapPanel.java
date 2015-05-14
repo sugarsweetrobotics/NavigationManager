@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -34,6 +35,14 @@ public class MapPanel extends JComponent {
 
 	private Pose2D goal;
 	
+	private float zoomFactor = 1.0f;
+	private float pendingZoomFactor = 1.0f;
+	
+	public float getZoomFactor() {return zoomFactor;}
+	
+	public void setZoomFactor(float v) {
+		pendingZoomFactor = v;
+	}
 
 	public void setRobotPose(Pose2D pose) {
 		robotPose = pose;
@@ -70,30 +79,37 @@ public class MapPanel extends JComponent {
 
 	private void onPanelClicked(MouseEvent e) {
 		if (mapImageHolder != null) {
-			Point2D p = mapImageHolder.pixelToPosition(e.getPoint());
+			Point p_ = new Point((int)(e.getPoint().x / zoomFactor),
+					(int)(e.getPoint().y / zoomFactor));
+			Point2D p = mapImageHolder.pixelToPosition(p_);
 			goal = new Pose2D(p, 0);
+		}
+	}
+	
+	void reallocImage() {
+		Dimension d_zoomed = new Dimension((int)(mapImageHolder.getPixelWidth() * zoomFactor),
+				(int)(mapImageHolder.getPixelHeight() * zoomFactor));
+
+		Dimension d = d_zoomed;// new Dimension((int)(mapImageHolder.getPixelWidth()),
+				//(int)(mapImageHolder.getPixelHeight()));
+		this.setSize(d_zoomed);
+		this.setPreferredSize(d_zoomed);
+		if (bufferImage == null) {
+			this.bufferImage = new BufferedImage(
+					d.width, d.height,
+					BufferedImage.TYPE_INT_ARGB);
+		} else if (bufferImage.getWidth() != d.width
+				|| bufferImage.getHeight() != d.height) {
+			this.bufferImage = new BufferedImage(
+					d.width,
+					d.height,
+					BufferedImage.TYPE_INT_ARGB);
 		}
 	}
 
 	synchronized public void setMap(OGMap map) {
 		this.mapImageHolder = new MapImageHolder(map);
-		this.setSize(mapImageHolder.getPixelWidth(),
-				mapImageHolder.getPixelHeight());
-
-		this.setPreferredSize( new Dimension(mapImageHolder.getPixelWidth(),
-				mapImageHolder.getPixelHeight()));
-		if (bufferImage == null) {
-			this.bufferImage = new BufferedImage(
-					mapImageHolder.getPixelWidth(),
-					mapImageHolder.getPixelHeight(),
-					BufferedImage.TYPE_INT_ARGB);
-		} else if (bufferImage.getWidth() != mapImageHolder.getPixelWidth()
-				|| bufferImage.getHeight() != mapImageHolder.getPixelHeight()) {
-			this.bufferImage = new BufferedImage(
-					mapImageHolder.getPixelWidth(),
-					mapImageHolder.getPixelHeight(),
-					BufferedImage.TYPE_INT_ARGB);
-		}
+		reallocImage();
 		if (robotPose == null) {
 			robotPose = new Pose2D(new Point2D(0, 0), 0);
 		}
@@ -104,13 +120,19 @@ public class MapPanel extends JComponent {
 																// getGraphics();
 		if (g2d != null) {
 			if (bufferImage != null) {
-				mapImageHolder.getImage().copyData(bufferImage.getRaster());
+				//mapImageHolder.getImage().copyData(bufferImage.getRaster());
+				if(pendingZoomFactor != zoomFactor) {
+					zoomFactor = pendingZoomFactor;
+					reallocImage();
+				}
 				Graphics2D g2d2 = (Graphics2D) bufferImage.getGraphics();
+				g2d2.drawImage(mapImageHolder.getImage(), new AffineTransform(zoomFactor, 0f, 0f, zoomFactor, 0f, 0f), this);
+				g2d2.setTransform(new AffineTransform(zoomFactor, 0f, 0f, zoomFactor, 0f, 0f));
 				drawGoal(g2d2);
 				drawAxis(g2d2);
 				drawPath(g2d2);
 				drawRobot(g2d2);
-				g2d.drawImage(bufferImage, 0, 0, this);
+				g2d.drawImage(bufferImage, 0, 0 , this);
 			} else {
 				g2d.drawString("No Map Loaded", 10, 20);
 			}

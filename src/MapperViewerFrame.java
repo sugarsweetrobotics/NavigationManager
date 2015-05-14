@@ -113,6 +113,23 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 			}
 		});
 
+		setupToolbar();
+
+		setupMenu();
+
+		setSize(new Dimension(width, height));
+		setVisible(true);
+		startTimer();
+		//startAutoRefresh();
+		//mapPanel.startAutoRepaint();
+		
+		(new Thread(this)).start();
+		
+		logger = Logger.getLogger("MapperViewer");
+	}
+
+
+	private void setupToolbar() {
 		JToolBar toolBar = new JToolBar();
 		this.add(toolBar, BorderLayout.NORTH);
 		JButton startButton = new JButton(new AbstractAction("Start Mapping") {
@@ -151,7 +168,29 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 
 		});
 		toolBar.add(followButton);
+		toolBar.add(new JToolBar.Separator());
+		JButton zoomInButton = new JButton(new AbstractAction("Zoom In") {
 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onZoomIn();
+			}
+
+		});
+		toolBar.add(zoomInButton);
+		JButton zoomOutButton = new JButton(new AbstractAction("Zoom Out") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onZoomOut();
+			}
+
+		});
+		toolBar.add(zoomOutButton);
+	}
+
+
+	private void setupMenu() {
 		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		this.fileMenu = new JMenu("File");
@@ -232,16 +271,6 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 
 		});
 		controlMenu.add(openJoystick);
-
-		setSize(new Dimension(width, height));
-		setVisible(true);
-		//startTimer();
-		//startAutoRefresh();
-		//mapPanel.startAutoRepaint();
-		
-		(new Thread(this)).start();
-		
-		logger = Logger.getLogger("MapperViewer");
 	}
 
 
@@ -376,19 +405,17 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 		}
 		
 	}
-
-	/*
-	@Override
-	public void repaint() {
-		mapPanel.repaint();
-		cameraViewPanel.repaint();
-	}
 	
-	public void repaintCamera() {
-		cameraViewPanel.repaint();
+	private void onZoomIn() {
+		mapPanel.setZoomFactor(mapPanel.getZoomFactor() * 2.0f );
 	}
-	*/
 
+	private void onZoomOut() {
+		float zf = mapPanel.getZoomFactor() / 2.0f;
+		mapPanel.setZoomFactor(zf);
+	}
+
+	
 	public void setRobotPose(Pose2D pose) {
 		if (map != null) {
 			mapPanel.setRobotPose(pose);
