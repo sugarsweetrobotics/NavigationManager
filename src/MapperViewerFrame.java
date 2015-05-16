@@ -10,12 +10,14 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -30,7 +32,7 @@ import RTC.Velocity2D;
 
 
 @SuppressWarnings("serial")
-public class MapperViewerFrame extends JFrame {
+public class MapperViewerFrame extends JFrame implements Runnable {
 
 	private MapPanel mapPanel;
 
@@ -69,6 +71,8 @@ public class MapperViewerFrame extends JFrame {
 	private RTSystemTreeView systemTreeView;
 	
 	private Logger logger;
+
+	private StatusBar statusBar;
 	
 	public MapperViewerFrame(MapperViewerImpl rtc) {
 		super("Mapper Viewer");
@@ -76,7 +80,7 @@ public class MapperViewerFrame extends JFrame {
 		int width = 800;
 		int height = 600;
 		
-		mapPanel = new MapPanel();
+		mapPanel = new MapPanel(this);
 		cameraViewPanel = new CameraViewPanel();
 		
 		systemTreeView  = new RTSystemTreeView();
@@ -112,6 +116,30 @@ public class MapperViewerFrame extends JFrame {
 			}
 		});
 
+		setupToolbar();
+
+		setupMenu();
+		
+		statusBar = new StatusBar("Ready");
+		this.add(BorderLayout.SOUTH, statusBar);
+
+		setSize(new Dimension(width, height));
+		setVisible(true);
+		startTimer();
+		//startAutoRefresh();
+		//mapPanel.startAutoRepaint();
+		
+		(new Thread(this)).start();
+		
+		logger = Logger.getLogger("MapperViewer");
+	}
+
+
+	public void setStatus(String text) {
+		statusBar.setText(text);
+	}
+	
+	private void setupToolbar() {
 		JToolBar toolBar = new JToolBar();
 		this.add(toolBar, BorderLayout.NORTH);
 		JButton startButton = new JButton(new AbstractAction("Start Mapping") {
@@ -150,7 +178,29 @@ public class MapperViewerFrame extends JFrame {
 
 		});
 		toolBar.add(followButton);
+		toolBar.add(new JToolBar.Separator());
+		JButton zoomInButton = new JButton(new AbstractAction("Zoom In") {
 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onZoomIn();
+			}
+
+		});
+		toolBar.add(zoomInButton);
+		JButton zoomOutButton = new JButton(new AbstractAction("Zoom Out") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onZoomOut();
+			}
+
+		});
+		toolBar.add(zoomOutButton);
+	}
+
+
+	private void setupMenu() {
 		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		this.fileMenu = new JMenu("File");
@@ -204,7 +254,7 @@ public class MapperViewerFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				onEnableUpdating();
+				onEnableAutoUpdating();
 			}
 
 		});
@@ -231,23 +281,26 @@ public class MapperViewerFrame extends JFrame {
 
 		});
 		controlMenu.add(openJoystick);
-
-		setSize(new Dimension(width, height));
-		setVisible(true);
-		startTimer();
-		startAutoRefresh();
-		
-		logger = Logger.getLogger("MapperViewer");
 	}
 
-	private double getGoalX() {
-		return mapPanel.getGoalX();
-	}
 
-	private double getGoalY() {
-		return mapPanel.getGoalY();
-	}
+	public void run() {
+		while (true) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					repaint();
+				}
+			});
 
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private void onSaveAs() {
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new FileNameExtensionFilter("*.png", "png"));
@@ -259,16 +312,6 @@ public class MapperViewerFrame extends JFrame {
 		}
 	}
 
-	private void onTimer() {
-		if (!mapMenu.isPopupMenuVisible() && !fileMenu.isPopupMenuVisible()) {
-			try {
-				onRequest();
-				repaintCamera();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
 
 	private void startTimer() {
 		if (timer == null) {
@@ -285,36 +328,21 @@ public class MapperViewerFrame extends JFrame {
 		}
 	}
 
-	Timer refreshTimer;
-
-	private void startAutoRefresh() {
-
-		refreshTimer = new Timer(100, new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-					onRepaint();
-			}
-
-		});
-
-		refreshTimer.start();
-	}
-
-	private synchronized void onRepaint() {
-		repaint();
-	}
-	
-	public synchronized void setImage(RTC.CameraImage image) {
-		cameraViewPanel.setImage(image);
-	}
-	
 	private void stopTimer() {
 		if (timer != null) {
 			timer.stop();
 			timer = null;
 		}
 	}
+	
+	private void onTimer() {
+		onRequest();
+	}
+	
+	public synchronized void setImage(RTC.CameraImage image) {
+		cameraViewPanel.setImage(image);
+	}
+	
 
 	private void onExit() {
 		stopTimer();
@@ -353,11 +381,10 @@ public class MapperViewerFrame extends JFrame {
 	private void onPlan() {
 		logger.info("Start Planning....");
 		PathPlanParameter param = new PathPlanParameter();
-		param.targetPose = new RTC.Pose2D(new RTC.Point2D(getGoalX(),
-				getGoalY()), 0);
+		param.targetPose = mapPanel.getGoal();//new RTC.Pose2D(new RTC.Point2D(getGoalX(), getGoalY()), 0);
 		param.maxSpeed = new Velocity2D(1.0, 0, 1.0);
-		param.distanceTolerance = 0.1;
-		param.headingTolerance = 0.5;
+		param.distanceTolerance = 9999;
+		param.headingTolerance = 9999;
 		param.timeLimit = new RTC.Time(1000000, 0);
 
 		RTC.Path2D path = rtc.planPath(param);
@@ -378,7 +405,7 @@ public class MapperViewerFrame extends JFrame {
 		rtc.stopMapping();
 	}
 	
-	private void onEnableUpdating() {
+	private void onEnableAutoUpdating() {
 		if (this.timer != null) { // Timer is active
 			stopTimer();
 			this.enableUpdateMenu.setText("Enable Auto Map Updating");
@@ -386,18 +413,19 @@ public class MapperViewerFrame extends JFrame {
 			startTimer();
 			this.enableUpdateMenu.setText("Disable Auto Map Updating");
 		}
-	}
-
-	@Override
-	public void repaint() {
-		mapPanel.repaint();
-		cameraViewPanel.repaint();
+		
 	}
 	
-	public void repaintCamera() {
-		cameraViewPanel.repaint();
+	private void onZoomIn() {
+		mapPanel.setZoomFactor(mapPanel.getZoomFactor() * 2.0f );
 	}
 
+	private void onZoomOut() {
+		float zf = mapPanel.getZoomFactor() / 2.0f;
+		mapPanel.setZoomFactor(zf);
+	}
+
+	
 	public void setRobotPose(Pose2D pose) {
 		if (map != null) {
 			mapPanel.setRobotPose(pose);
@@ -449,4 +477,10 @@ public class MapperViewerFrame extends JFrame {
 		return joyFrame.getRotationVelocity();
 	}
 
+	public class StatusBar extends JLabel {
+		
+		public StatusBar(String title) {
+			super(title);
+		}
+	}
 }

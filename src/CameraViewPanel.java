@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
@@ -29,9 +30,9 @@ public class CameraViewPanel extends JPanel {
 	}
 
 	@Override
-	public void repaint() {
+	public void paintComponent(Graphics g_) {
 		if (image == null) {
-			Graphics2D g = (Graphics2D) getGraphics();
+			Graphics2D g = (Graphics2D) g_;//getGraphics();
 			if (g != null) {
 				g.drawString("No Image", 10, 20);
 			}

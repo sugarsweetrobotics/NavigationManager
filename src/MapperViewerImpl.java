@@ -136,10 +136,13 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		// </rtc-template>
 		bindParameter("debug", m_debug, "0");
 		bindParameter("interval", m_interval, "1.0");
+		bindParameter("pathDistanceTolerance", m_pathDistanceTolerance, "1.0");
+		bindParameter("pathHeadingTolerance", m_pathHeadingTolerance, "1.0");
 
 		this.frame = new MapperViewerFrame(this);
 
 		logger.info("Successfully Initialized");
+		frame.setStatus("Initialized");
 		return super.onInitialize();
 	}
 
@@ -208,6 +211,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		m_lastReceivedTime = Calendar.getInstance();
 
 		logger.info("Successfully Activated");
+		frame.setStatus("Activated");
 		return super.onActivated(ec_id);
 	}
 
@@ -227,6 +231,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	protected ReturnCode_t onDeactivated(int ec_id) {
 
 		logger.info("Successfully Deactivated");
+		frame.setStatus("Deactivated");
 		return super.onDeactivated(ec_id);
 	}
 
@@ -264,13 +269,13 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 					m_lastReceivedTime = null;
 				}
 			} else {
-				
+
 			}
 		}
 
 		if (m_cameraIn.isNew()) {
 			logger.info("Camera Received.");
-			synchronized(this.frame.cameraViewPanel) {
+			synchronized (this.frame.cameraViewPanel) {
 				m_cameraIn.read();
 				this.frame.setImage(m_camera.v);
 			}
@@ -344,9 +349,10 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 * 
 	 */
 	// @Override
-	// public ReturnCode_t onError(int ec_id) {
-	// return super.onError(ec_id);
-	// }
+	public ReturnCode_t onError(int ec_id) {
+		frame.setStatus("Error");
+		return super.onError(ec_id);
+	}
 
 	/***
 	 * 
@@ -413,6 +419,10 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 * - Name: interval - DefaultValue: 1.0
 	 */
 	protected DoubleHolder m_interval = new DoubleHolder();
+
+	protected DoubleHolder m_pathDistanceTolerance = new DoubleHolder();
+
+	protected DoubleHolder m_pathHeadingTolerance = new DoubleHolder();
 	// </rtc-template>
 
 	// DataInPort declaration
@@ -610,6 +620,8 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 				this.m_currentPose.v.data.position.x,
 				this.m_currentPose.v.data.position.y), 0);
 		param.map = requestMap();
+		param.distanceTolerance = this.m_pathDistanceTolerance.getValue();
+		param.headingTolerance = this.m_pathHeadingTolerance.getValue();
 
 		if (m_pathPlannerPort.get_connector_profiles().length != 0) {// dose it
 																		// connected
@@ -629,8 +641,27 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		return pathHolder.value;
 	}
 
+	Path2D followingTargetPath;
+	Thread followingTask;
+
 	public void followPath(Path2D path) {
-		logger.entering("MapperViewerImpl","followPath()",path);
+		followingTargetPath = path;
+
+		followingTask = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				follow();
+			}
+
+		});
+
+		followingTask.start();
+	}
+
+	private void follow() {
+		Path2D path = followingTargetPath;
+		logger.entering("MapperViewerImpl", "followPath()", path);
 		if (m_pathFollowerPort.get_connector_profiles().length != 0) {// dose it
 																		// connected
 																		// with
@@ -648,6 +679,9 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 				return;
 			} else if (retval == RETURN_VALUE.RETVAL_CURRENT_POSE_INVALID_VALUE) {
 				logger.warning("ERROR: FOLLOWING Localization sent Strange Value");
+				return;
+			} else {
+				logger.warning("ERROR: FOLLOWING FAILED with UNKNOWN ERROR");
 				return;
 			}
 		}
