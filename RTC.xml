@@ -1,47 +1,99 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<rtc:RtcProfile rtc:version="0.2" rtc:id="RTC:Sugar Sweet Robotics:Test:MapperViewer:1.0.0" xmlns:rtc="http://www.openrtp.org/namespaces/rtc" xmlns:rtcExt="http://www.openrtp.org/namespaces/rtc_ext" xmlns:rtcDoc="http://www.openrtp.org/namespaces/rtc_doc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <rtc:BasicInfo xsi:type="rtcExt:basic_info_ext" rtcExt:saveProject="MapperViewer" rtc:updateDate="2015-01-03T14:09:03.685+09:00" rtc:creationDate="2014-08-04T11:23:31+09:00" rtc:version="1.0.0" rtc:vendor="Sugar Sweet Robotics" rtc:maxInstances="1" rtc:executionType="ExtTrigExecutionContext" rtc:executionRate="1000.0" rtc:description="Mapper Viewer RTC" rtc:category="Test" rtc:componentKind="DataFlowComponent" rtc:activityType="PERIODIC" rtc:componentType="STATIC" rtc:name="MapperViewer">
-        <rtcExt:VersionUpLogs></rtcExt:VersionUpLogs>
-        <rtcExt:VersionUpLogs></rtcExt:VersionUpLogs>
-    </rtc:BasicInfo>
-    <rtc:Actions>
-        <rtc:OnInitialize xsi:type="rtcDoc:action_status_doc" rtc:implemented="true"/>
-        <rtc:OnFinalize xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
-        <rtc:OnStartup xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
-        <rtc:OnShutdown xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
-        <rtc:OnActivated xsi:type="rtcDoc:action_status_doc" rtc:implemented="true"/>
-        <rtc:OnDeactivated xsi:type="rtcDoc:action_status_doc" rtc:implemented="true"/>
-        <rtc:OnAborting xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
-        <rtc:OnError xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
-        <rtc:OnReset xsi:type="rtcDoc:action_status_doc" rtc:implemented="true"/>
-        <rtc:OnExecute xsi:type="rtcDoc:action_status_doc" rtc:implemented="true"/>
-        <rtc:OnStateUpdate xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
-        <rtc:OnRateChanged xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
-        <rtc:OnAction xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
-        <rtc:OnModeChanged xsi:type="rtcDoc:action_status_doc" rtc:implemented="false"/>
-    </rtc:Actions>
-    <rtc:ConfigurationSet>
-        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="debug" rtc:unit="" rtc:defaultValue="0" rtc:type="int" rtc:name="debug">
-            <rtcExt:Properties rtcExt:value="text" rtcExt:name="__widget__"/>
-        </rtc:Configuration>
-    </rtc:ConfigurationSet>
-    <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="LEFT" rtcExt:variableName="currentPose" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::TimedPose2D" rtc:name="currentPose" rtc:portType="DataInPort"/>
-    <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="LEFT" rtcExt:variableName="range" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::RangeData" rtc:name="range" rtc:portType="DataInPort"/>
-    <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="LEFT" rtcExt:variableName="path" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::Path2D" rtc:name="path" rtc:portType="DataInPort"/>
-    <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="LEFT" rtcExt:variableName="camera" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::CameraImage" rtc:name="camera" rtc:portType="DataInPort"/>
-    <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="RIGHT" rtcExt:variableName="targetVelocity" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::TimedVector2D" rtc:name="targetVelocity" rtc:portType="DataOutPort"/>
-    <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="RIGHT" rtcExt:variableName="goal" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::Waypoint2D" rtc:name="goal" rtc:portType="DataOutPort"/>
-    <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="mapperService">
-        <rtc:ServiceInterface xsi:type="rtcExt:serviceinterface_ext" rtcExt:variableName="mapper" rtc:path="C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl" rtc:type="RTC::OGMapper" rtc:idlFile="C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl\MobileRobot.idl" rtc:instanceName="OGMapper" rtc:direction="Required" rtc:name="OGMapper"/>
-    </rtc:ServicePorts>
-    <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="mapServer">
-        <rtc:ServiceInterface xsi:type="rtcExt:serviceinterface_ext" rtcExt:variableName="OGMapServer" rtc:path="C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl" rtc:type="RTC::OGMapServer" rtc:idlFile="C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl\MobileRobot.idl" rtc:instanceName="mapServer" rtc:direction="Required" rtc:name="mapServer"/>
-    </rtc:ServicePorts>
-    <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="PathPlanner">
-        <rtc:ServiceInterface xsi:type="rtcExt:serviceinterface_ext" rtcExt:variableName="pathPlanner" rtc:path="C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl" rtc:type="RTC::PathPlanner" rtc:idlFile="C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl\MobileRobot.idl" rtc:instanceName="pathPlanner" rtc:direction="Required" rtc:name="PathPlanner"/>
-    </rtc:ServicePorts>
-    <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="PathFollower">
-        <rtc:ServiceInterface xsi:type="rtcExt:serviceinterface_ext" rtcExt:variableName="pathFollower" rtc:path="C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl" rtc:type="RTC::PathFollower" rtc:idlFile="C:\Users\ogata\Desktop\MappingRTCs\MapperViewer\idl\MobileRobot.idl" rtc:instanceName="pathFollower" rtc:direction="Required" rtc:name="PathFollower"/>
-    </rtc:ServicePorts>
-    <rtc:Language xsi:type="rtcExt:language_ext" rtc:kind="Java"/>
+<rtc:RtcProfile xmlns:rtc="http://www.openrtp.org/namespaces/rtc" xmlns:rtcDoc="http://www.openrtp.org/namespaces/rtc_doc" xmlns:rtcExt="http://www.openrtp.org/namespaces/rtc_ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" rtc:version="0.2" rtc:id="RTC:Sugar Sweet Robotics:Test:MapperViewer:1.0.0">
+  <rtc:BasicInfo xsi:type="rtcExt:basic_info_ext" rtcExt:saveProject="PROJECT_NAME" rtc:updateDate="2013-07-18T11:35:13.287+09:00" rtc:creationDate="2013-07-17T13:19:33+09:00" rtc:version="1.0.0" rtc:vendor="Sugar Sweet Robotics" rtc:maxInstances="1" rtc:executionType="PeriodicExecutionContext" rtc:executionRate="1000.0" rtc:description="Mobile Robot Navigation Framework RT-Component" rtc:category="Test" rtc:componentKind="DataFlowComponent" rtc:activityType="PERIODIC" rtc:componentType="STATIC" rtc:abstract="This RTC provides GUI for Mobile robot navigation" rtc:name="MapperViewer">
+    <rtcDoc:Doc rtcDoc:reference="http://ogata-lab.jp" rtcDoc:license="LGPL" rtcDoc:creator="Sugar Sweet Robotics, Ogata lab. Waseda Univ." rtcDoc:algorithm="" rtcDoc:inout="" rtcDoc:description="This component provides Graphical user interface for Mobile robot navigation framework for RTM." />
+  </rtc:BasicInfo>
+  <rtc:Actions>
+    <rtc:OnInitialize xsi:type="rtcDoc:action_status_doc" rtc:implemented="true">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnInitialize>
+    <rtc:OnFinalize xsi:type="rtcDoc:action_status_doc" rtc:implemented="false">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnFinalize>
+    <rtc:OnStartup xsi:type="rtcDoc:action_status_doc" rtc:implemented="false">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnStartup>
+    <rtc:OnShutdown xsi:type="rtcDoc:action_status_doc" rtc:implemented="false">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnShutdown>
+    <rtc:OnActivated xsi:type="rtcDoc:action_status_doc" rtc:implemented="true">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnActivated>
+    <rtc:OnDeactivated xsi:type="rtcDoc:action_status_doc" rtc:implemented="true">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnDeactivated>
+    <rtc:OnAborting xsi:type="rtcDoc:action_status_doc" rtc:implemented="false">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnAborting>
+    <rtc:OnError xsi:type="rtcDoc:action_status_doc" rtc:implemented="false">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnError>
+    <rtc:OnReset xsi:type="rtcDoc:action_status_doc" rtc:implemented="false">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnReset>
+    <rtc:OnExecute xsi:type="rtcDoc:action_status_doc" rtc:implemented="true">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnExecute>
+    <rtc:OnStateUpdate xsi:type="rtcDoc:action_status_doc" rtc:implemented="false">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnStateUpdate>
+    <rtc:OnRateChanged xsi:type="rtcDoc:action_status_doc" rtc:implemented="false">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnRateChanged>
+    <rtc:OnAction xsi:type="rtcDoc:action_status_doc" rtc:implemented="false">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnAction>
+    <rtc:OnModeChanged xsi:type="rtcDoc:action_status_doc" rtc:implemented="false">
+      <rtcDoc:Doc rtcDoc:preCondition="" rtcDoc:postCondition="" rtcDoc:description="" />
+    </rtc:OnModeChanged>
+  </rtc:Actions>
+  <rtc:ConfigurationSet>
+    <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="debug" rtc:unit="" rtc:defaultValue="0" rtc:type="string" rtc:name="debug">
+      <rtcDoc:Doc rtcDoc:constraint="null" rtcDoc:range="null" rtcDoc:unit="" rtcDoc:description="Debug Level." rtcDoc:defaultValue="0" rtcDoc:dataname="debug" />
+      <rtcExt:Properties rtcExt:value="text" rtcExt:name="__widget__" />
+    </rtc:Configuration>
+  </rtc:ConfigurationSet>
+  <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="LEFT" rtcExt:variableName="currentPose" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::TimedPose2D" rtc:name="currentPose" rtc:portType="DataInPort">
+    <rtcDoc:Doc rtcDoc:operation="" rtcDoc:occerrence="" rtcDoc:unit="m, rad" rtcDoc:semantics="" rtcDoc:number="" rtcDoc:type="" rtcDoc:description="When this port receives pose of robot, and if the map is already loaded, the current position of mobile robot is drawn on the map" />
+  </rtc:DataPorts>
+  <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="LEFT" rtcExt:variableName="range" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::RangeData" rtc:name="range" rtc:portType="DataInPort">
+    <rtcDoc:Doc rtcDoc:operation="" rtcDoc:occerrence="" rtcDoc:unit="" rtcDoc:semantics="" rtcDoc:number="" rtcDoc:type="" rtcDoc:description="This port receives the Ranger data (such as LIDAR). When this port receives the data, and the map is already loaded and current pose is already arrived, detected points are drawn on the map" />
+  </rtc:DataPorts>
+  <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="LEFT" rtcExt:variableName="path" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::Path2D" rtc:name="path" rtc:portType="DataInPort">
+    <rtcDoc:Doc rtcDoc:operation="" rtcDoc:occerrence="" rtcDoc:unit="" rtcDoc:semantics="" rtcDoc:number="" rtcDoc:type="" rtcDoc:description="This port is to be omitted." />
+  </rtc:DataPorts>
+  <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="LEFT" rtcExt:variableName="camera" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::CameraImage" rtc:name="camera" rtc:portType="DataInPort">
+    <rtcDoc:Doc rtcDoc:operation="" rtcDoc:occerrence="" rtcDoc:unit="" rtcDoc:semantics="" rtcDoc:number="" rtcDoc:type="" rtcDoc:description="When this port receives camera image, the image is rendered on the GUI." />
+  </rtc:DataPorts>
+  <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="RIGHT" rtcExt:variableName="targetVelocity" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::TimedVelocity2D" rtc:name="targetVelocity" rtc:portType="DataOutPort">
+    <rtcDoc:Doc rtcDoc:operation="" rtcDoc:occerrence="" rtcDoc:unit="m/sec, rad/sec" rtcDoc:semantics="" rtcDoc:number="" rtcDoc:type="" rtcDoc:description="When this port is connected to the mobile robot driver RTC, virtual joystick GUI is shown, and you can send velocity command to the robot." />
+  </rtc:DataPorts>
+  <rtc:DataPorts xsi:type="rtcExt:dataport_ext" rtcExt:position="RIGHT" rtcExt:variableName="goal" rtc:unit="" rtc:subscriptionType="" rtc:dataflowType="" rtc:interfaceType="" rtc:idlFile="" rtc:type="RTC::Waypoint2D" rtc:name="goal" rtc:portType="DataOutPort">
+    <rtcDoc:Doc rtcDoc:operation="" rtcDoc:occerrence="" rtcDoc:unit="" rtcDoc:semantics="" rtcDoc:number="" rtcDoc:type="" rtcDoc:description="This port will be omitted." />
+  </rtc:DataPorts>
+  <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="mapperService">
+    <rtc:ServiceInterface xsi:type="rtcExt:serviceinterface_ext" rtc:name="OGMapper" rtcExt:variableName="motion" rtc:type="RTC::OGMapper" rtc:instanceName="OGMapper" rtc:direction="Required" rtc:idlFile="" rtc:path="">
+      <rtcDoc:Doc rtcDoc:description="Occupancy GridMap Mapping Service. This service requires Mapper service provider." rtcDoc:docPreCondition="" rtcDoc:docPostCondition="" rtcDoc:docException="" rtcDoc:docReturn="" rtcDoc:docArgument="" />
+    </rtc:ServiceInterface>
+    <rtcDoc:Doc rtcDoc:description="" rtcDoc:ifdescription="" />
+  </rtc:ServicePorts>
+  <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="mapServer">
+    <rtc:ServiceInterface xsi:type="rtcExt:serviceinterface_ext" rtc:name="mapServer" rtcExt:variableName="motion" rtc:type="RTC::OGMapServer" rtc:instanceName="mapServer" rtc:direction="Required" rtc:idlFile="" rtc:path="">
+      <rtcDoc:Doc rtcDoc:description="OGMap Server Interface. This interface requires Map provider." rtcDoc:docPreCondition="" rtcDoc:docPostCondition="" rtcDoc:docException="" rtcDoc:docReturn="" rtcDoc:docArgument="" />
+    </rtc:ServiceInterface>
+    <rtcDoc:Doc rtcDoc:description="" rtcDoc:ifdescription="" />
+  </rtc:ServicePorts>
+  <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="pathPlanner">
+    <rtc:ServiceInterface xsi:type="rtcExt:serviceinterface_ext" rtc:name="PathPlanner" rtcExt:variableName="motion" rtc:type="RTC::PathPlanner" rtc:instanceName="PathPlanner" rtc:direction="Required" rtc:idlFile="" rtc:path="">
+      <rtcDoc:Doc rtcDoc:description="Path Planner Service." rtcDoc:docPreCondition="" rtcDoc:docPostCondition="" rtcDoc:docException="" rtcDoc:docReturn="" rtcDoc:docArgument="" />
+    </rtc:ServiceInterface>
+    <rtcDoc:Doc rtcDoc:description="" rtcDoc:ifdescription="" />
+  </rtc:ServicePorts>
+  <rtc:ServicePorts xsi:type="rtcExt:serviceport_ext" rtcExt:position="LEFT" rtc:name="pathFollower">
+    <rtc:ServiceInterface xsi:type="rtcExt:serviceinterface_ext" rtc:name="PathFollower" rtcExt:variableName="motion" rtc:type="RTC::PathFollower" rtc:instanceName="PathFollower" rtc:direction="Required" rtc:idlFile="" rtc:path="">
+      <rtcDoc:Doc rtcDoc:description="Path Follower Service." rtcDoc:docPreCondition="" rtcDoc:docPostCondition="" rtcDoc:docException="" rtcDoc:docReturn="" rtcDoc:docArgument="" />
+    </rtc:ServiceInterface>
+    <rtcDoc:Doc rtcDoc:description="" rtcDoc:ifdescription="" />
+  </rtc:ServicePorts>
+  <rtc:Language xsi:type="rtcExt:language_ext" rtc:kind="Java" />
 </rtc:RtcProfile>
