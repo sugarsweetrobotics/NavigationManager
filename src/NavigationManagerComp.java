@@ -1,6 +1,6 @@
 // -*- Java -*-
 /*!
- * @file MapperViewerComp.java
+ * @file NavigationManagerComp.java
  * @brief Standalone component
  * @date $Date$
  *
@@ -13,18 +13,18 @@ import jp.go.aist.rtm.RTC.RTObject_impl;
 import jp.go.aist.rtm.RTC.util.Properties;
 
 /*!
- * @class MapperViewerComp
+ * @class NavigationManagerComp
  * @brief Standalone component Class
  *
  */
-public class MapperViewerComp implements ModuleInitProc {
+public class NavigationManagerComp implements ModuleInitProc {
 
     public void myModuleInit(Manager mgr) {
-      Properties prop = new Properties(MapperViewer.component_conf);
-      mgr.registerFactory(prop, new MapperViewer(), new MapperViewer());
+      Properties prop = new Properties(NavigationManager.component_conf);
+      mgr.registerFactory(prop, new NavigationManager(), new NavigationManager());
 
       // Create a component
-      RTObject_impl comp = mgr.createComponent("MapperViewer");
+      RTObject_impl comp = mgr.createComponent("NavigationManager");
       if( comp==null ) {
     	  System.err.println("Component create failed.");
     	  System.exit(0);
@@ -83,7 +83,7 @@ public class MapperViewerComp implements ModuleInitProc {
 
         // Set module initialization proceduer
         // This procedure will be invoked in activateManager() function.
-        MapperViewerComp init = new MapperViewerComp();
+        NavigationManagerComp init = new NavigationManagerComp();
         manager.setModuleInitProc(init);
 
         // Activate manager and register to naming service

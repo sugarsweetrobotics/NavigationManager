@@ -1,9 +1,12 @@
+
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -21,44 +24,31 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import application.CameraViewPanel;
+
+
 import ssr.logger.ui.LoggerView;
 import ssr.nameservice.ui.RTSystemTreeView;
 import RTC.MAPPER_STATE;
 import RTC.OGMap;
 import RTC.PathPlanParameter;
-import RTC.Pose2D;
 import RTC.RangeData;
+import RTC.TimedPose2D;
 import RTC.Velocity2D;
 
 
 @SuppressWarnings("serial")
-public class MapperViewerFrame extends JFrame implements Runnable {
+public class MapperViewerFrame extends JFrame {
 
 	private MapPanel mapPanel;
-
-	private MapperViewerImpl rtc;
 
 	private JMenuItem startMenu;
 
 	private JMenuItem stopMenu;
 
-	private Timer timer;
-
 	private JMenu fileMenu;
 
 	private JMenu mapMenu;
-
-	private OGMap map;
-
-	private JMenu controlMenu;
-
-	private JoyFrame joyFrame;
-
-	private JMenuItem enableUpdateMenu;
-
-	private JMenuItem openJoystick;
-
-	private MAPPER_STATE mapper_state = MAPPER_STATE.MAPPER_UNKNOWN;
 
 	private JSplitPane vSplitPaneSmall;
 	
@@ -73,14 +63,24 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 	private Logger logger;
 
 	private StatusBar statusBar;
-	
-	public MapperViewerFrame(MapperViewerImpl rtc) {
-		super("Mapper Viewer");
 
+	private Application app;
+		
+	public MapperViewerFrame(Application app) {
+		super("Navigation Manager(" + app.getVersion() + ")");
+		logger = Logger.getLogger("MapperViewer");
+
+		this.app =app;
+		
+		initializePresentation();
+		setVisible(true);
+	}
+
+	private void initializePresentation() {
+		
 		int width = 800;
 		int height = 600;
-		
-		mapPanel = new MapPanel(this);
+		mapPanel = new MapPanel(this.app);
 		cameraViewPanel = new CameraViewPanel();
 		
 		systemTreeView  = new RTSystemTreeView();
@@ -103,9 +103,6 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 		vSplitPane.add(new LoggerView("MapperViewer"));
 		
 		
-		this.rtc = rtc;
-		
-		// setContentPane(mapPanel);
 		add(hSplitPane, BorderLayout.CENTER);
 		
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -124,21 +121,8 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 		this.add(BorderLayout.SOUTH, statusBar);
 
 		setSize(new Dimension(width, height));
-		setVisible(true);
-		startTimer();
-		//startAutoRefresh();
-		//mapPanel.startAutoRepaint();
-		
-		(new Thread(this)).start();
-		
-		logger = Logger.getLogger("MapperViewer");
 	}
 
-
-	public void setStatus(String text) {
-		statusBar.setText(text);
-	}
-	
 	private void setupToolbar() {
 		JToolBar toolBar = new JToolBar();
 		this.add(toolBar, BorderLayout.NORTH);
@@ -151,16 +135,27 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 
 		});
 		toolBar.add(startButton);
-		JButton saveAsButton = new JButton(new AbstractAction("Save") {
+		JButton stopButton = new JButton(new AbstractAction("Stop Mapping") {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				onSaveAs();
+				onStopMapping();
+			}
+
+		});
+		toolBar.add(stopButton);
+		JButton saveAsButton = new JButton(new AbstractAction("Save Map") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onSaveMapAs();
 			}
 
 		});
 		toolBar.add(saveAsButton);
-		JButton planButton = new JButton(new AbstractAction("Plan") {
+		toolBar.add(new JToolBar.Separator());
+
+		JButton planButton = new JButton(new AbstractAction("Plan Path") {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -169,6 +164,15 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 
 		});
 		toolBar.add(planButton);
+		JButton savePathButton = new JButton(new AbstractAction("Save Path") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onSavePath();
+			}
+
+		});
+		toolBar.add(savePathButton);
 		JButton followButton = new JButton(new AbstractAction("Follow") {
 
 			@Override
@@ -199,21 +203,12 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 		toolBar.add(zoomOutButton);
 	}
 
-
 	private void setupMenu() {
 		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		this.fileMenu = new JMenu("File");
 		menuBar.add(fileMenu);
-		JMenuItem saveAsMenu = new JMenuItem(new AbstractAction("Save As") {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				onSaveAs();
-			}
-
-		});
-		fileMenu.add(saveAsMenu);
+		
 
 		JMenuItem exitMenu = new JMenuItem(new AbstractAction("Exit") {
 
@@ -241,67 +236,26 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 		  
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
-		    	onStop();
+		    	onStopMapping();
 		    }
-		  
-		  
-		  
 		  });
 	    mapMenu.add(stopMenu);
-		 
-		enableUpdateMenu = new JMenuItem(new AbstractAction(
-				"Disable Auto Map Updating") {
+	    JMenuItem saveAsMenu = new JMenuItem(new AbstractAction("Save Map As...") {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				onEnableAutoUpdating();
+				onSaveMapAs();
 			}
 
 		});
-		mapMenu.add(enableUpdateMenu);
-
-		JMenuItem requestMenu = new JMenuItem(new AbstractAction("Request") {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				onRequest();
-			}
-
-		});
-		mapMenu.add(requestMenu);
-
-		this.controlMenu = new JMenu("Control");
-		getJMenuBar().add(controlMenu);
-		openJoystick = new JMenuItem(new AbstractAction("Open Joystick") {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				onOpenJoystick();
-			}
-
-		});
-		controlMenu.add(openJoystick);
+		mapMenu.add(saveAsMenu);
 	}
 
-
-	public void run() {
-		while (true) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					repaint();
-				}
-			});
-
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+	public void setStatus(String text) {
+		statusBar.setText(text);
 	}
 	
-	private void onSaveAs() {
+	private void onSaveMapAs() {
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new FileNameExtensionFilter("*.png", "png"));
 
@@ -312,108 +266,34 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 		}
 	}
 
-
-	private void startTimer() {
-		if (timer == null) {
-			this.timer = new Timer(this.rtc.getInterval(),
-					new ActionListener() {
-
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							onTimer();
-						}
-
-					});
-			timer.start();
-		}
-	}
-
-	private void stopTimer() {
-		if (timer != null) {
-			timer.stop();
-			timer = null;
-		}
-	}
-	
-	private void onTimer() {
-		onRequest();
-	}
-	
 	public synchronized void setImage(RTC.CameraImage image) {
 		cameraViewPanel.setImage(image);
 	}
 	
 
 	private void onExit() {
-		stopTimer();
 		System.exit(0);
 	}
 
-	private synchronized void onRequest() {
-		
-		this.map = rtc.requestMap();
-		if (map != null) {
-			logger.fine("Map is successfully acquired. Rendering....");
-			mapPanel.setMap(map);
-		}
-		
-		mapper_state = rtc.requestState();
-		if (mapper_state.equals(MAPPER_STATE.MAPPER_MAPPING)) {
-			this.startMenu.setText("Stop Mapping");
-		} else {
-			this.startMenu.setText("Start Mapping");
-		}
-	}
 
 	private void onStartMapping() {
-		if (mapper_state.equals(MAPPER_STATE.MAPPER_MAPPING)) {
-			if (rtc.stopMapping()) {
-
-			}
-
-		} else {
-			if (rtc.startMapping()) {
-
-			}
-		}
+		app.startMapping();
+	}
+	
+	private void onStopMapping() {
+		app.stopMapping();
 	}
 
 	private void onPlan() {
-		logger.info("Start Planning....");
-		PathPlanParameter param = new PathPlanParameter();
-		param.targetPose = mapPanel.getGoal();//new RTC.Pose2D(new RTC.Point2D(getGoalX(), getGoalY()), 0);
-		param.maxSpeed = new Velocity2D(1.0, 0, 1.0);
-		param.distanceTolerance = 9999;
-		param.headingTolerance = 9999;
-		param.timeLimit = new RTC.Time(1000000, 0);
-
-		RTC.Path2D path = rtc.planPath(param);
-		if (path != null) {
-			logger.info("Path is successfully acquired. Rendering....");
-			mapPanel.setPath2D(path);
-		}
+		app.planPath();
+	}
+	
+	private void onSavePath() {
+		app.savePath();
 	}
 
 	private void onFollow() {
-		logger.info("Start Following...");
-		rtc.followPath(mapPanel.getPath2D());
-		logger.info("Following End");
-	}
-	
-	
-	private void onStop() {
-		rtc.stopMapping();
-	}
-	
-	private void onEnableAutoUpdating() {
-		if (this.timer != null) { // Timer is active
-			stopTimer();
-			this.enableUpdateMenu.setText("Enable Auto Map Updating");
-		} else { // Timer is inactive
-			startTimer();
-			this.enableUpdateMenu.setText("Disable Auto Map Updating");
-		}
-		
+		app.follow();
 	}
 	
 	private void onZoomIn() {
@@ -423,58 +303,6 @@ public class MapperViewerFrame extends JFrame implements Runnable {
 	private void onZoomOut() {
 		float zf = mapPanel.getZoomFactor() / 2.0f;
 		mapPanel.setZoomFactor(zf);
-	}
-
-	
-	public void setRobotPose(Pose2D pose) {
-		if (map != null) {
-			mapPanel.setRobotPose(pose);
-		}
-	}
-
-	public void setRangeData(RangeData range) {
-		if (map != null) {
-			mapPanel.setRangeData(range);
-		}
-	}
-
-	public void openJoystickFrame(boolean flag) {
-		if (flag) {
-			if (this.joyFrame == null) {
-				this.joyFrame = new JoyFrame();
-			}
-		} else {
-			if (this.joyFrame != null) {
-				this.joyFrame.setVisible(false);
-				this.joyFrame = null;
-			}
-		}
-	}
-
-	public void onOpenJoystick() {
-		if (joyFrame == null) { // JoyFrame inactive
-			this.openJoystickFrame(true);
-			this.openJoystick.setText("Close Joystick");
-		} else { // JoyFrame active
-			this.openJoystickFrame(false);
-			this.openJoystick.setText("Open Joystick");
-		}
-	}
-
-	public boolean isJoystick() {
-		return joyFrame != null;
-	}
-
-	public int getJoyState() {
-		return joyFrame.getState();
-	}
-
-	public double getTranslationVelocity() {
-		return joyFrame.getTranslationVelocity();
-	}
-
-	public double getRotationVelocity() {
-		return joyFrame.getRotationVelocity();
 	}
 
 	public class StatusBar extends JLabel {

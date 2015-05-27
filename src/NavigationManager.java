@@ -1,6 +1,6 @@
 // -*- Java -*-
 /*!
- * @file MapperViewer.java
+ * @file NavigationManager.java
  * @date $Date$
  *
  * $Id$
@@ -14,16 +14,16 @@ import jp.go.aist.rtm.RTC.RegisterModuleFunc;
 import jp.go.aist.rtm.RTC.util.Properties;
 
 /*!
- * @class MapperViewer
+ * @class NavigationManager
  * @brief Mapper Viewer RTC
  */
-public class MapperViewer implements RtcNewFunc, RtcDeleteFunc, RegisterModuleFunc {
+public class NavigationManager implements RtcNewFunc, RtcDeleteFunc, RegisterModuleFunc {
 
 //  Module specification
 //  <rtc-template block="module_spec">
     public static String component_conf[] = {
-    	    "implementation_id", "MapperViewer",
-    	    "type_name",         "MapperViewer",
+    	    "implementation_id", "NavigationManager",
+    	    "type_name",         "NavigationManager",
     	    "description",       "Mapper Viewer RTC",
     	    "version",           "1.0.0",
     	    "vendor",            "Sugar Sweet Robotics",
@@ -42,7 +42,7 @@ public class MapperViewer implements RtcNewFunc, RtcDeleteFunc, RegisterModuleFu
 //  </rtc-template>
 
     public RTObject_impl createRtc(Manager mgr) {
-        return new MapperViewerImpl(mgr);
+        return new NavigationManagerImpl(mgr);
     }
 
     public void deleteRtc(RTObject_impl rtcBase) {
@@ -51,6 +51,6 @@ public class MapperViewer implements RtcNewFunc, RtcDeleteFunc, RegisterModuleFu
     public void registerModule() {
         Properties prop = new Properties(component_conf);
         final Manager manager = Manager.instance();
-        manager.registerFactory(prop, new MapperViewer(), new MapperViewer());
+        manager.registerFactory(prop, new NavigationManager(), new NavigationManager());
     }
 }

@@ -10,6 +10,9 @@
 import java.util.Calendar;
 import java.util.logging.Logger;
 
+import application.DataContainer;
+import application.VirtualJoystickContainer;
+
 import jp.go.aist.rtm.RTC.DataFlowComponentBase;
 import jp.go.aist.rtm.RTC.Manager;
 import jp.go.aist.rtm.RTC.port.CorbaConsumer;
@@ -46,10 +49,11 @@ import RTC.Waypoint2D;
  * @brief Mapper Viewer RTC
  *
  */
-public class MapperViewerImpl extends DataFlowComponentBase {
+public class NavigationManagerImpl extends DataFlowComponentBase {
 
-	private MapperViewerFrame frame;
+	//private MapperViewerFrame frame;
 
+	private Application app;
 	private Calendar m_lastReceivedTime;
 	private float m_poseTimeout = (float) 3.0; // should be added config
 
@@ -62,7 +66,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 * 
 	 * @param manager Maneger Object
 	 */
-	public MapperViewerImpl(Manager manager) {
+	public NavigationManagerImpl(Manager manager) {
 		super(manager);
 		// <rtc-template block="initializer">
 		m_currentPose_val = new TimedPose2D(new Time(0, 0), new Pose2D(
@@ -139,10 +143,9 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		bindParameter("pathDistanceTolerance", m_pathDistanceTolerance, "1.0");
 		bindParameter("pathHeadingTolerance", m_pathHeadingTolerance, "1.0");
 
-		this.frame = new MapperViewerFrame(this);
-
+		//this.frame = new MapperViewerFrame(this, this.dataContainer);
+		app = new Application(this);
 		logger.info("Successfully Initialized");
-		frame.setStatus("Initialized");
 		return super.onInitialize();
 	}
 
@@ -211,7 +214,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		m_lastReceivedTime = Calendar.getInstance();
 
 		logger.info("Successfully Activated");
-		frame.setStatus("Activated");
+		app.activate();
 		return super.onActivated(ec_id);
 	}
 
@@ -231,7 +234,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	protected ReturnCode_t onDeactivated(int ec_id) {
 
 		logger.info("Successfully Deactivated");
-		frame.setStatus("Deactivated");
+		app.deactivate();
 		return super.onDeactivated(ec_id);
 	}
 
@@ -251,12 +254,12 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 		Calendar currentTime = Calendar.getInstance();
 		if (m_currentPoseIn.isNew()) {
 			m_currentPoseIn.read();
-			this.frame.setRobotPose(m_currentPose.v.data);
+			app.dataContainer.setRobotPose(m_currentPose.v);
 		}
 
 		if (m_rangeIn.isNew()) {
 			m_rangeIn.read();
-			this.frame.setRangeData(m_range.v);
+			app.dataContainer.setRangeData(m_range.v);
 			m_lastReceivedTime = currentTime;
 		} else {
 			if (m_lastReceivedTime != null) {
@@ -265,57 +268,25 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 				if (duration > m_poseTimeout * 1000 && m_poseTimeout > 0) {
 					// System.out.println("Range Data is Timeout to MapperViewer");
 					logger.warning("Range Data Timeout");
-					this.frame.setRangeData(null);
+					app.dataContainer.setRangeData(null);
 					m_lastReceivedTime = null;
 				}
-			} else {
-
 			}
 		}
 
 		if (m_cameraIn.isNew()) {
-			logger.info("Camera Received.");
-			synchronized (this.frame.cameraViewPanel) {
-				m_cameraIn.read();
-				this.frame.setImage(m_camera.v);
-			}
+			m_cameraIn.read();
+			app.dataContainer.setCameraImage(m_camera.v);
 		}
 
 		if (m_targetVelocityOut.getConnectorProfiles().size() > 0) {
-			frame.openJoystickFrame(true);
-		} else {
-			frame.openJoystickFrame(false);
-		}
-
-		if (frame.isJoystick()) {
-			int state = frame.getJoyState();
-			double vx = 0;
-			double vy = 0;
-			double va = 0;
-			double tvel = frame.getTranslationVelocity();
-			double rvel = frame.getRotationVelocity();
-			switch (state) {
-			case JoyFrame.UP:
-				vx = tvel;
-				break;
-			case JoyFrame.DOWN:
-				vx = -tvel;
-				break;
-			case JoyFrame.LEFT:
-				va = rvel;
-				break;
-			case JoyFrame.RIGHT:
-				va = -rvel;
-				break;
-			case JoyFrame.DEF:
-				break;
-			default:
-				break;
-			}
-			this.m_targetVelocity.v.data.vx = vx;
-			this.m_targetVelocity.v.data.vy = vy;
-			this.m_targetVelocity.v.data.va = va;
+			app.joystickContainer.setVisible(true);
+			this.m_targetVelocity.v.data = app.joystickContainer.getTargetVelocity();
+			m_targetVelocityOut.setTimestamp(m_targetVelocity.v);
+			app.dataContainer.setTargetVelocity(this.m_targetVelocity.v);
 			m_targetVelocityOut.write();
+		} else {
+			app.joystickContainer.setVisible(false);
 		}
 		return super.onExecute(ec_id);
 	}
@@ -350,7 +321,7 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 	 */
 	// @Override
 	public ReturnCode_t onError(int ec_id) {
-		frame.setStatus("Error");
+		app.onError();
 		return super.onError(ec_id);
 	}
 
@@ -686,5 +657,5 @@ public class MapperViewerImpl extends DataFlowComponentBase {
 			}
 		}
 	}
-
+	
 }

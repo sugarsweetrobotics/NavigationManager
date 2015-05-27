@@ -16,7 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import ssr.RTMHelper;
-import ssr.nameservice.CorbaNamingParser;
 import RTC.PortService;
 
 @SuppressWarnings("serial")
