@@ -18,6 +18,20 @@ public class VirtualJoystickContainer {
 	}
 	
 	public Velocity2D getTargetVelocity() {
+		return getTargetVelocityEx();
+	}
+	
+	public Velocity2D getTargetVelocityEx() {
+		double dx = joyFrame.getDX();
+		double dy = joyFrame.getDY();
+
+		double tvel = joyFrame.getTranslationVelocity();
+		double rvel = joyFrame.getRotationVelocity();
+		
+		return new Velocity2D(dx * tvel, 0, dy * rvel);
+	}
+	
+	public Velocity2D getTargetVelocityOld() {
 		int state = joyFrame.getState();
 		double vx = 0;
 		double vy = 0;

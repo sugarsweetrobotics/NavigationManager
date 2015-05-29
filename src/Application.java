@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.util.logging.Logger;
 
@@ -17,21 +16,21 @@ import application.VirtualJoystickContainer;
 public class Application implements Runnable {
 
 	public MapperViewerFrame view;
-	
+
 	public NavigationManagerImpl rtc;
-	
-	public DataContainer     dataContainer;
-	
+
+	public DataContainer dataContainer;
+
 	private Logger logger;
-	
+
 	private Thread applicationRoutine;
 
 	private MAPPER_STATE mapper_state;
-	
+
 	private boolean endFlag = false;
 
 	public VirtualJoystickContainer joystickContainer;
-	
+
 	public Application(NavigationManagerImpl rtc) {
 		this.rtc = rtc;
 
@@ -41,7 +40,7 @@ public class Application implements Runnable {
 		view = new MapperViewerFrame(this);
 		joystickContainer = new VirtualJoystickContainer();
 	}
-	
+
 	public void activate() {
 		startRoutine();
 		view.setStatus("Active");
@@ -69,27 +68,31 @@ public class Application implements Runnable {
 	public void onError() {
 		view.setStatus("Error");
 	}
-	
-
 
 	public void run() {
 		while (!endFlag) {
-			if(isAutoRepaint()) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					view.repaint();
-				}
-			});
-			} 
-			
-			if(isAutoRequestMap()) {
-				requestMap();
-			}
-
 			try {
+				if (isAutoRepaint()) {
+
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							view.repaint();
+						}
+					});
+
+				}
+
+				if (isAutoRequestMap()) {
+					requestMap();
+				}
+
 				Thread.sleep(getInterval());
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				logger.warning("Exception: " + e);
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.warning("Exception: " + e);
 			}
 		}
 	}
@@ -97,7 +100,7 @@ public class Application implements Runnable {
 	private int getInterval() {
 		return 200;
 	}
-	
+
 	private boolean isAutoRequestMap() {
 		return true;
 	}
@@ -140,7 +143,9 @@ public class Application implements Runnable {
 	public void planPath() {
 		logger.info("Start Planning....");
 		PathPlanParameter param = new PathPlanParameter();
-		param.targetPose = dataContainer.getGoal();//new RTC.Pose2D(new RTC.Point2D(getGoalX(), getGoalY()), 0);
+		param.targetPose = dataContainer.getGoal();// new RTC.Pose2D(new
+													// RTC.Point2D(getGoalX(),
+													// getGoalY()), 0);
 		param.maxSpeed = new Velocity2D(1.0, 0, 1.0);
 		param.distanceTolerance = 9999;
 		param.headingTolerance = 9999;
@@ -162,7 +167,7 @@ public class Application implements Runnable {
 		if (fc.showOpenDialog(this.view) == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			logger.info("Saving Path File to " + file.getAbsolutePath());
-			PathUtil.savePath(path, file);			
+			PathUtil.savePath(path, file);
 		}
 	}
 
@@ -175,5 +180,5 @@ public class Application implements Runnable {
 	public String getVersion() {
 		return this.rtc.get_component_profile().version;
 	}
-	
+
 }

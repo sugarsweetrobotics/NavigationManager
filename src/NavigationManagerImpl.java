@@ -1,4 +1,4 @@
-// -*- Java -*-
+	// -*- Java -*-
 /*!
  * @file  MapperViewerImpl.java
  * @brief Mapper Viewer RTC
@@ -9,9 +9,6 @@
 
 import java.util.Calendar;
 import java.util.logging.Logger;
-
-import application.DataContainer;
-import application.VirtualJoystickContainer;
 
 import jp.go.aist.rtm.RTC.DataFlowComponentBase;
 import jp.go.aist.rtm.RTC.Manager;
@@ -42,6 +39,7 @@ import RTC.ReturnCode_t;
 import RTC.Time;
 import RTC.TimedPose2D;
 import RTC.TimedVelocity2D;
+import RTC.Velocity2D;
 import RTC.Waypoint2D;
 
 /*!
@@ -69,8 +67,11 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 	public NavigationManagerImpl(Manager manager) {
 		super(manager);
 		// <rtc-template block="initializer">
+		
+		System.out.println("NavigationManagerImpl.init().");
 		m_currentPose_val = new TimedPose2D(new Time(0, 0), new Pose2D(
 				new Point2D(0, 0), 0));
+		System.out.println("CP1");
 		m_currentPose = new DataRef<TimedPose2D>(m_currentPose_val);
 		m_currentPoseIn = new InPort<TimedPose2D>("currentPose", m_currentPose);
 		m_range_val = new RangeData();
@@ -96,6 +97,7 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 		m_pathFollowerPort = new CorbaPort("pathFollower");
 		// </rtc-template>
 
+		System.out.println("Object created.");
 		logger = Logger.getLogger("MapperViewer");
 	}
 
@@ -112,6 +114,8 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 		// Registration: InPort/OutPort/Service
 		// <rtc-template block="registration">
 		// Set InPort buffers
+
+		System.out.println("NavigationManagerImpl.onInitialize");
 		addInPort("currentPose", m_currentPoseIn);
 		addInPort("range", m_rangeIn);
 		addInPort("path", m_pathIn);
@@ -262,6 +266,7 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 			app.dataContainer.setRangeData(m_range.v);
 			m_lastReceivedTime = currentTime;
 		} else {
+			/*
 			if (m_lastReceivedTime != null) {
 				double duration = currentTime.getTimeInMillis()
 						- m_lastReceivedTime.getTimeInMillis();
@@ -272,6 +277,7 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 					m_lastReceivedTime = null;
 				}
 			}
+			*/
 		}
 
 		if (m_cameraIn.isNew()) {
@@ -281,7 +287,11 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 
 		if (m_targetVelocityOut.getConnectorProfiles().size() > 0) {
 			app.joystickContainer.setVisible(true);
-			this.m_targetVelocity.v.data = app.joystickContainer.getTargetVelocity();
+			Velocity2D v = app.joystickContainer.getTargetVelocity();
+			this.m_targetVelocity.v.data.vx = v.vx;
+			this.m_targetVelocity.v.data.vy = v.vy;
+			this.m_targetVelocity.v.data.va = v.va;
+			
 			m_targetVelocityOut.setTimestamp(m_targetVelocity.v);
 			app.dataContainer.setTargetVelocity(this.m_targetVelocity.v);
 			m_targetVelocityOut.write();
@@ -513,40 +523,39 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 		if (this.get_context(0).get_component_state(this.m_objref) != RTC.LifeCycleState.ACTIVE_STATE) {
 			return null;
 		}
-		if (m_mapperServicePort.get_connector_profiles().length != 0) {// dose
-																		// it
-																		// connected
-																		// with
-																		// Mapper_MRPT?
-			RETURN_VALUE retval;
-			retval = this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder);
-			if (this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
-				return mapHolder.value;
-			} else if (retval == RETURN_VALUE.RETVAL_ODOMETRY_TIME_OUT) {
-				logger.warning("ERROR: Mobile Robot is timeout in Mapper RTC.");
-			} else if (retval == RETURN_VALUE.RETVAL_RANGE_TIME_OUT) {
-				logger.warning("ERROR: Range Sensor is timeout in Mapper RTC.");
-			} else if (retval == RETURN_VALUE.RETVAL_ODOMETRY_INVALID_VALUE) {
-				logger.warning("ERROR: Kobuki out of map range");
+		try {
+			if (m_mapperServicePort.get_connector_profiles().length != 0) {
+				RETURN_VALUE retval;
+				retval = this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder);
+				if (this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
+					return mapHolder.value;
+				} else if (retval == RETURN_VALUE.RETVAL_ODOMETRY_TIME_OUT) {
+					logger.warning("ERROR: Mobile Robot is timeout in Mapper RTC.");
+				} else if (retval == RETURN_VALUE.RETVAL_RANGE_TIME_OUT) {
+					logger.warning("ERROR: Range Sensor is timeout in Mapper RTC.");
+				} else if (retval == RETURN_VALUE.RETVAL_ODOMETRY_INVALID_VALUE) {
+					logger.warning("ERROR: Kobuki out of map range");
+				}
+	
+			} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {// dose
+																					// it
+																					// connected
+																					// with
+																					// MapServer?
+				RETURN_VALUE retval;
+				retval = this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(
+						mapHolder);
+				if (retval == RETURN_VALUE.RETVAL_OK) {
+					return mapHolder.value;
+				} else if (retval == RETURN_VALUE.RETVAL_EMPTY_MAP) {
+					logger.warning("ERROR: Empty Map");
+				}
 			}
-
-		} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {// dose
-																				// it
-																				// connected
-																				// with
-																				// MapServer?
-			RETURN_VALUE retval;
-			retval = this.m_OGMapServerBase._ptr().requestCurrentBuiltMap(
-					mapHolder);
-			if (retval == RETURN_VALUE.RETVAL_OK) {
-				return mapHolder.value;
-			} else if (retval == RETURN_VALUE.RETVAL_EMPTY_MAP) {
-				logger.warning("ERROR: Empty Map");
-			}
+		} catch (org.omg.CORBA.UNKNOWN e) {
+			e.printStackTrace();
+		} catch (org.omg.CORBA.OBJECT_NOT_EXIST e) {
+			e.printStackTrace();
 		}
-		// } catch (org.omg.CORBA.UNKNOWN e) {
-		// e.printStackTrace();
-		// }
 		return null;
 	}
 

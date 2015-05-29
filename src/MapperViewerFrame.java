@@ -3,10 +3,8 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -20,21 +18,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-import application.CameraViewPanel;
-
 
 import ssr.logger.ui.LoggerView;
 import ssr.nameservice.ui.RTSystemTreeView;
-import RTC.MAPPER_STATE;
-import RTC.OGMap;
-import RTC.PathPlanParameter;
-import RTC.RangeData;
-import RTC.TimedPose2D;
-import RTC.Velocity2D;
+import application.CameraViewPanel;
 
 
 @SuppressWarnings("serial")
@@ -65,6 +53,14 @@ public class MapperViewerFrame extends JFrame {
 	private StatusBar statusBar;
 
 	private Application app;
+
+	private JMenu pathMenu;
+
+	private JMenu viewMenu;
+
+	private JMenu helpMenu;
+
+	private JMenu logMenu;
 		
 	public MapperViewerFrame(Application app) {
 		super("Navigation Manager(" + app.getVersion() + ")");
@@ -249,6 +245,48 @@ public class MapperViewerFrame extends JFrame {
 
 		});
 		mapMenu.add(saveAsMenu);
+		
+		
+		this.pathMenu = new JMenu("Path");
+		menuBar.add(pathMenu);
+	    JMenuItem planPathMenu = new JMenuItem(new AbstractAction("Plan Path") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onPlan();
+			}
+
+		});
+		pathMenu.add(planPathMenu);
+		JMenuItem savePathMenu = new JMenuItem(new AbstractAction("Save Path As ...") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onSavePath();
+			}
+
+		});
+		pathMenu.add(savePathMenu);		
+		JMenuItem followPathMenu = new JMenuItem(new AbstractAction("Follow Path") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onFollow();
+			}
+
+		});
+		pathMenu.add(followPathMenu);		
+		
+		this.viewMenu = new JMenu("View");
+		menuBar.add(viewMenu);
+		
+
+		this.logMenu = new JMenu("Log");
+		menuBar.add(logMenu);
+		
+
+		this.helpMenu = new JMenu("Help");
+		menuBar.add(helpMenu);
 	}
 
 	public void setStatus(String text) {
@@ -274,7 +312,6 @@ public class MapperViewerFrame extends JFrame {
 	private void onExit() {
 		System.exit(0);
 	}
-
 
 	private void onStartMapping() {
 		app.startMapping();

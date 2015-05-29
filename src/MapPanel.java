@@ -107,6 +107,8 @@ public class MapPanel extends JComponent {
 		}
 	}
 
+	
+	int frameNo = 0;
 	synchronized public void draw(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;// getGraphics();//mapCanvas.getGraphics();//
 										// g;//
@@ -129,8 +131,13 @@ public class MapPanel extends JComponent {
 				drawAxis(g2d2);
 				drawPath(g2d2);
 				drawRobot(g2d2);
+				
+				g2d2.drawString("Frame: " + frameNo, 10, 10);
+				frameNo++;
 				g2d.drawImage(bufferImage, 0, 0, this);
 			} else {
+				g2d.drawString("Frame: " + frameNo, 10, 10);
+				frameNo++;
 				g2d.drawString("No Map Loaded", 10, 20);
 			}
 		}

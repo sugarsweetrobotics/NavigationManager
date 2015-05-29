@@ -1,12 +1,12 @@
 <!--
 # -*- Buildfile -*-
-# @file  build_MapperViewer.xml
+# @file  build_NavigationManager.xml
 # @brief RTComponent makefile for "MapperViewer component"
 # @date  $Date$
 #
 # $Id$
  -->
-<project name="MapperViewer" default="compile">
+<project name="NavigationManager" default="compile">
 	<property name="source" value="src" />
 	<property name="dest" value="bin" />
 	<property environment="env" />

@@ -341,9 +341,21 @@ public class RTSTreeNode extends DefaultMutableTreeNode {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					String name = rtNamingContext.getName().split(":")[0].trim();
+					String name = rtNamingContext.getName().split("\\(")[0].trim();
 					RTObject rto = (RTObject) privateData;
-					ConfigurationSet confSet = (ConfigurationSet)((RTSTreeNode)parent).privateData;
+					ConfigurationSet confSet = null;
+					try {
+						confSet = rto.get_configuration().get_active_configuration_set();
+					} catch (NotAvailable e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					} catch (InternalError e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					} catch (InterfaceNotImplemented e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}//(ConfigurationSet)((RTSTreeNode)parent).privateData;
 					String def_value = "";
 					for(NameValue nv : confSet.configuration_data) {
 						if(nv.name.equals(name)) {
@@ -370,6 +382,7 @@ public class RTSTreeNode extends DefaultMutableTreeNode {
 						d.insert_string(new_value);
 						try {
 							rto.get_configuration().set_configuration_set_values(confSet);
+							//rto.get_configuration()
 						} catch (InvalidParameter e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
