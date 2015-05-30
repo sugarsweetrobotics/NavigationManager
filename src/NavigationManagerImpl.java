@@ -118,12 +118,12 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 		System.out.println("NavigationManagerImpl.onInitialize");
 		addInPort("currentPose", m_currentPoseIn);
 		addInPort("range", m_rangeIn);
-		addInPort("path", m_pathIn);
+		//addInPort("path", m_pathIn);
 		addInPort("camera", m_cameraIn);
 
 		// Set OutPort buffer
 		addOutPort("targetVelocity", m_targetVelocityOut);
-		addOutPort("goal", m_goalOut);
+		//addOutPort("goal", m_goalOut);
 
 		// Set service consumers to Ports
 		m_mapperServicePort.registerConsumer("OGMapper", "RTC::OGMapper",
