@@ -287,14 +287,16 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 
 		if (m_targetVelocityOut.getConnectorProfiles().size() > 0) {
 			app.joystickContainer.setVisible(true);
-			Velocity2D v = app.joystickContainer.getTargetVelocity();
-			this.m_targetVelocity.v.data.vx = v.vx;
-			this.m_targetVelocity.v.data.vy = v.vy;
-			this.m_targetVelocity.v.data.va = v.va;
-			
-			m_targetVelocityOut.setTimestamp(m_targetVelocity.v);
-			app.dataContainer.setTargetVelocity(this.m_targetVelocity.v);
-			m_targetVelocityOut.write();
+			if(!app.joystickContainer.isMute()) {
+				Velocity2D v = app.joystickContainer.getTargetVelocity();
+				this.m_targetVelocity.v.data.vx = v.vx;
+				this.m_targetVelocity.v.data.vy = v.vy;
+				this.m_targetVelocity.v.data.va = v.va;
+				
+				m_targetVelocityOut.setTimestamp(m_targetVelocity.v);
+				app.dataContainer.setTargetVelocity(this.m_targetVelocity.v);
+				m_targetVelocityOut.write();
+			}
 		} else {
 			app.joystickContainer.setVisible(false);
 		}

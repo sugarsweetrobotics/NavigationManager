@@ -88,18 +88,18 @@ public class RTSTreeNode extends DefaultMutableTreeNode {
 			super(title);
 			this.portName = targetPortName;
 			List<PortService> ports = RTMHelper
-					.searchPortServicesFromType("MapperViewer",
+					.searchPortServicesFromType("NavigationManager",
 							portName);
 			if (ports.size() == 1) {
 				sourcePortService = ports.get(0);
 			} else if (ports.size() == 0) {
-				logger.warning("Can not find " + "MapperViewer."
+				logger.warning("Can not find " + "NavigationManager."
 						+ targetPortName);
-				logger.warning("MapperViewer does not support Connection Functions");
+				logger.warning("NavigationManager does not support Connection Functions");
 			} else {
-				logger.warning("Can find multiple" + "MapperViewer."
+				logger.warning("Can find multiple" + "NavigationManager."
 						+ targetPortName);
-				logger.warning("MapperViewer does not support Connection Functions");
+				logger.warning("NavigationManager does not support Connection Functions");
 			}
 			this.targetPortService = portService;
 			this.properties = properties;
@@ -112,7 +112,7 @@ public class RTSTreeNode extends DefaultMutableTreeNode {
 		}
 	}
 	
-	class PortConnectAction extends AbstractAction {
+	public class PortConnectAction extends AbstractAction {
 		private PortService portService;
 		private Map<String, String> properties;
 		public PortConnectAction(String title, PortService port, Map<String, String> properties) {

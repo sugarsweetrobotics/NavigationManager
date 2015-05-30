@@ -60,4 +60,8 @@ public class VirtualJoystickContainer {
 		return new Velocity2D(vx, vy, va);
 	}
 	
+	public boolean isMute() {
+		return joyFrame.isMute();
+	}
+	
 }

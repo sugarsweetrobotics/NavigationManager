@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,7 +26,7 @@ public class JoyFrame extends JFrame {
 	private int state = DEF;
 
 	private JoyPanelEx jp;
-
+	private MutePanel jm;
 	private SpeedPanel sp;
 
 	final public static int UP = 0;
@@ -36,6 +37,8 @@ public class JoyFrame extends JFrame {
 
 	final public double vx = 0;
 	final public double va = 0;
+
+	private JPanel controlPanel;
 
 	public int getState() {
 		return state;
@@ -207,6 +210,7 @@ public class JoyFrame extends JFrame {
 			gbc.gridy = 0;
 			gbc.gridwidth = 1;
 			gbc.gridheight = 1;
+			gbc.weightx = 1.0;
 			JLabel l0 = new JLabel("Velocity X");
 			layout.setConstraints(l0, gbc);
 			add(l0);
@@ -214,6 +218,7 @@ public class JoyFrame extends JFrame {
 			this.js0 = new JSlider(0, 100);
 			gbc.gridx = 1;
 			gbc.gridwidth = 2;
+			gbc.weightx = 2.0;
 			layout.setConstraints(js0, gbc);
 			add(js0);
 
@@ -222,17 +227,53 @@ public class JoyFrame extends JFrame {
 			gbc.gridy = 2;
 			gbc.gridwidth = 1;
 			gbc.gridheight = 1;
+			gbc.weightx = 1.0;
 			layout.setConstraints(l1, gbc);
 			add(l1);
 
 			this.js1 = new JSlider(0, 100);
 			gbc.gridx = 1;
 			gbc.gridwidth = 2;
+			gbc.weightx = 2.0;
 			layout.setConstraints(js1, gbc);
 			add(js1);
 
 		}
 
+	}
+
+	public class MutePanel extends JPanel {
+
+		private JCheckBox jr;
+		
+		public MutePanel() {
+			super();
+
+			GridBagLayout layout = new GridBagLayout();
+			setLayout(layout);
+
+			GridBagConstraints gbc = new GridBagConstraints();
+			JLabel l2 = new JLabel("Mute Velocity Output ");
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			gbc.gridwidth = 2;
+			gbc.gridheight = 1;
+			gbc.weightx = 2;
+			layout.setConstraints(l2, gbc);
+			add(l2);
+
+			this.jr = new JCheckBox();
+			gbc.gridx = 3;
+			gbc.gridwidth = 1;
+			gbc.gridheight = 1;
+			gbc.weightx = 1;
+			layout.setConstraints(jr, gbc);
+			add(jr);
+		}
+		
+		boolean isMute() {
+			return jr.isSelected();
+		}
 	}
 
 	public JoyFrame() {
@@ -243,13 +284,24 @@ public class JoyFrame extends JFrame {
 	}
 
 	public void initPresentation() {
-		this.jp = new JoyPanelEx();
-		this.sp = new SpeedPanel();
+		
+
 		BorderLayout layout = new BorderLayout();
 		setLayout(layout);
+		this.jp = new JoyPanelEx();
 
 		getContentPane().add(jp, BorderLayout.CENTER);
-		getContentPane().add(sp, BorderLayout.SOUTH);
+		
+		///getContentPane().add(jm, BorderLayout.NORTH);
+		
+		
+		this.controlPanel = new JPanel();
+		controlPanel.setLayout(new GridLayout(2,1));
+		this.sp = new SpeedPanel();
+		this.jm = new MutePanel();
+		controlPanel.add(jm);
+		controlPanel.add(sp);
+		getContentPane().add(controlPanel, BorderLayout.SOUTH);
 	}
 
 	public static void main(String[] s) {
@@ -263,6 +315,11 @@ public class JoyFrame extends JFrame {
 
 	public double getDY() {
 		return jp.getDY();
+	}
+	
+	
+	public boolean isMute() {
+		return jm.isMute();
 	}
 
 }

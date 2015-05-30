@@ -1,10 +1,10 @@
 
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -20,10 +20,13 @@ import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import ssr.RTMHelper;
 import ssr.logger.ui.LoggerView;
+import ssr.nameservice.ui.PortConnectionDialog;
+import ssr.nameservice.ui.RTSTreeNode;
 import ssr.nameservice.ui.RTSystemTreeView;
+import RTC.PortService;
 import application.CameraViewPanel;
-
 
 @SuppressWarnings("serial")
 public class MapperViewerFrame extends JFrame {
@@ -39,15 +42,15 @@ public class MapperViewerFrame extends JFrame {
 	private JMenu mapMenu;
 
 	private JSplitPane vSplitPaneSmall;
-	
+
 	private JSplitPane vSplitPane;
-	
+
 	private JSplitPane hSplitPane;
-	
+
 	public CameraViewPanel cameraViewPanel;
-	
+
 	private RTSystemTreeView systemTreeView;
-	
+
 	private Logger logger;
 
 	private StatusBar statusBar;
@@ -61,35 +64,36 @@ public class MapperViewerFrame extends JFrame {
 	private JMenu helpMenu;
 
 	private JMenu logMenu;
-		
+
+	private JMenu controlMenu;
+
 	public MapperViewerFrame(Application app) {
 		super("Navigation Manager(" + app.getVersion() + ")");
 		logger = Logger.getLogger("MapperViewer");
 
-		this.app =app;
-		
+		this.app = app;
+
 		initializePresentation();
 		setVisible(true);
 	}
 
 	private void initializePresentation() {
-		
+
 		int width = 800;
 		int height = 600;
 		mapPanel = new MapPanel(this.app);
 		cameraViewPanel = new CameraViewPanel();
-		
-		systemTreeView  = new RTSystemTreeView();
-		
+
+		systemTreeView = new RTSystemTreeView();
+
 		hSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		vSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		vSplitPaneSmall = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		
-		
+
 		hSplitPane.setDividerLocation(width / 3);
 		hSplitPane.add(vSplitPaneSmall);
 		hSplitPane.add(vSplitPane);
-		
+
 		vSplitPaneSmall.setDividerLocation(height / 2);
 		vSplitPaneSmall.add((systemTreeView));
 		vSplitPaneSmall.add(new JScrollPane(cameraViewPanel));
@@ -97,10 +101,9 @@ public class MapperViewerFrame extends JFrame {
 		vSplitPane.setDividerLocation(height / 3 * 2);
 		vSplitPane.add(new JScrollPane(mapPanel));
 		vSplitPane.add(new LoggerView("MapperViewer"));
-		
-		
+
 		add(hSplitPane, BorderLayout.CENTER);
-		
+
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			@Override
@@ -112,7 +115,7 @@ public class MapperViewerFrame extends JFrame {
 		setupToolbar();
 
 		setupMenu();
-		
+
 		statusBar = new StatusBar("Ready");
 		this.add(BorderLayout.SOUTH, statusBar);
 
@@ -204,7 +207,6 @@ public class MapperViewerFrame extends JFrame {
 		this.setJMenuBar(menuBar);
 		this.fileMenu = new JMenu("File");
 		menuBar.add(fileMenu);
-		
 
 		JMenuItem exitMenu = new JMenuItem(new AbstractAction("Exit") {
 
@@ -227,16 +229,17 @@ public class MapperViewerFrame extends JFrame {
 
 		});
 		mapMenu.add(startMenu);
-		
-	    this.stopMenu = new JMenuItem(new AbstractAction("Stop mapping") {
-		  
-		    @Override
-		    public void actionPerformed(ActionEvent e) {
-		    	onStopMapping();
-		    }
-		  });
-	    mapMenu.add(stopMenu);
-	    JMenuItem saveAsMenu = new JMenuItem(new AbstractAction("Save Map As...") {
+
+		this.stopMenu = new JMenuItem(new AbstractAction("Stop mapping") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onStopMapping();
+			}
+		});
+		mapMenu.add(stopMenu);
+		JMenuItem saveAsMenu = new JMenuItem(new AbstractAction(
+				"Save Map As...") {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -245,11 +248,10 @@ public class MapperViewerFrame extends JFrame {
 
 		});
 		mapMenu.add(saveAsMenu);
-		
-		
+
 		this.pathMenu = new JMenu("Path");
 		menuBar.add(pathMenu);
-	    JMenuItem planPathMenu = new JMenuItem(new AbstractAction("Plan Path") {
+		JMenuItem planPathMenu = new JMenuItem(new AbstractAction("Plan Path") {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -258,7 +260,8 @@ public class MapperViewerFrame extends JFrame {
 
 		});
 		pathMenu.add(planPathMenu);
-		JMenuItem savePathMenu = new JMenuItem(new AbstractAction("Save Path As ...") {
+		JMenuItem savePathMenu = new JMenuItem(new AbstractAction(
+				"Save Path As ...") {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -266,8 +269,9 @@ public class MapperViewerFrame extends JFrame {
 			}
 
 		});
-		pathMenu.add(savePathMenu);		
-		JMenuItem followPathMenu = new JMenuItem(new AbstractAction("Follow Path") {
+		pathMenu.add(savePathMenu);
+		JMenuItem followPathMenu = new JMenuItem(new AbstractAction(
+				"Follow Path") {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -275,15 +279,36 @@ public class MapperViewerFrame extends JFrame {
 			}
 
 		});
-		pathMenu.add(followPathMenu);		
-		
+		pathMenu.add(followPathMenu);
+
 		this.viewMenu = new JMenu("View");
 		menuBar.add(viewMenu);
-		
 
 		this.logMenu = new JMenu("Log");
 		menuBar.add(logMenu);
-		
+
+		this.controlMenu = new JMenu("Control");
+		menuBar.add(controlMenu);
+		JMenuItem startControlMenu = new JMenuItem(new AbstractAction(
+				"Start Control") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onStartControl();
+			}
+
+		});
+		controlMenu.add(startControlMenu);
+		JMenuItem stopControlMenu = new JMenuItem(new AbstractAction(
+				"Stop Control") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onStopControl();
+			}
+
+		});
+		controlMenu.add(stopControlMenu);
 
 		this.helpMenu = new JMenu("Help");
 		menuBar.add(helpMenu);
@@ -292,7 +317,7 @@ public class MapperViewerFrame extends JFrame {
 	public void setStatus(String text) {
 		statusBar.setText(text);
 	}
-	
+
 	private void onSaveMapAs() {
 		JFileChooser fc = new JFileChooser();
 		fc.setFileFilter(new FileNameExtensionFilter("*.png", "png"));
@@ -307,7 +332,24 @@ public class MapperViewerFrame extends JFrame {
 	public synchronized void setImage(RTC.CameraImage image) {
 		cameraViewPanel.setImage(image);
 	}
-	
+
+	private void onStartControl() {
+		PortService ps = app.rtc.m_targetVelocityOut.get_port_profile().port_ref;
+		List<String> hostAddresses = systemTreeView.getHostAddresses();
+		if(hostAddresses.size() == 0) {
+			hostAddresses.add("localhost:2809");
+		}
+		PortConnectionDialog dialog = new PortConnectionDialog(
+				null, ps, hostAddresses, RTMHelper.getDefaultDataPortConnectionProperties());
+		dialog.setModal(true);
+		dialog.setSize(new Dimension(400, 400));
+		dialog.setVisible(true);
+	}
+
+	private void onStopControl() {
+		PortService ps = app.rtc.m_targetVelocityOut.get_port_profile().port_ref;
+		ps.disconnect_all();
+	}
 
 	private void onExit() {
 		System.exit(0);
@@ -316,7 +358,7 @@ public class MapperViewerFrame extends JFrame {
 	private void onStartMapping() {
 		app.startMapping();
 	}
-	
+
 	private void onStopMapping() {
 		app.stopMapping();
 	}
@@ -324,7 +366,7 @@ public class MapperViewerFrame extends JFrame {
 	private void onPlan() {
 		app.planPath();
 	}
-	
+
 	private void onSavePath() {
 		app.savePath();
 	}
@@ -332,9 +374,9 @@ public class MapperViewerFrame extends JFrame {
 	private void onFollow() {
 		app.follow();
 	}
-	
+
 	private void onZoomIn() {
-		mapPanel.setZoomFactor(mapPanel.getZoomFactor() * 2.0f );
+		mapPanel.setZoomFactor(mapPanel.getZoomFactor() * 2.0f);
 	}
 
 	private void onZoomOut() {
@@ -343,7 +385,7 @@ public class MapperViewerFrame extends JFrame {
 	}
 
 	public class StatusBar extends JLabel {
-		
+
 		public StatusBar(String title) {
 			super(title);
 		}
