@@ -656,10 +656,10 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 			} else if (retval == RETURN_VALUE.RETVAL_EMERGENCY_STOP) {
 				logger.warning("ERROR: FOLLOWING EMERGENCY STOP");
 				return;
-			} else if (retval == RETURN_VALUE.RETVAL_CURRENT_POSE_TIME_OUT) {
+			} else if (retval == RETURN_VALUE.RETVAL_ODOMETRY_TIME_OUT) {
 				logger.warning("ERROR: FOLLOWING Localization disconnected or Kobuki error");
 				return;
-			} else if (retval == RETURN_VALUE.RETVAL_CURRENT_POSE_INVALID_VALUE) {
+			} else if (retval == RETURN_VALUE.RETVAL_ODOMETRY_INVALID_VALUE) {
 				logger.warning("ERROR: FOLLOWING Localization sent Strange Value");
 				return;
 			} else {
