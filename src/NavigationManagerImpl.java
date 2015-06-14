@@ -258,7 +258,7 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 		Calendar currentTime = Calendar.getInstance();
 		if (m_currentPoseIn.isNew()) {
 			m_currentPoseIn.read();
-			app.dataContainer.setRobotPose(m_currentPose.v);
+			app.setRobotPose(m_currentPose.v);
 		}
 
 		if (m_rangeIn.isNew()) {
@@ -600,7 +600,7 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 
 		param.currentPose = new RTC.Pose2D(new RTC.Point2D(
 				this.m_currentPose.v.data.position.x,
-				this.m_currentPose.v.data.position.y), 0);
+				this.m_currentPose.v.data.position.y), m_currentPose.v.data.heading);
 		param.map = requestMap();
 		param.distanceTolerance = this.m_pathDistanceTolerance.getValue();
 		param.headingTolerance = this.m_pathHeadingTolerance.getValue();

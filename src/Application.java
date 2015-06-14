@@ -1,4 +1,8 @@
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
@@ -7,7 +11,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import RTC.MAPPER_STATE;
 import RTC.OGMap;
+import RTC.Path2D;
 import RTC.PathPlanParameter;
+import RTC.TimedPose2D;
 import RTC.Velocity2D;
 import application.DataContainer;
 import application.PathUtil;
@@ -44,6 +50,7 @@ public class Application implements Runnable {
 	public void activate() {
 		startRoutine();
 		view.setStatus("Active");
+		view.setTitle(MapperViewerFrame.getTitleStr(this, "ACTIVE"));
 	}
 
 	private void startRoutine() {
@@ -54,6 +61,7 @@ public class Application implements Runnable {
 	public void deactivate() {
 		stopRoutine();
 		view.setStatus("Inactive");
+		view.setTitle(MapperViewerFrame.getTitleStr(this, "INACTIVE"));
 	}
 
 	private void stopRoutine() {
@@ -162,12 +170,35 @@ public class Application implements Runnable {
 		logger.info("Save Path Plan...");
 		RTC.Path2D path = dataContainer.getPath();
 		JFileChooser fc = new JFileChooser();
-		fc.setFileFilter(new FileNameExtensionFilter("*.png", "png"));
+		fc.setFileFilter(new FileNameExtensionFilter("*.yaml", "yaml"));
 
 		if (fc.showOpenDialog(this.view) == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
+			if (!file.getName().endsWith("yaml")) {
+				file = new File(file.getAbsolutePath() + ".yaml");
+			}
 			logger.info("Saving Path File to " + file.getAbsolutePath());
 			PathUtil.savePath(path, file);
+		}
+	}
+
+	public void loadPath() {
+		logger.info("Load Path Plan...");
+		JFileChooser fc = new JFileChooser();
+		fc.setFileFilter(new FileNameExtensionFilter("*.yaml", "yaml"));
+		if (fc.showOpenDialog(this.view) == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			logger.info("Load Path From File " + file.getAbsolutePath());
+			try {
+				Path2D path = PathUtil.loadPath(file);
+				this.dataContainer.setPath(path);
+				dataContainer
+						.setGoal(path.waypoints[path.waypoints.length - 1].target);
+			} catch (IOException e) {
+				logger.warning("Failed to load Path from "
+						+ file.getAbsolutePath());
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -179,6 +210,72 @@ public class Application implements Runnable {
 
 	public String getVersion() {
 		return this.rtc.get_component_profile().version;
+	}
+
+	private Object loggerMutex = new Object();
+	private boolean logging;
+	private File robotLogFile;
+	private PrintWriter robotLogWriter;
+
+	public void startRobotLogging() throws IOException {
+		synchronized (loggerMutex) {
+			logger.info("Save Robot Log To ...");
+			JFileChooser fc = new JFileChooser();
+			fc.setFileFilter(new FileNameExtensionFilter("*.csv", "csv"));
+			if (fc.showOpenDialog(this.view) == JFileChooser.APPROVE_OPTION) {
+				robotLogFile = fc.getSelectedFile();
+				if (!robotLogFile.getName().endsWith("csv")) {
+					robotLogFile = new File(robotLogFile.getAbsolutePath() + ".csv");
+				}
+				logger.info("Save Log to  " + robotLogFile.getAbsolutePath());
+				robotLogWriter = new PrintWriter(new BufferedWriter(
+						new FileWriter(robotLogFile)));
+				logging = true;
+			} else {
+				robotLogFile = null;
+			}
+		}
+	}
+
+	public void stopRobotLogging() {
+		synchronized (loggerMutex) {
+			logging = false;
+			robotLogWriter.close();
+			robotLogFile = null;
+			robotLogWriter = null;
+		}
+	}
+
+	public void setRobotPose(TimedPose2D v) {
+		dataContainer.setRobotPose(v);
+		synchronized (loggerMutex) {
+			if (logging) {
+				robotLogWriter.write(v.tm.sec + ", " + v.tm.nsec + ", "
+						+ v.data.position.x + ", " + v.data.position.y + ", "
+						+ v.data.heading + "\n");
+			}
+		}
+	}
+
+
+	
+	public void openLog() {
+		logger.info("Open Robot Log To ...");
+		JFileChooser fc = new JFileChooser();
+		fc.setFileFilter(new FileNameExtensionFilter("*.csv", "csv"));
+		if (fc.showOpenDialog(this.view) == JFileChooser.APPROVE_OPTION) {
+			robotLogFile = fc.getSelectedFile();
+			if (robotLogFile.exists()) {
+				try {
+					dataContainer.loadRobotLogFile(robotLogFile);
+				} catch (IOException e) {
+					logger.warning("Log Open Failed.");
+					e.printStackTrace();
+				}
+			}
+		} else {
+			robotLogFile = null;
+		}
 	}
 
 }

@@ -1,7 +1,14 @@
 package application;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import RTC.CameraImage;
 import RTC.OGMap;
 import RTC.Path2D;
+import RTC.Point2D;
 import RTC.Pose2D;
 import RTC.RangeData;
 import RTC.TimedPose2D;
@@ -17,6 +24,34 @@ public class DataContainer {
 	private OGMap map;
 	private Pose2D goal;
 	private Path2D path;
+	public ArrayList<PoseLog> poseLogs = new ArrayList<PoseLog>();
+
+	
+	public class PoseLog {
+		public ArrayList<TimedPose2D> poses = new ArrayList<TimedPose2D>();
+		public File file;
+
+		public PoseLog(File file) throws IOException {
+			this.file = file;
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			while (br.ready()) {
+				String line = br.readLine();
+				String[] tokens = line.split(",");
+				if (tokens.length != 5) {
+					throw new IOException();
+				}
+				
+				int sec = Integer.parseInt(tokens[0].trim());
+				int nsec = Integer.parseInt(tokens[1].trim());
+				double x = Double.parseDouble(tokens[2].trim());
+				double y = Double.parseDouble(tokens[3].trim());
+				double phi = Double.parseDouble(tokens[4].trim());
+				
+				poses.add(new TimedPose2D(new RTC.Time(sec, nsec), new Pose2D(new Point2D(x, y), phi)));
+			}
+		}
+	}
+
 	
 	public DataContainer() {
 		
@@ -68,5 +103,10 @@ public class DataContainer {
 
 	public RangeData getRangeData() {
 		return rangeData;
+	}
+
+	public void loadRobotLogFile(File robotLogFile) throws IOException {
+		poseLogs.add(new PoseLog(robotLogFile));
+
 	}
 }

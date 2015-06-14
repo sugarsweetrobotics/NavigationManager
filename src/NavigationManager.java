@@ -8,9 +8,9 @@
 
 import jp.go.aist.rtm.RTC.Manager;
 import jp.go.aist.rtm.RTC.RTObject_impl;
+import jp.go.aist.rtm.RTC.RegisterModuleFunc;
 import jp.go.aist.rtm.RTC.RtcDeleteFunc;
 import jp.go.aist.rtm.RTC.RtcNewFunc;
-import jp.go.aist.rtm.RTC.RegisterModuleFunc;
 import jp.go.aist.rtm.RTC.util.Properties;
 
 /*!
@@ -25,9 +25,9 @@ public class NavigationManager implements RtcNewFunc, RtcDeleteFunc, RegisterMod
     	    "implementation_id", "NavigationManager",
     	    "type_name",         "NavigationManager",
     	    "description",       "Mapper Viewer RTC",
-    	    "version",           "1.0.0",
+    	    "version",           "1.0.1",
     	    "vendor",            "Sugar Sweet Robotics",
-    	    "category",          "Test",
+    	    "category",          "Navigation",
     	    "activity_type",     "STATIC",
     	    "max_instance",      "1",
     	    "language",          "Java",
