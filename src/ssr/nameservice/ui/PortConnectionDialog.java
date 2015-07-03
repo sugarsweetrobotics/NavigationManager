@@ -40,7 +40,7 @@ public class PortConnectionDialog extends JDialog {
 		}
 	}
 	
-    public PortConnectionDialog(Frame owner, PortService port, List<String> hostAddresses, Map<String, String> properties) {
+    public PortConnectionDialog(Frame owner, PortService port, List<String> hostAddresses, Map<String, String> properties) throws Exception {
         super(owner);
         this.portService = port;
         this.properties = properties;
@@ -58,6 +58,7 @@ public class PortConnectionDialog extends JDialog {
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+				throw e1;
 			}
         	
         }

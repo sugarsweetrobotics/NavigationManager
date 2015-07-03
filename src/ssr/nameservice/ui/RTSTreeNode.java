@@ -124,11 +124,15 @@ public class RTSTreeNode extends DefaultMutableTreeNode {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			List<String> hostAddresses = view.getHostAddresses();
+			try {
 			PortConnectionDialog dialog = new PortConnectionDialog(
 					null, portService, hostAddresses, properties);
 			dialog.setModal(true);
 			dialog.setSize(new Dimension(400, 400));
 			dialog.setVisible(true);
+			} catch (Exception ex) {
+				logger.warning("NameServer can not be found.");
+			}
 		}
 
 	}

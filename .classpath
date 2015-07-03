@@ -4,5 +4,6 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="jar/commons-cli-1.1.jar"/>
 	<classpathentry kind="lib" path="jar/OpenRTM-aist-1.1.0.jar"/>
+	<classpathentry kind="lib" path="jar/jyaml-1.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

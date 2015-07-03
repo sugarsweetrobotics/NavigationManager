@@ -9,6 +9,13 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
+import jp.go.aist.rtm.RTC.CorbaNaming;
+import jp.go.aist.rtm.RTC.Manager;
+import jp.go.aist.rtm.RTC.RTObject_impl;
+import jp.go.aist.rtm.RTC.util.CORBA_SeqUtil;
+import jp.go.aist.rtm.RTC.util.NVUtil;
+import jp.go.aist.rtm.RTC.util.ORBUtil;
+
 import org.omg.CosNaming.Binding;
 import org.omg.CosNaming.BindingIteratorHolder;
 import org.omg.CosNaming.BindingListHolder;
@@ -16,13 +23,6 @@ import org.omg.CosNaming.BindingType;
 import org.omg.CosNaming.NamingContext;
 
 import ssr.rtsbuilder.RTSystemBuilder;
-
-import jp.go.aist.rtm.RTC.CorbaNaming;
-import jp.go.aist.rtm.RTC.Manager;
-import jp.go.aist.rtm.RTC.RTObject_impl;
-import jp.go.aist.rtm.RTC.util.CORBA_SeqUtil;
-import jp.go.aist.rtm.RTC.util.NVUtil;
-import jp.go.aist.rtm.RTC.util.ORBUtil;
 import RTC.ConnectorProfile;
 import RTC.ConnectorProfileHolder;
 import RTC.PortInterfaceProfile;

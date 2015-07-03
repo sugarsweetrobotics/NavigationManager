@@ -1,7 +1,6 @@
 package application;
 import java.awt.Color;
 import java.awt.Point;
-import RTC.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,13 +10,18 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import RTC.OGMap;
+import RTC.Point2D;
 
 
 public class MapImageHolder {
 
 	private OGMap map;
 	
+	public OGMap getMap() {return map;}
+	
 	private BufferedImage image;
+	
+	private float zoomFactor = 1.0f;
 	
 	public MapImageHolder(OGMap map) {
 		this.map = map;
@@ -45,16 +49,23 @@ public class MapImageHolder {
 	}
 		
 	public Point positionToPixel(double x, double y) {
-		return new Point((int)((x + map.config.origin.position.x) / map.config.xScale),
-		-(int)((y + map.config.origin.position.y) / map.config.yScale)); 
+		return new Point((int)(zoomFactor* (x + map.config.origin.position.x) / map.config.xScale),
+		-(int)(zoomFactor* (y + map.config.origin.position.y) / map.config.yScale)); 
 	}
 	
 	public Point2D pixelToPosition(int x, int y) {
-		return new Point2D(x * map.config.xScale - map.config.origin.position.x,
-				-y * map.config.yScale - map.config.origin.position.y);
+		float x_ = x / zoomFactor;
+		float y_ = y / zoomFactor;
+		return new Point2D(x_ * map.config.xScale - map.config.origin.position.x,
+				-y_ * map.config.yScale - map.config.origin.position.y);
 	}
 		
 	public Point2D pixelToPosition(Point point) {
+		return pixelToPosition(point.x, point.y);
+	}
+	
+	public Point2D pixelToPosition(Point point, float zoomFactor) {
+		setZoomFactor(zoomFactor);
 		return pixelToPosition(point.x, point.y);
 	}
 	
@@ -116,5 +127,13 @@ public class MapImageHolder {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void loadMap(File file) throws IOException {
+		this.map = MapLoader.loadMap(file);
+	}
+
+	public void setZoomFactor(float z) {
+		this.zoomFactor = z;
 	}
 }
