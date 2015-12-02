@@ -32,6 +32,7 @@ import RTC.OGMap;
 import RTC.PortService;
 import application.CameraViewPanel;
 import application.MapLoader;
+import application.NavigationLogger;
 
 
 
@@ -86,7 +87,7 @@ public class MapperViewerFrame extends JFrame {
 
 	private RTSystemTreeView systemTreeView;
 
-	private Logger logger;
+	private NavigationLogger logger;
 
 	private StatusBar statusBar;
 
@@ -110,7 +111,7 @@ public class MapperViewerFrame extends JFrame {
 
 	public MapperViewerFrame(Application app) {
 		super(getTitleStr(app, "INACTIVE"));
-		logger = Logger.getLogger("MapperViewer");
+		logger = new NavigationLogger();
 
 		this.app = app;
 

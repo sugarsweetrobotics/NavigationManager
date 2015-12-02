@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -25,11 +24,12 @@ import ssr.nameservice.CorbaNamingParser;
 import ssr.nameservice.RTNamingContext;
 import ssr.rtsbuilder.RTSystemBuilder;
 import ssr.rtsprofile.RTSystemProfile;
+import application.NavigationLogger;
 
 @SuppressWarnings("serial")
 public class RTSystemTreeView extends JPanel {
 
-	static Logger logger = Logger.getLogger("MapperViewer");
+	static NavigationLogger logger = new NavigationLogger();//Logger.getLogger("MapperViewer");
 	DefaultMutableTreeNode rootNode;
 	JToolBar toolBar;
 

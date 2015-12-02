@@ -25,7 +25,7 @@ public class NavigationManager implements RtcNewFunc, RtcDeleteFunc, RegisterMod
     	    "implementation_id", "NavigationManager",
     	    "type_name",         "NavigationManager",
     	    "description",       "Mapper Viewer RTC",
-    	    "version",           "1.0.1",
+    	    "version",           "1.0.2",
     	    "vendor",            "Sugar Sweet Robotics",
     	    "category",          "Navigation",
     	    "activity_type",     "STATIC",

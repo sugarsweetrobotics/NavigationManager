@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 import jp.go.aist.rtm.RTC.CorbaNaming;
 import jp.go.aist.rtm.RTC.Manager;
@@ -30,14 +29,15 @@ import RTC.PortService;
 import RTC.RTObject;
 import _SDOPackage.NVListHolder;
 import _SDOPackage.NameValue;
+import application.NavigationLogger;
 
 public class RTMHelper {
 
-	private static Logger logger;
+	private static NavigationLogger logger;
 	private static Map<String, String> defaultDataPortConnectionProperties;
 	
 	static {
-		logger = Logger.getLogger("MapperViewer");
+		logger = new NavigationLogger();// Logger.getLogger("MapperViewer");
 		
 		defaultDataPortConnectionProperties = new HashMap<String, String>();
 		defaultDataPortConnectionProperties.put("dataport.interface_type", "corba_cdr");

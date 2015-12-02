@@ -1,5 +1,15 @@
 *.log
+
 *.log.lck
+
 src/RTC/
+
 build-win32/
+
 bin/
+*.pyc
+*~
+*.bak
+*.BAK
+build-*
+*.lock

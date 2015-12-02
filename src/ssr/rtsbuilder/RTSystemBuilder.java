@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 import jp.go.aist.rtm.RTC.CorbaNaming;
 import jp.go.aist.rtm.RTC.port.CorbaConsumer;
@@ -48,18 +47,19 @@ import _SDOPackage.InternalError;
 import _SDOPackage.NVListHolder;
 import _SDOPackage.NameValue;
 import _SDOPackage.NotAvailable;
+import application.NavigationLogger;
 
 /**
  * @author ysuga
  * 
  */
 public class RTSystemBuilder {
-	static private Logger logger;
+	static private NavigationLogger logger;
 
 	// static private Map<String, CorbaNaming> corbaNamingMap;
 
 	static {
-		logger = Logger.getLogger("net.ysuga.rtsbuilder");
+		logger = new NavigationLogger();//Logger.getLogger("net.ysuga.rtsbuilder");
 		// corbaNamingMap = new HashMap<String, CorbaNaming>();
 	}
 
@@ -188,8 +188,7 @@ public class RTSystemBuilder {
 	 * @param rtSystemProfile
 	 */
 	static public void destroyRTSystem(RTSystemProfile rtSystemProfile) {
-		logger.entering(RTSystemBuilder.class.getName(), "destroyRTSystem",
-				rtSystemProfile);
+		logger.entering(RTSystemBuilder.class.getName(), "destroyRTSystem");
 		for (DataPortConnector connector : rtSystemProfile.dataPortConnectorSet) {
 			try {
 				disconnect(connector);
@@ -226,8 +225,7 @@ public class RTSystemBuilder {
 	 */
 	public static void clearAllConnection(RTComponent component)
 			throws CorbaNamingCannotFindException, CorbaNamingResolveException {
-		logger.entering(RTSystemBuilder.class.getName(), "clearAllConnection",
-				component);
+		logger.entering(RTSystemBuilder.class.getName(), "clearAllConnection");
 		RTObject rtObject = getComponent(component);
 		for (PortService portService : rtObject.get_ports()) {
 			portService.disconnect_all();
@@ -245,8 +243,7 @@ public class RTSystemBuilder {
 	 */
 	static public void disconnect(PortConnector connector)
 			throws CorbaNamingCannotFindException, CorbaNamingResolveException {
-		logger.entering(RTSystemBuilder.class.getName(), "disconnect",
-				connector);
+		logger.entering(RTSystemBuilder.class.getName(), "disconnect");
 		RTObject sourceRTObject = getComponent(connector
 				.getSourceComponentPathUri());
 		for (PortService portService : sourceRTObject.get_ports()) {
@@ -288,7 +285,7 @@ public class RTSystemBuilder {
 	 * @throws Exception
 	 */
 	static public void connect(PortConnector connector) throws Exception {
-		logger.entering(RTSystemBuilder.class.getName(), "connect", connector);
+		logger.entering(RTSystemBuilder.class.getName(), "connect");
 
 		RTObject sourceRTObject = getComponent(connector
 				.getSourceComponentPathUri());
@@ -848,8 +845,7 @@ public class RTSystemBuilder {
 	 */
 	final static public RTC.RTObject getComponent(String pathUri)
 			throws CorbaNamingCannotFindException, CorbaNamingResolveException {
-		logger.entering(RTSystemBuilder.class.getName(), "getComponent:",
-				pathUri);
+		logger.entering(RTSystemBuilder.class.getName(), "getComponent:");
 		String namingURI = RTSystemBuilder.getNamingUri(pathUri);
 		String compURI = RTSystemBuilder.getComponentUri(pathUri);
 
@@ -872,8 +868,7 @@ public class RTSystemBuilder {
 	
 	final static public RTM.Manager getManager(String pathUri)
 			throws CorbaNamingCannotFindException, CorbaNamingResolveException {
-		logger.entering(RTSystemBuilder.class.getName(), "getComponent:",
-				pathUri);
+		logger.entering(RTSystemBuilder.class.getName(), "getComponent:");
 		String namingURI = RTSystemBuilder.getNamingUri(pathUri);
 		String compURI = RTSystemBuilder.getComponentUri(pathUri);
 

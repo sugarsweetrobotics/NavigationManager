@@ -16,6 +16,7 @@ import RTC.PathPlanParameter;
 import RTC.TimedPose2D;
 import RTC.Velocity2D;
 import application.DataContainer;
+import application.NavigationLogger;
 import application.PathUtil;
 import application.VirtualJoystickContainer;
 
@@ -27,7 +28,7 @@ public class Application implements Runnable {
 
 	public DataContainer dataContainer;
 
-	private Logger logger;
+	private NavigationLogger logger;
 
 	private Thread applicationRoutine;
 
@@ -40,7 +41,7 @@ public class Application implements Runnable {
 	public Application(NavigationManagerImpl rtc) {
 		this.rtc = rtc;
 
-		logger = Logger.getLogger("MapperViewer");
+		logger = new NavigationLogger();
 		applicationRoutine = new Thread(this);
 		dataContainer = new DataContainer();
 		view = new MapperViewerFrame(this);

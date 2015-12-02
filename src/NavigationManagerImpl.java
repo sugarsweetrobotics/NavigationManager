@@ -10,6 +10,8 @@
 import java.util.Calendar;
 import java.util.logging.Logger;
 
+import application.NavigationLogger;
+
 import jp.go.aist.rtm.RTC.DataFlowComponentBase;
 import jp.go.aist.rtm.RTC.Manager;
 import jp.go.aist.rtm.RTC.port.CorbaConsumer;
@@ -55,7 +57,7 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 	private Calendar m_lastReceivedTime;
 	private float m_poseTimeout = (float) 3.0; // should be added config
 
-	private Logger logger;
+	private NavigationLogger logger;
 
 	/*
 	 * !
@@ -98,7 +100,7 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 		// </rtc-template>
 
 		System.out.println("Object created.");
-		logger = Logger.getLogger("MapperViewer");
+		logger = new NavigationLogger();
 	}
 
 	/*
@@ -520,11 +522,13 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 	 */
 	public OGMap requestMap() {
 		logger.entering("MapperViewerImpl", "requestMap");
-		OGMap map = new OGMap();
-		OGMapHolder mapHolder = new OGMapHolder(map);
 		if (this.get_context(0).get_component_state(this.m_objref) != RTC.LifeCycleState.ACTIVE_STATE) {
 			return null;
 		}
+
+		
+		OGMap map = new OGMap();
+		OGMapHolder mapHolder = new OGMapHolder(map);
 		try {
 			if (m_mapperServicePort.get_connector_profiles().length != 0) {
 				RETURN_VALUE retval;
@@ -595,7 +599,7 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 	}
 
 	public Path2D planPath(PathPlanParameter param) {
-		logger.entering("MapperViewerImpl", "planPath", param);
+		logger.entering("MapperViewerImpl", "planPath");
 		Path2DHolder pathHolder = new Path2DHolder();
 
 		param.currentPose = new RTC.Pose2D(new RTC.Point2D(
@@ -643,7 +647,7 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 
 	private void follow() {
 		Path2D path = followingTargetPath;
-		logger.entering("MapperViewerImpl", "followPath()", path);
+		logger.entering("MapperViewerImpl", "followPath()");
 		if (m_pathFollowerPort.get_connector_profiles().length != 0) {// dose it
 																		// connected
 																		// with

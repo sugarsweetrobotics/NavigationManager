@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -44,6 +43,7 @@ import _SDOPackage.InvalidParameter;
 import _SDOPackage.NVListHolder;
 import _SDOPackage.NameValue;
 import _SDOPackage.NotAvailable;
+import application.NavigationLogger;
 
 @SuppressWarnings("serial")
 public class RTSTreeNode extends DefaultMutableTreeNode {
@@ -51,12 +51,12 @@ public class RTSTreeNode extends DefaultMutableTreeNode {
 	private RTNamingContext rtNamingContext;
 	private RTComponent component;
 	private RTSystemTreeView view;
-	private Logger logger;
+	private NavigationLogger logger;
 
 	public RTSTreeNode(RTSystemTreeView view, RTNamingContext rtNamingContext) {
 		this.rtNamingContext = rtNamingContext;
 		this.view = view;
-		logger = Logger.getLogger("MapperViewer");
+		logger = new  NavigationLogger();// Logger.getLogger("MapperViewer");
 	}
 
 	public String toString() {

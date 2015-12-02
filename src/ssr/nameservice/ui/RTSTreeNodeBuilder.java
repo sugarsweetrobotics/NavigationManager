@@ -168,12 +168,12 @@ public class RTSTreeNodeBuilder {
 					confNode.add(n);
 				}
 			} catch (NotAvailable | InternalError | InterfaceNotImplemented e) {
-				Logger.getLogger("MapperViewer").warning(e.getMessage());
+				//Logger.getLogger("MapperViewer").warning(e.getMessage());
 			}
 			
 			// Configuration Profiles
 		} catch (CorbaNamingCannotFindException | CorbaNamingResolveException | org.omg.CORBA.COMM_FAILURE ex) {
-			Logger.getLogger("MapperViewer").warning(ex.getMessage());
+			//Logger.getLogger("MapperViewer").warning(ex.getMessage());
 		}
 		
 		return list;
