@@ -8,9 +8,6 @@
  */
 
 import java.util.Calendar;
-import java.util.logging.Logger;
-
-import application.NavigationLogger;
 
 import jp.go.aist.rtm.RTC.DataFlowComponentBase;
 import jp.go.aist.rtm.RTC.Manager;
@@ -36,6 +33,7 @@ import RTC.PathPlanner;
 import RTC.Point2D;
 import RTC.Pose2D;
 import RTC.RETURN_VALUE;
+import RTC.RTObject;
 import RTC.RangeData;
 import RTC.ReturnCode_t;
 import RTC.Time;
@@ -43,6 +41,7 @@ import RTC.TimedPose2D;
 import RTC.TimedVelocity2D;
 import RTC.Velocity2D;
 import RTC.Waypoint2D;
+import application.NavigationLogger;
 
 /*!
  * @class MapperViewerImpl
@@ -532,6 +531,13 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 		try {
 			if (m_mapperServicePort.get_connector_profiles().length != 0) {
 				RETURN_VALUE retval;
+				RTObject obj = null;
+				if (m_mapperServicePort.get_connector_profiles()[0].ports[0].get_port_profile().name.equals(m_mapperServicePort.get_port_profile().name)) {
+					obj = m_mapperServicePort.get_connector_profiles()[0].ports[1].get_port_profile().owner;
+				} else {
+					obj = m_mapperServicePort.get_connector_profiles()[0].ports[0].get_port_profile().owner;
+				}
+				if (obj.get_context(0).get_component_state(obj).equals(RTC.LifeCycleState.ACTIVE_STATE)) {
 				retval = this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder);
 				if (this.m_mapperBase._ptr().requestCurrentBuiltMap(mapHolder) == RETURN_VALUE.RETVAL_OK) {
 					return mapHolder.value;
@@ -542,7 +548,7 @@ public class NavigationManagerImpl extends DataFlowComponentBase {
 				} else if (retval == RETURN_VALUE.RETVAL_ODOMETRY_INVALID_VALUE) {
 					logger.warning("ERROR: Kobuki out of map range");
 				}
-	
+				}	
 			} else if (this.m_mapServerPort.get_connector_profiles().length != 0) {// dose
 																					// it
 																					// connected

@@ -55,7 +55,18 @@ public class Application implements Runnable {
 	}
 
 	private void startRoutine() {
+		if (applicationRoutine.isAlive()) {
+			endFlag = true;
+			
+			try {
+				applicationRoutine.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		endFlag = false;
+		applicationRoutine = new Thread(this);
 		applicationRoutine.start();
 	}
 
